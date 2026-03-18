@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import Head from "next/head";
+import Link from "next/link";
 import { BOOKS } from "../lib/books";
 
 function getScoreStyle(s) {
@@ -240,6 +241,11 @@ export default function Home() {
             Las valoraciones se basan en análisis de fuentes públicas y no representan posiciones doctrinales oficiales.
             El objetivo es orientar a lectores católicos, no emitir juicios definitivos.
           </p>
+          <div className="footer-links">
+            <Link href="/acerca">Acerca de</Link>
+            <span>·</span>
+            <Link href="/privacidad">Política de Privacidad</Link>
+          </div>
         </footer>
 
         {/* AD BANNER BOTTOM */}
@@ -394,6 +400,18 @@ export default function Home() {
           .search-btn { padding: 0 14px; font-size: 13px; }
           .stats-row { grid-template-columns: repeat(3, 1fr); gap: 6px; }
         }
+      .footer-links {
+          display: flex;
+          justify-content: center;
+          gap: 12px;
+          margin-top: 8px;
+          font-size: 12px;
+        }
+        .footer-links a {
+          color: #B4B2A9;
+          text-decoration: none;
+        }
+        .footer-links a:hover { color: #888780; }
       `}</style>
     </>
   );
