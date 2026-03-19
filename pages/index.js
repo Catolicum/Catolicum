@@ -104,7 +104,7 @@ export default function Home() {
           <Link href="/" style={{ textDecoration: "none", color: "inherit" }}>
             <div className="sidebar-logo">
               <div className="logo-icon">
-                <CrossIcon size={20} color="#F5F5F7" />
+                <CrossIcon size={14} color="#F5F5F7" />
               </div>
               <div className="sidebar-divider" />
               <div>
