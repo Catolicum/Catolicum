@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import Head from "next/head";
 import Link from "next/link";
-import { searchBook, getRecomendados } from "../lib/search";
+import { searchBook, getRecomendados, getSuggestions } from "../lib/search";
 
 function getScoreStyle(s) {
   if (s >= 9) return { color: "#1D9E75", bg: "#EAF3DE", text: "#085041", label: "Muy afin" };
@@ -31,7 +31,8 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [recommended, setRecommended] = useState([]);
-
+  const [suggestions, setSuggestions] = useState([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
   useEffect(function() {
     getRecomendados().then(function(data) {
       setRecommended(data);
@@ -50,6 +51,25 @@ export default function Home() {
 
   function handleKey(e) {
     if (e.key === "Enter") handleSearch(query);
+  }
+
+  async function handleInputChange(e) {
+    var val = e.target.value;
+    setQuery(val);
+    if (val.length < 2) {
+      setSuggestions([]);
+      setShowSuggestions(false);
+      return;
+    }
+    var results = await getSuggestions(val);
+    setSuggestions(results);
+    setShowSuggestions(results.length > 0);
+  }
+
+  function handleSelectSuggestion(titulo) {
+    setQuery(titulo);
+    setShowSuggestions(false);
+    handleSearch(titulo);
   }
 
   var st = result ? getScoreStyle(result.s) : null;
@@ -140,14 +160,35 @@ export default function Home() {
                   type="text"
                   placeholder="Titulo del libro o nombre del autor..."
                   value={query}
-                  onChange={function(e) { setQuery(e.target.value); }}
+                  onChange={handleInputChange}
+                  onBlur={function() { setTimeout(function() { setShowSuggestions(false); }, 150); }}
+                  onFocus={function() { if (suggestions.length > 0) setShowSuggestions(true); }}
                   onKeyDown={handleKey}
                 />
                 <button className="search-btn" onClick={function() { handleSearch(query); }}>
                   Analizar
                 </button>
+              {showSuggestions && (
+              <div className="suggestions-box">
+                {suggestions.map(function(s) {
+                  return (
+                    <div
+                      key={s.titulo}
+                      className="suggestion-item"
+                      onMouseDown={function() { handleSelectSuggestion(s.titulo); }}
+                    >
+                      <span className="suggestion-score" style={{ background: getScoreStyle(s.puntuacion).bg, color: getScoreStyle(s.puntuacion).text }}>
+                        {s.puntuacion}
+                      </span>
+                      <span className="suggestion-title">{s.titulo}</span>
+                      <span className="suggestion-author">{s.autor}</span>
+                    </div>
+                  );
+                })}
               </div>
-              <div className="examples-row">
+            )}
+            </div>
+            <div className="examples-row">
                 <span className="examples-label">Ejemplos:</span>
                 {EXAMPLES.map(function(ex) {
                   return (
@@ -401,6 +442,29 @@ export default function Home() {
             transition: all .15s;
           }
           .back-btn:hover { border-color: #888780; color: #2C2C2A; }
+          .search-row { position: relative; }
+          .suggestions-box {
+            position: absolute; top: 52px; left: 0;
+            right: 80px; background: #fff;
+            border: 0.5px solid #D3D1C7; border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            z-index: 100; overflow: hidden;
+          }
+          .suggestion-item {
+            display: flex; align-items: center; gap: 10px;
+            padding: 10px 14px; cursor: pointer;
+            border-bottom: 0.5px solid #F1EFE8;
+            transition: background .1s;
+          }
+          .suggestion-item:last-child { border-bottom: none; }
+          .suggestion-item:hover { background: #FAF8F4; }
+          .suggestion-score {
+            width: 28px; height: 28px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 12px; font-weight: 500; flex-shrink: 0;
+          }
+          .suggestion-title { font-size: 13px; font-weight: 500; flex: 1; }
+          .suggestion-author { font-size: 12px; color: #888780; }
       `}</style>
     </div>
   );
