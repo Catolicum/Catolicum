@@ -245,6 +245,8 @@ export default function Home() {
             <Link href="/acerca">Acerca de</Link>
             <span>·</span>
             <Link href="/privacidad">Política de Privacidad</Link>
+            <span>·</span>
+            <Link href="/contacto">Contacto</Link>
           </div>
         </footer>
 
