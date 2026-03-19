@@ -11,6 +11,7 @@
     "@supabase/supabase-js": "^2.99.3",
     "next": "14.2.3",
     "next-sitemap": "^4.2.3",
+    "quagga": "^0.12.1",
     "react": "^18",
     "react-dom": "^18"
   }

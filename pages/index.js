@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import Head from "next/head";
 import Link from "next/link";
 import { searchBook, getRecomendados, getSuggestions } from "../lib/search";
+import BarcodeScanner from "../components/BarcodeScanner";
 
 function getScoreStyle(s) {
   if (s >= 9) return { color: "#1D9E75", bg: "#EAF3DE", text: "#085041", label: "Muy afin" };
@@ -41,6 +42,7 @@ export default function Home() {
   const [suggestions, setSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [showScanner, setShowScanner] = useState(false);
 
   useEffect(function() {
     getRecomendados().then(function(data) { setRecommended(data); });
@@ -189,8 +191,33 @@ export default function Home() {
                   onFocus={function() { if (suggestions.length > 0) setShowSuggestions(true); }}
                   style={{ flex: 1, height: 48, padding: "0 16px", border: "0.5px solid #D1D1D6", borderRadius: 10, background: "#FFFFFF", color: "#1D1D1F", fontSize: 14, fontFamily: "DM Sans, sans-serif" }}
                 />
-                <button onClick={function() { handleSearch(query); }} style={{ height: 48, padding: "0 18px", background: "#1D1D1F", color: "#F5F5F7", border: "none", borderRadius: 10, fontSize: 14, cursor: "pointer", fontFamily: "DM Sans, sans-serif", whiteSpace: "nowrap" }}>
+                <button
+  onClick={function() { handleSearch(query); }}
+  style={{ height: 48, padding: "0 18px", background: "#1D1D1F", color: "#F5F5F7", border: "none", borderRadius: 10, fontSize: 14, cursor: "pointer", fontFamily: "DM Sans, sans-serif", whiteSpace: "nowrap" }}
+                >
                   Analizar
+                </button>
+                <button
+                  onClick={function() { setShowScanner(true); }}
+                  title="Escanear codigo de barras"
+                  style={{ height: 48, width: 48, background: "#FFFFFF", border: "0.5px solid #D1D1D6", borderRadius: 10, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}
+                >
+                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                    <rect x="2" y="4" width="2" height="12" fill="#1D1D1F"/>
+                    <rect x="5" y="4" width="1" height="12" fill="#1D1D1F"/>
+                    <rect x="7" y="4" width="2" height="12" fill="#1D1D1F"/>
+                    <rect x="10" y="4" width="1" height="12" fill="#1D1D1F"/>
+                    <rect x="12" y="4" width="3" height="12" fill="#1D1D1F"/>
+                    <rect x="16" y="4" width="2" height="12" fill="#1D1D1F"/>
+                    <rect x="1" y="2" width="4" height="1" fill="#1D1D1F"/>
+                    <rect x="1" y="2" width="1" height="4" fill="#1D1D1F"/>
+                    <rect x="15" y="2" width="4" height="1" fill="#1D1D1F"/>
+                    <rect x="18" y="2" width="1" height="4" fill="#1D1D1F"/>
+                    <rect x="1" y="17" width="4" height="1" fill="#1D1D1F"/>
+                    <rect x="1" y="14" width="1" height="4" fill="#1D1D1F"/>
+                    <rect x="15" y="17" width="4" height="1" fill="#1D1D1F"/>
+                    <rect x="18" y="14" width="1" height="4" fill="#1D1D1F"/>
+                  </svg>
                 </button>
               </div>
 
@@ -305,6 +332,16 @@ export default function Home() {
                     );
                   })}
                 </div>
+                              {showScanner && (
+                <BarcodeScanner
+                  onDetected={function(isbn) {
+                    setShowScanner(false);
+                    setQuery(isbn);
+                    handleSearch(isbn);
+                  }}
+                  onClose={function() { setShowScanner(false); }}
+                />
+              )}
               </div>
             )}
 
