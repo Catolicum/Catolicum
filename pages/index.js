@@ -78,13 +78,15 @@ export default function Home() {
       <div className="layout">
 
         <aside className="sidebar">
-          <div className="sidebar-logo">
-            <div className="logo-icon">✝</div>
-            <div>
-              <div className="logo-title">Catolicum</div>
-              <div className="logo-tagline">La Libreria Catolica</div>
+          <Link href="/" style={{ textDecoration: "none", color: "inherit" }}>
+            <div className="sidebar-logo">
+              <div className="logo-icon">✝</div>
+              <div>
+                <div className="logo-title">Catolicum</div>
+                <div className="logo-tagline">La Libreria Catolica</div>
+              </div>
             </div>
-          </div>
+          </Link>
           <nav className="sidebar-nav">
             {NAV.map(function(item) {
               return (
@@ -163,6 +165,12 @@ export default function Home() {
 
             {searched && !loading && (
               <div className="result-area">
+                <button
+                  className="back-btn"
+                  onClick={function() { setSearched(false); setResult(null); setQuery(""); }}
+                >
+                  ← Nueva búsqueda
+                </button>
                 {result ? (
                   <div className="result-card">
                     <div className="result-header">
@@ -384,6 +392,15 @@ export default function Home() {
           .ad-banner { padding: 6px 10px; }
           .ad-placeholder { padding: 10px 0; }
         }
+          .back-btn {
+            display: inline-flex; align-items: center; gap: 6px;
+            margin-bottom: 1rem; padding: 6px 14px;
+            background: #fff; border: 0.5px solid #D3D1C7;
+            border-radius: 20px; font-size: 13px; color: #888780;
+            cursor: pointer; font-family: 'DM Sans', sans-serif;
+            transition: all .15s;
+          }
+          .back-btn:hover { border-color: #888780; color: #2C2C2A; }
       `}</style>
     </div>
   );
