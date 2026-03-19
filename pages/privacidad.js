@@ -54,8 +54,12 @@ export default function Privacidad() {
           </div>
         </aside>
 
-        <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ maxWidth: 680, margin: "0 auto", padding: "2.5rem 1.5rem" }}>
+        <div style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column" }}>
+            <div style={{ width: "100%", background: "#FFFFFF", borderBottom: "0.5px solid #D1D1D6", padding: "8px 16px", display: "flex", alignItems: "center", gap: 12 }}>
+              <span style={{ fontSize: 10, color: "#AEAEB2", textTransform: "uppercase", letterSpacing: ".06em", flexShrink: 0 }}>Publicidad</span>
+              <div style={{ flex: 1, textAlign: "center", fontSize: 12, color: "#AEAEB2", padding: "18px 0", border: "0.5px dashed #D1D1D6", borderRadius: 6 }}>[ Google AdSense ]</div>
+            </div>
+            <div style={{ maxWidth: 680, margin: "0 auto", padding: "2.5rem 1.5rem", flex: 1 }}>
             <Link href="/" style={{ fontSize: 13, color: "#6E6E73", textDecoration: "none" }}>← Volver</Link>
             <h1 style={{ fontFamily: "EB Garamond, serif", fontSize: 36, fontWeight: 500, margin: "1.5rem 0 .5rem", color: "#1D1D1F" }}>Politica de Privacidad</h1>
             <p style={{ fontSize: 13, color: "#6E6E73", marginBottom: "2rem" }}>Ultima actualizacion: enero 2025</p>

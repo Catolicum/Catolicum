@@ -31,17 +31,6 @@ const CrossIcon = () => (
   </svg>
 );
 
-const sidebarStyle = { width: 220, flexShrink: 0, background: "#FFFFFF", borderRight: "0.5px solid #D1D1D6", display: "flex", flexDirection: "column", padding: "1.5rem 1rem", position: "sticky", top: 0, height: "100vh", overflowY: "auto" };
-const logoWrapStyle = { display: "flex", alignItems: "center", gap: 12, marginBottom: "2rem", cursor: "pointer" };
-const logoIconStyle = { width: 38, height: 38, borderRadius: 9, background: "#1D1D1F", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 };
-const logoDividerStyle = { width: 1, height: 28, background: "#D1D1D6", flexShrink: 0 };
-const logoTitleStyle = { fontFamily: "EB Garamond, serif", fontSize: 19, fontWeight: 500, color: "#1D1D1F", lineHeight: 1.1 };
-const logoTaglineStyle = { fontFamily: "EB Garamond, serif", fontSize: 11, fontStyle: "italic", color: "#6E6E73", marginTop: 2 };
-const navStyle = { display: "flex", flexDirection: "column", gap: 2, flex: 1 };
-const navItemStyle = { display: "flex", alignItems: "center", padding: "9px 10px", borderRadius: 8, fontSize: 14, color: "#3A3A3C", textDecoration: "none" };
-const sidebarFooterStyle = { display: "flex", flexDirection: "column", gap: 4, paddingTop: "1rem", borderTop: "0.5px solid #D1D1D6" };
-const sidebarLinkStyle = { fontSize: 11, color: "#AEAEB2", textDecoration: "none", padding: "3px 0" };
-
 export default function Home() {
   const [query, setQuery] = useState("");
   const [result, setResult] = useState(null);
@@ -111,33 +100,35 @@ export default function Home() {
 
       <div style={{ display: "flex", minHeight: "100vh" }}>
 
-        <aside style={sidebarStyle}>
+        <aside style={{ width: 220, flexShrink: 0, background: "#FFFFFF", borderRight: "0.5px solid #D1D1D6", display: "flex", flexDirection: "column", padding: "1.5rem 1rem", position: "sticky", top: 0, height: "100vh", overflowY: "auto" }}>
           <Link href="/" style={{ textDecoration: "none", color: "inherit" }}>
-            <div style={logoWrapStyle}>
-              <div style={logoIconStyle}><CrossIcon /></div>
-              <div style={logoDividerStyle} />
+            <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: "2rem", cursor: "pointer" }}>
+              <div style={{ width: 38, height: 38, borderRadius: 9, background: "#1D1D1F", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                <CrossIcon />
+              </div>
+              <div style={{ width: 1, height: 28, background: "#D1D1D6", flexShrink: 0 }} />
               <div>
-                <div style={logoTitleStyle}>Catolicum</div>
-                <div style={logoTaglineStyle}>La Libreria Catolica</div>
+                <div style={{ fontFamily: "EB Garamond, serif", fontSize: 19, fontWeight: 500, color: "#1D1D1F", lineHeight: 1.1 }}>Catolicum</div>
+                <div style={{ fontFamily: "EB Garamond, serif", fontSize: 11, fontStyle: "italic", color: "#6E6E73", marginTop: 2 }}>La Libreria Catolica</div>
               </div>
             </div>
           </Link>
-          <nav style={navStyle}>
+          <nav style={{ display: "flex", flexDirection: "column", gap: 2, flex: 1 }}>
             {NAV.map(function(item) {
               return (
-                <Link key={item.href} href={item.href} style={navItemStyle}>
+                <Link key={item.href} href={item.href} style={{ display: "flex", alignItems: "center", padding: "9px 10px", borderRadius: 8, fontSize: 14, color: "#3A3A3C", textDecoration: "none" }}>
                   {item.label}
                 </Link>
               );
             })}
           </nav>
-          <div style={sidebarFooterStyle}>
-            <Link href="/privacidad" style={sidebarLinkStyle}>Privacidad</Link>
-            <Link href="/acerca" style={sidebarLinkStyle}>Acerca de</Link>
+          <div style={{ display: "flex", flexDirection: "column", gap: 4, paddingTop: "1rem", borderTop: "0.5px solid #D1D1D6" }}>
+            <Link href="/privacidad" style={{ fontSize: 11, color: "#AEAEB2", textDecoration: "none", padding: "3px 0" }}>Privacidad</Link>
+            <Link href="/acerca" style={{ fontSize: 11, color: "#AEAEB2", textDecoration: "none", padding: "3px 0" }}>Acerca de</Link>
           </div>
         </aside>
 
-        <div style={{ display: "none" }} id="mobile-header-placeholder"></div>
+        <div style={{ display: "none" }} id="mobile-placeholder"></div>
 
         <div style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column" }}>
 
@@ -302,19 +293,6 @@ export default function Home() {
 
         </div>
       </div>
-
-      <style jsx global>{`
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-        html { font-size: 16px; }
-        body { font-family: 'DM Sans', sans-serif; background: #F5F5F7; color: #1D1D1F; min-height: 100vh; }
-        a { color: inherit; }
-      `}</style>
-
-      <style jsx>{`
-        @media (max-width: 768px) {
-          aside { display: none !important; }
-        }
-      `}</style>
     </div>
   );
 }
