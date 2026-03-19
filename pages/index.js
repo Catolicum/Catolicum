@@ -330,7 +330,7 @@ export default function Home() {
       `}</style>
 
       <style jsx>{`
-        .layout { display: flex; min-height: 100vh; }
+        .layout { display: flex; min-height: 100vh; flex-direction: row;}
 
         .sidebar {
           width: 220px; flex-shrink: 0;
@@ -392,7 +392,7 @@ export default function Home() {
           text-decoration: none; border-bottom: 0.5px solid #E8E6DE;
         }
 
-        .content { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+        .content { flex: 1; display: flex; flex-direction: column; min-width: 0; overflow-x: hidden; width: 100%; }
         .main { flex: 1; max-width: 680px; margin: 0 auto; width: 100%; padding: 2rem 1rem 1rem; }
 
         .ad-banner {
@@ -515,10 +515,15 @@ export default function Home() {
         .footer-links span { color: #D3D1C7; }
 
         @media (max-width: 768px) {
-          .sidebar { display: none; }
-          .mobile-header { display: flex; }
-          .search-btn { padding: 0 14px; font-size: 13px; }
-          .stats-row { gap: 6px; }
+        .sidebar { display: none; }
+        .mobile-header { display: flex; }
+        .layout { flex-direction: column; }
+        .content { width: 100%; }
+        .main { padding: 1rem; }
+        .search-btn { padding: 0 14px; font-size: 13px; }
+        .stats-row { gap: 6px; }
+        .ad-banner { padding: 6px 10px; }
+        .ad-placeholder { padding: 10px 0; }
         }
       `}</style>
     </>
