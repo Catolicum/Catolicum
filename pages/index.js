@@ -63,6 +63,7 @@ export default function Home() {
         <meta name="keywords" content="libros católicos, análisis doctrinal, fe católica, libros recomendados católicos, catecismo, doctrina católica" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta name="robots" content="index, follow" />
+        <meta name="google-site-verification" content="DJgtQhrJpw86EiMeHjn-XjbOAYSsebWi-QaTPUl6dA8" />
         <meta property="og:title" content="Catolicum — La Librería Católica" />
         <meta property="og:description" content="Análisis doctrinal de libros desde la perspectiva católica. Más de 150 libros analizados." />
         <meta property="og:url" content="https://catolicum.vercel.app" />
