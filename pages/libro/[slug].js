@@ -49,8 +49,8 @@ export default function LibroPage(props) {
   var pageTitle = book.t + " - Analisis catolico - Catolicum";
   var keywords = book.t + ", " + book.a + ", analisis catolico, fe catolica";
 
-  return (
-    <div>
+ return (
+    <div style={{ minHeight: "100vh", background: "#FAF8F4" }}>
       <Head>
         <title>{pageTitle}</title>
         <meta name="description" content={metaDesc} />
@@ -144,7 +144,7 @@ export default function LibroPage(props) {
           </div>
         </div>
 
-        <div style={{ marginTop: "2rem", borderTop: "0.5px solid #D3D1C7", paddingTop: "1rem", display: "flex", gap: 16, fontSize: 12, color: "#B4B2A9" }}>
+        <div style={{ marginTop: "2rem", borderTop: "0.5px solid #D3D1C7", paddingTop: "1rem", display: "flex", gap: 16, fontSize: 12, color: "#B4B2A9", justifyContent: "flex-start" }}>
           <Link href="/" style={{ color: "#B4B2A9", textDecoration: "none" }}>Inicio</Link>
           <span>.</span>
           <Link href="/recomendados" style={{ color: "#B4B2A9", textDecoration: "none" }}>Recomendados</Link>
