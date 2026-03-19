@@ -49,7 +49,7 @@ export default function Home() {
   return (
     <>
       <Head>
-        <title>Catolicum — Análisis doctrinal de libros</title>
+        <title>Catolicum — La Librería Católica</title>
         <meta name="description" content="Descubre si un libro es compatible con la fe católica. Análisis doctrinal basado en fuentes públicas." />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -73,7 +73,7 @@ export default function Home() {
               <div className="logo-icon">✝</div>
               <div>
                 <h1 className="logo-title">Catolicum</h1>
-                <p className="logo-sub">Análisis doctrinal de libros</p>
+                 <p className="logo-tagline">La Librería Católica</p>
               </div>
             </div>
           </header>
@@ -302,13 +302,15 @@ export default function Home() {
           display: flex; align-items: center; justify-content: center;
           font-size: 22px;
         }
-        .logo-title {
+        .logo-tagline {
           font-family: 'EB Garamond', serif;
-          font-size: 32px; font-weight: 500;
-          color: #2C2C2A; text-align: left; line-height: 1.1;
+          font-size: 18px;
+          font-weight: 400;
+          font-style: italic;
+          color: #888780;
+          text-align: left;
+          margin-top: 4px;
         }
-        .logo-sub { font-size: 13px; color: #888780; text-align: left; margin-top: 2px; }
-
         /* LANG */
         .lang-row { display: flex; gap: 6px; justify-content: center; margin-bottom: 1.5rem; }
         .lang-btn {
@@ -320,7 +322,11 @@ export default function Home() {
         .lang-btn.active { background: #2C2C2A; color: #FAF8F4; border-color: #2C2C2A; }
 
         /* SEARCH */
-        .search-wrap { margin-bottom: 1.5rem; }
+        .search-wrap {
+          margin-bottom: 1.5rem;
+          max-width: 560px;
+          margin-left: auto;
+          margin-right: auto;}
         .search-row { display: flex; gap: 8px; margin-bottom: .75rem; }
         .search-input {
           flex: 1; height: 48px; padding: 0 16px;
