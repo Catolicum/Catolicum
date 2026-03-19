@@ -81,8 +81,7 @@ export default function Home() {
           <nav className="sidebar-nav">
             {NAV.map((item) => (
               <Link key={item.href} href={item.href} className="nav-item">
-                <span className="nav-icon">{item.icon}</span>
-                {item.label}
+               {item.label}
               </Link>
             ))}
           </nav>
@@ -344,9 +343,9 @@ export default function Home() {
         .logo-tagline { font-family: 'EB Garamond', serif; font-size: 12px; font-style: italic; color: #888780; margin-top: 2px; }
         .sidebar-nav { display: flex; flex-direction: column; gap: 2px; flex: 1; }
         .nav-item {
-          display: flex; align-items: center; gap: 10px;
+          display: flex; align-items: center;
           padding: 8px 10px; border-radius: 8px;
-          font-size: 13px; color: #5F5E5A; text-decoration: none;
+          font-size: 15px; color: #5F5E5A; text-decoration: none;
           transition: all .15s;
         }
         .nav-item:hover { background: #E8E6DE; color: #2C2C2A; }
