@@ -1,40 +1,80 @@
 import Head from "next/head";
 import Link from "next/link";
 
+const CrossIcon = () => (
+  <svg width="14" height="14" viewBox="0 0 14 14">
+    <rect x="5.5" y="1" width="3" height="12" rx="1.5" fill="#F5F5F7"/>
+    <rect x="1" y="4.5" width="12" height="3" rx="1.5" fill="#F5F5F7"/>
+  </svg>
+);
+
+const NAV = [
+  { label: "Home", href: "/" },
+  { label: "Mision", href: "/mision" },
+  { label: "Libros recomendados", href: "/recomendados" },
+  { label: "Contacto", href: "/contacto" },
+];
+
 export default function Privacidad() {
   return (
-    <>
+    <div style={{ minHeight: "100vh", background: "#F5F5F7", fontFamily: "DM Sans, sans-serif", color: "#1D1D1F" }}>
       <Head>
-        <title>Política de Privacidad — Catolicum</title>
+        <title>Politica de Privacidad - Catolicum</title>
+        <meta name="description" content="Politica de privacidad de Catolicum." />
         <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
       </Head>
-      <div style={{ maxWidth: 680, margin: "0 auto", padding: "2rem 1rem", fontFamily: "'DM Sans', sans-serif", color: "#2C2C2A" }}>
-        <Link href="/" style={{ fontSize: 13, color: "#888780", textDecoration: "none" }}>← Volver a Catolicum</Link>
-        <h1 style={{ fontFamily: "'EB Garamond', serif", fontSize: 32, fontWeight: 500, margin: "1.5rem 0 .5rem" }}>Política de Privacidad</h1>
-        <p style={{ fontSize: 13, color: "#888780", marginBottom: "2rem" }}>Última actualización: enero 2025</p>
 
-        <h2 style={{ fontSize: 16, fontWeight: 500, margin: "1.5rem 0 .5rem" }}>1. Quiénes somos</h2>
-        <p style={{ fontSize: 14, lineHeight: 1.7, color: "#5F5E5A", marginBottom: "1rem" }}>Catolicum (catolicum.vercel.app) es un proyecto independiente que ofrece análisis doctrinales de libros desde la perspectiva católica, basados en fuentes públicas. No está afiliado a la Iglesia Católica ni a ninguna institución religiosa oficial.</p>
+      <div style={{ display: "flex", minHeight: "100vh" }}>
 
-        <h2 style={{ fontSize: 16, fontWeight: 500, margin: "1.5rem 0 .5rem" }}>2. Datos que recopilamos</h2>
-        <p style={{ fontSize: 14, lineHeight: 1.7, color: "#5F5E5A", marginBottom: "1rem" }}>Catolicum no recopila datos personales de forma directa. No hay registro de usuarios, ni formularios de contacto, ni almacenamiento de búsquedas individuales.</p>
+        <aside style={{ width: 220, flexShrink: 0, background: "#FFFFFF", borderRight: "0.5px solid #D1D1D6", display: "flex", flexDirection: "column", padding: "1.5rem 1rem", position: "sticky", top: 0, height: "100vh", overflowY: "auto" }}>
+          <Link href="/" style={{ textDecoration: "none", color: "inherit" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: "2rem", cursor: "pointer" }}>
+              <div style={{ width: 38, height: 38, borderRadius: 9, background: "#1D1D1F", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                <CrossIcon />
+              </div>
+              <div style={{ width: 1, height: 28, background: "#D1D1D6", flexShrink: 0 }} />
+              <div>
+                <div style={{ fontFamily: "EB Garamond, serif", fontSize: 19, fontWeight: 500, color: "#1D1D1F", lineHeight: 1.1 }}>Catolicum</div>
+                <div style={{ fontFamily: "EB Garamond, serif", fontSize: 11, fontStyle: "italic", color: "#6E6E73", marginTop: 2 }}>La Libreria Catolica</div>
+              </div>
+            </div>
+          </Link>
+          <nav style={{ display: "flex", flexDirection: "column", gap: 2, flex: 1 }}>
+            {NAV.map(function(item) {
+              return (
+                <Link key={item.href} href={item.href} style={{ display: "flex", alignItems: "center", padding: "9px 10px", borderRadius: 8, fontSize: 14, color: "#3A3A3C", textDecoration: "none" }}>
+                  {item.label}
+                </Link>
+              );
+            })}
+          </nav>
+          <div style={{ display: "flex", flexDirection: "column", gap: 4, paddingTop: "1rem", borderTop: "0.5px solid #D1D1D6" }}>
+            <Link href="/privacidad" style={{ fontSize: 11, color: "#AEAEB2", textDecoration: "none", padding: "3px 0" }}>Privacidad</Link>
+            <Link href="/acerca" style={{ fontSize: 11, color: "#AEAEB2", textDecoration: "none", padding: "3px 0" }}>Acerca de</Link>
+          </div>
+        </aside>
 
-        <h2 style={{ fontSize: 16, fontWeight: 500, margin: "1.5rem 0 .5rem" }}>3. Cookies y publicidad</h2>
-        <p style={{ fontSize: 14, lineHeight: 1.7, color: "#5F5E5A", marginBottom: "1rem" }}>Esta web utiliza Google AdSense para mostrar publicidad. Google puede usar cookies para personalizar los anuncios que se muestran. Puedes consultar la política de privacidad de Google en: <a href="https://policies.google.com/privacy" style={{ color: "#5F5E5A" }}>policies.google.com/privacy</a>.</p>
-
-        <h2 style={{ fontSize: 16, fontWeight: 500, margin: "1.5rem 0 .5rem" }}>4. Servicios de terceros</h2>
-        <p style={{ fontSize: 14, lineHeight: 1.7, color: "#5F5E5A", marginBottom: "1rem" }}>La web está alojada en Vercel (vercel.com), que puede registrar datos técnicos de acceso como la dirección IP, el navegador y la página visitada, con fines de seguridad y rendimiento.</p>
-
-        <h2 style={{ fontSize: 16, fontWeight: 500, margin: "1.5rem 0 .5rem" }}>5. Tus derechos</h2>
-        <p style={{ fontSize: 14, lineHeight: 1.7, color: "#5F5E5A", marginBottom: "1rem" }}>Al no recopilar datos personales, no es necesario ejercer derechos de acceso, rectificación o supresión. Si tienes alguna pregunta puedes contactarnos a través de GitHub.</p>
-
-        <h2 style={{ fontSize: 16, fontWeight: 500, margin: "1.5rem 0 .5rem" }}>6. Cambios en esta política</h2>
-        <p style={{ fontSize: 14, lineHeight: 1.7, color: "#5F5E5A", marginBottom: "2rem" }}>Nos reservamos el derecho a actualizar esta política. Los cambios se publicarán en esta misma página.</p>
-
-        <div style={{ borderTop: "0.5px solid #D3D1C7", paddingTop: "1rem", fontSize: 12, color: "#B4B2A9" }}>
-          Catolicum — Proyecto independiente, no afiliado a la Iglesia Católica.
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ maxWidth: 680, margin: "0 auto", padding: "2.5rem 1.5rem" }}>
+            <Link href="/" style={{ fontSize: 13, color: "#6E6E73", textDecoration: "none" }}>← Volver</Link>
+            <h1 style={{ fontFamily: "EB Garamond, serif", fontSize: 36, fontWeight: 500, margin: "1.5rem 0 .5rem", color: "#1D1D1F" }}>Politica de Privacidad</h1>
+            <p style={{ fontSize: 13, color: "#6E6E73", marginBottom: "2rem" }}>Ultima actualizacion: enero 2025</p>
+            <h2 style={{ fontFamily: "EB Garamond, serif", fontSize: 20, fontWeight: 500, margin: "1.5rem 0 .5rem", color: "#1D1D1F" }}>1. Quienes somos</h2>
+            <p style={{ fontSize: 14, lineHeight: 1.7, color: "#3A3A3C", marginBottom: "1rem" }}>Catolicum es un proyecto independiente que ofrece analisis doctrinales de libros desde la perspectiva catolica, basados en fuentes publicas. No esta afiliado a la Iglesia Catolica ni a ninguna institucion religiosa oficial.</p>
+            <h2 style={{ fontFamily: "EB Garamond, serif", fontSize: 20, fontWeight: 500, margin: "1.5rem 0 .5rem", color: "#1D1D1F" }}>2. Datos que recopilamos</h2>
+            <p style={{ fontSize: 14, lineHeight: 1.7, color: "#3A3A3C", marginBottom: "1rem" }}>Catolicum no recopila datos personales de forma directa. No hay registro de usuarios, ni formularios de contacto con almacenamiento, ni busquedas guardadas individualmente.</p>
+            <h2 style={{ fontFamily: "EB Garamond, serif", fontSize: 20, fontWeight: 500, margin: "1.5rem 0 .5rem", color: "#1D1D1F" }}>3. Cookies y publicidad</h2>
+            <p style={{ fontSize: 14, lineHeight: 1.7, color: "#3A3A3C", marginBottom: "1rem" }}>Esta web utiliza Google AdSense para mostrar publicidad. Google puede usar cookies para personalizar los anuncios. Puedes consultar la politica de Google en policies.google.com/privacy.</p>
+            <h2 style={{ fontFamily: "EB Garamond, serif", fontSize: 20, fontWeight: 500, margin: "1.5rem 0 .5rem", color: "#1D1D1F" }}>4. Servicios de terceros</h2>
+            <p style={{ fontSize: 14, lineHeight: 1.7, color: "#3A3A3C", marginBottom: "1rem" }}>La web esta alojada en Vercel, que puede registrar datos tecnicos de acceso como IP y navegador con fines de seguridad y rendimiento.</p>
+            <h2 style={{ fontFamily: "EB Garamond, serif", fontSize: 20, fontWeight: 500, margin: "1.5rem 0 .5rem", color: "#1D1D1F" }}>5. Cambios en esta politica</h2>
+            <p style={{ fontSize: 14, lineHeight: 1.7, color: "#3A3A3C", marginBottom: "2rem" }}>Nos reservamos el derecho a actualizar esta politica. Los cambios se publicaran en esta misma pagina.</p>
+            <div style={{ borderTop: "0.5px solid #D1D1D6", paddingTop: "1rem", fontSize: 12, color: "#AEAEB2" }}>
+              Catolicum — Proyecto independiente, no afiliado a la Iglesia Catolica.
+            </div>
+          </div>
         </div>
       </div>
-    </>
+    </div>
   );
 }
