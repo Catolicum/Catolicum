@@ -95,7 +95,6 @@ export default function Home() {
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="true" />
         <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
-        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8107872231396052" crossOrigin="anonymous"></script>
       </Head>
 
       <div style={{ display: "flex", minHeight: "100vh" }}>
@@ -290,7 +289,6 @@ export default function Home() {
             <span style={{ fontSize: 10, color: "#AEAEB2", textTransform: "uppercase", letterSpacing: ".06em", flexShrink: 0 }}>Publicidad</span>
             <div style={{ flex: 1, textAlign: "center", fontSize: 12, color: "#AEAEB2", padding: "18px 0", border: "0.5px dashed #D1D1D6", borderRadius: 6 }}>[ Google AdSense ]</div>
           </div>
-
         </div>
       </div>
     </div>
