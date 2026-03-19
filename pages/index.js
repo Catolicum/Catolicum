@@ -24,12 +24,23 @@ const NAV = [
 
 const EXAMPLES = ["El Codigo Da Vinci", "Summa Theologica", "Harry Potter", "El Alquimista", "Sapiens"];
 
-const CrossIcon = ({ size = 20, color = "#F5F5F7" }) => (
-  <svg width={size} height={size} viewBox="0 0 20 20">
-    <rect x="8.5" y="2" width="3" height="16" rx="1.5" fill={color}/>
-    <rect x="2" y="6.5" width="16" height="3" rx="1.5" fill={color}/>
+const CrossIcon = () => (
+  <svg width="14" height="14" viewBox="0 0 14 14">
+    <rect x="5.5" y="1" width="3" height="12" rx="1.5" fill="#F5F5F7"/>
+    <rect x="1" y="4.5" width="12" height="3" rx="1.5" fill="#F5F5F7"/>
   </svg>
 );
+
+const sidebarStyle = { width: 220, flexShrink: 0, background: "#FFFFFF", borderRight: "0.5px solid #D1D1D6", display: "flex", flexDirection: "column", padding: "1.5rem 1rem", position: "sticky", top: 0, height: "100vh", overflowY: "auto" };
+const logoWrapStyle = { display: "flex", alignItems: "center", gap: 12, marginBottom: "2rem", cursor: "pointer" };
+const logoIconStyle = { width: 38, height: 38, borderRadius: 9, background: "#1D1D1F", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 };
+const logoDividerStyle = { width: 1, height: 28, background: "#D1D1D6", flexShrink: 0 };
+const logoTitleStyle = { fontFamily: "EB Garamond, serif", fontSize: 19, fontWeight: 500, color: "#1D1D1F", lineHeight: 1.1 };
+const logoTaglineStyle = { fontFamily: "EB Garamond, serif", fontSize: 11, fontStyle: "italic", color: "#6E6E73", marginTop: 2 };
+const navStyle = { display: "flex", flexDirection: "column", gap: 2, flex: 1 };
+const navItemStyle = { display: "flex", alignItems: "center", padding: "9px 10px", borderRadius: 8, fontSize: 14, color: "#3A3A3C", textDecoration: "none" };
+const sidebarFooterStyle = { display: "flex", flexDirection: "column", gap: 4, paddingTop: "1rem", borderTop: "0.5px solid #D1D1D6" };
+const sidebarLinkStyle = { fontSize: 11, color: "#AEAEB2", textDecoration: "none", padding: "3px 0" };
 
 export default function Home() {
   const [query, setQuery] = useState("");
@@ -78,7 +89,7 @@ export default function Home() {
   var st = result ? getScoreStyle(result.s) : null;
 
   return (
-    <div>
+    <div style={{ minHeight: "100vh", background: "#F5F5F7", fontFamily: "DM Sans, sans-serif", color: "#1D1D1F" }}>
       <Head>
         <title>Catolicum - La Libreria Catolica</title>
         <meta name="description" content="Descubre si un libro es compatible con la fe catolica. Analisis doctrinal de mas de 300 libros basado en el Catecismo y fuentes publicas." />
@@ -98,79 +109,48 @@ export default function Home() {
         <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8107872231396052" crossOrigin="anonymous"></script>
       </Head>
 
-      <div className="layout">
+      <div style={{ display: "flex", minHeight: "100vh" }}>
 
-        <aside style={{ width: 220, flexShrink: 0, background: "#FFFFFF", borderRight: "0.5px solid #D1D1D6", display: "flex", flexDirection: "column", padding: "1.5rem 1rem", position: "sticky", top: 0, height: "100vh", overflowY: "auto" }}>
+        <aside style={sidebarStyle}>
           <Link href="/" style={{ textDecoration: "none", color: "inherit" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: "2rem", cursor: "pointer" }}>
-              <div style={{ width: 38, height: 38, borderRadius: 9, background: "#1D1D1F", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                <CrossIcon size={14} color="#F5F5F7" />
-              </div>
-              <div style={{ width: 1, height: 28, background: "#D1D1D6", flexShrink: 0 }} />
+            <div style={logoWrapStyle}>
+              <div style={logoIconStyle}><CrossIcon /></div>
+              <div style={logoDividerStyle} />
               <div>
-                <div style={{ fontFamily: "EB Garamond, serif", fontSize: 19, fontWeight: 500, color: "#1D1D1F", lineHeight: 1.1 }}>Catolicum</div>
-                <div style={{ fontFamily: "EB Garamond, serif", fontSize: 11, fontStyle: "italic", color: "#6E6E73", marginTop: 2 }}>La Libreria Catolica</div>
+                <div style={logoTitleStyle}>Catolicum</div>
+                <div style={logoTaglineStyle}>La Libreria Catolica</div>
               </div>
             </div>
           </Link>
-          <nav style={{ display: "flex", flexDirection: "column", gap: 2, flex: 1 }}>
+          <nav style={navStyle}>
             {NAV.map(function(item) {
               return (
-                <Link key={item.href} href={item.href} style={{ display: "flex", alignItems: "center", padding: "9px 10px", borderRadius: 8, fontSize: 14, color: "#3A3A3C", textDecoration: "none" }}>
+                <Link key={item.href} href={item.href} style={navItemStyle}>
                   {item.label}
                 </Link>
               );
             })}
           </nav>
-          <div style={{ display: "flex", flexDirection: "column", gap: 4, paddingTop: "1rem", borderTop: "0.5px solid #D1D1D6" }}>
-            <Link href="/privacidad" style={{ fontSize: 11, color: "#AEAEB2", textDecoration: "none", padding: "3px 0" }}>Privacidad</Link>
-            <Link href="/acerca" style={{ fontSize: 11, color: "#AEAEB2", textDecoration: "none", padding: "3px 0" }}>Acerca de</Link>
+          <div style={sidebarFooterStyle}>
+            <Link href="/privacidad" style={sidebarLinkStyle}>Privacidad</Link>
+            <Link href="/acerca" style={sidebarLinkStyle}>Acerca de</Link>
           </div>
         </aside>
 
-        <div className="mobile-header">
-          <Link href="/" style={{ textDecoration: "none" }}>
-            <div className="mobile-logo">
-              <div className="logo-icon-sm">
-                <CrossIcon size={14} color="#F5F5F7" />
-              </div>
-              <span className="mobile-title">Catolicum</span>
-            </div>
-          </Link>
-          <button className="burger" onClick={function() { setMenuOpen(!menuOpen); }}>
-            <div className="burger-lines">
-              <span className="burger-line" />
-              <span className="burger-line" />
-              <span className="burger-line" />
-            </div>
-          </button>
-        </div>
+        <div style={{ display: "none" }} id="mobile-header-placeholder"></div>
 
-        {menuOpen && (
-          <div className="mobile-menu">
-            {NAV.map(function(item) {
-              return (
-                <Link key={item.href} href={item.href} className="mobile-nav-item" onClick={function() { setMenuOpen(false); }}>
-                  {item.label}
-                </Link>
-              );
-            })}
-          </div>
-        )}
+        <div style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column" }}>
 
-        <div className="content">
-
-          <div className="ad-banner">
-            <span className="ad-label">Publicidad</span>
-            <div className="ad-placeholder">[ Google AdSense ]</div>
+          <div style={{ width: "100%", background: "#FFFFFF", borderBottom: "0.5px solid #D1D1D6", padding: "8px 16px", display: "flex", alignItems: "center", gap: 12 }}>
+            <span style={{ fontSize: 10, color: "#AEAEB2", textTransform: "uppercase", letterSpacing: ".06em", flexShrink: 0 }}>Publicidad</span>
+            <div style={{ flex: 1, textAlign: "center", fontSize: 12, color: "#AEAEB2", padding: "18px 0", border: "0.5px dashed #D1D1D6", borderRadius: 6 }}>[ Google AdSense ]</div>
           </div>
 
-          <main className="main">
+          <main style={{ flex: 1, maxWidth: 680, margin: "0 auto", width: "100%", padding: "2rem 1.5rem 1rem" }}>
 
-            <div className="search-wrap">
-              <div className="search-row">
+            <div style={{ marginBottom: "1.5rem", position: "relative" }}>
+              <div style={{ display: "flex", gap: 8, marginBottom: ".75rem", position: "relative" }}>
                 <input
-                  className="search-input"
                   type="text"
                   placeholder="Titulo del libro o nombre del autor..."
                   value={query}
@@ -178,37 +158,36 @@ export default function Home() {
                   onKeyDown={handleKey}
                   onBlur={function() { setTimeout(function() { setShowSuggestions(false); }, 150); }}
                   onFocus={function() { if (suggestions.length > 0) setShowSuggestions(true); }}
+                  style={{ flex: 1, height: 48, padding: "0 16px", border: "0.5px solid #D1D1D6", borderRadius: 10, background: "#FFFFFF", color: "#1D1D1F", fontSize: 14, fontFamily: "DM Sans, sans-serif" }}
                 />
-                <button className="search-btn" onClick={function() { handleSearch(query); }}>
+                <button
+                  onClick={function() { handleSearch(query); }}
+                  style={{ height: 48, padding: "0 22px", background: "#1D1D1F", color: "#F5F5F7", border: "none", borderRadius: 10, fontSize: 14, cursor: "pointer", fontFamily: "DM Sans, sans-serif", whiteSpace: "nowrap" }}
+                >
                   Analizar
                 </button>
               </div>
 
               {showSuggestions && (
-                <div className="suggestions-box">
+                <div style={{ position: "absolute", top: 52, left: 0, right: 90, background: "#FFFFFF", border: "0.5px solid #D1D1D6", borderRadius: 10, zIndex: 100, overflow: "hidden", boxShadow: "0 4px 16px rgba(0,0,0,0.08)" }}>
                   {suggestions.map(function(s) {
+                    var sc = getScoreStyle(s.puntuacion);
                     return (
-                      <div
-                        key={s.titulo}
-                        className="suggestion-item"
-                        onMouseDown={function() { handleSelectSuggestion(s.titulo); }}
-                      >
-                        <span className="suggestion-score" style={{ background: getScoreStyle(s.puntuacion).bg, color: getScoreStyle(s.puntuacion).text }}>
-                          {s.puntuacion}
-                        </span>
-                        <span className="suggestion-title">{s.titulo}</span>
-                        <span className="suggestion-author">{s.autor}</span>
+                      <div key={s.titulo} onMouseDown={function() { handleSelectSuggestion(s.titulo); }} style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 14px", cursor: "pointer", borderBottom: "0.5px solid #F5F5F7" }}>
+                        <span style={{ width: 28, height: 28, borderRadius: "50%", background: sc.bg, color: sc.text, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 500, flexShrink: 0 }}>{s.puntuacion}</span>
+                        <span style={{ fontSize: 13, fontWeight: 500, flex: 1 }}>{s.titulo}</span>
+                        <span style={{ fontSize: 12, color: "#6E6E73" }}>{s.autor}</span>
                       </div>
                     );
                   })}
                 </div>
               )}
 
-              <div className="examples-row">
-                <span className="examples-label">Ejemplos:</span>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 6, alignItems: "center" }}>
+                <span style={{ fontSize: 12, color: "#6E6E73" }}>Ejemplos:</span>
                 {EXAMPLES.map(function(ex) {
                   return (
-                    <button key={ex} className="chip" onClick={function() { setQuery(ex); handleSearch(ex); }}>
+                    <button key={ex} onClick={function() { setQuery(ex); handleSearch(ex); }} style={{ fontSize: 12, padding: "4px 12px", border: "0.5px solid #D1D1D6", borderRadius: 20, background: "#FFFFFF", color: "#3A3A3C", cursor: "pointer", fontFamily: "DM Sans, sans-serif" }}>
                       {ex}
                     </button>
                   );
@@ -217,129 +196,108 @@ export default function Home() {
             </div>
 
             {loading && (
-              <div className="loading-msg">Buscando...</div>
+              <div style={{ textAlign: "center", padding: "2rem", fontSize: 14, color: "#6E6E73" }}>Buscando...</div>
             )}
 
             {searched && !loading && (
-              <div className="result-area">
-                <button className="back-btn" onClick={function() { setSearched(false); setResult(null); setQuery(""); }}>
+              <div style={{ marginBottom: "1rem" }}>
+                <button onClick={function() { setSearched(false); setResult(null); setQuery(""); }} style={{ display: "inline-flex", alignItems: "center", gap: 6, marginBottom: "1rem", padding: "6px 14px", background: "#FFFFFF", border: "0.5px solid #D1D1D6", borderRadius: 20, fontSize: 13, color: "#6E6E73", cursor: "pointer", fontFamily: "DM Sans, sans-serif" }}>
                   Nueva busqueda
                 </button>
                 {result ? (
-                  <div className="result-card">
-                    <div className="result-header">
-                      <div className="result-meta">
-                        <div className="book-info">
+                  <div style={{ background: "#FFFFFF", border: "0.5px solid #D1D1D6", borderRadius: 14, overflow: "hidden" }}>
+                    <div style={{ padding: "1.25rem", borderBottom: "0.5px solid #F5F5F7" }}>
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 12, marginBottom: "1rem" }}>
+                        <div style={{ flex: 1 }}>
                           <Link href={"/libro/" + toSlug(result.t)} style={{ textDecoration: "none", color: "inherit" }}>
-                            <h2 className="book-title">{result.t}</h2>
+                            <h2 style={{ fontFamily: "EB Garamond, serif", fontSize: 22, fontWeight: 500, marginBottom: 4, color: "#1D1D1F" }}>{result.t}</h2>
                           </Link>
-                          <p className="book-author">{result.a}{result.y ? " · " + result.y : ""}</p>
-                          <span className="category-pill" style={{ background: st.bg, color: st.text }}>
-                            {st.label}
-                          </span>
+                          <p style={{ fontSize: 13, color: "#6E6E73", marginBottom: 8 }}>{result.a}{result.y ? " · " + result.y : ""}</p>
+                          <span style={{ fontSize: 12, padding: "3px 10px", borderRadius: 20, fontWeight: 500, background: st.bg, color: st.text }}>{st.label}</span>
                         </div>
-                        <div className="score-box">
-                          <div className="score-num" style={{ color: st.color }}>{result.s}</div>
-                          <div className="score-denom">/10</div>
+                        <div style={{ textAlign: "center", flexShrink: 0 }}>
+                          <div style={{ fontFamily: "EB Garamond, serif", fontSize: 44, fontWeight: 500, lineHeight: 1, color: st.color }}>{result.s}</div>
+                          <div style={{ fontSize: 12, color: "#6E6E73" }}>/10</div>
                         </div>
                       </div>
-                      <div className="score-bar-wrap">
-                        <div className="score-bar-track">
-                          <div className="score-bar-fill" style={{ width: (result.s * 10) + "%", background: st.color }} />
-                        </div>
-                        <div className="score-legend">
-                          <span>Contrario</span>
-                          <span>Neutral</span>
-                          <span>Afin</span>
-                        </div>
+                      <div style={{ height: 4, background: "#F5F5F7", borderRadius: 2, overflow: "hidden" }}>
+                        <div style={{ height: "100%", borderRadius: 2, background: st.color, width: (result.s * 10) + "%" }} />
+                      </div>
+                      <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10, color: "#AEAEB2", marginTop: 4 }}>
+                        <span>Contrario</span><span>Neutral</span><span>Afin</span>
                       </div>
                     </div>
-                    <div className="result-body">
-                      <p className="section-label">Analisis doctrinal</p>
-                      <p className="analysis-text">{result.an}</p>
+                    <div style={{ padding: "1.25rem" }}>
+                      <p style={{ fontSize: 10, fontWeight: 500, textTransform: "uppercase", letterSpacing: ".07em", color: "#AEAEB2", marginBottom: 6 }}>Analisis doctrinal</p>
+                      <p style={{ fontSize: 14, color: "#3A3A3C", lineHeight: 1.7, marginBottom: "1.1rem" }}>{result.an}</p>
                       {result.tags && result.tags.length > 0 && (
-                        <div>
-                          <p className="section-label">Temas presentes</p>
-                          <div className="tags-row">
+                        <div style={{ marginBottom: "1.1rem" }}>
+                          <p style={{ fontSize: 10, fontWeight: 500, textTransform: "uppercase", letterSpacing: ".07em", color: "#AEAEB2", marginBottom: 6 }}>Temas presentes</p>
+                          <div style={{ display: "flex", flexWrap: "wrap", gap: 5 }}>
                             {result.tags.map(function(tag) {
-                              return (<span key={tag} className="tag">{tag}</span>);
+                              return (<span key={tag} style={{ fontSize: 12, padding: "3px 9px", border: "0.5px solid #D1D1D6", borderRadius: 20, color: "#6E6E73" }}>{tag}</span>);
                             })}
                           </div>
                         </div>
                       )}
-                      <div className="ref-row">
-                        <span className="ref-label">Referencia:</span>
-                        <span className="ref-text">{result.ref}</span>
+                      <div style={{ display: "flex", gap: 6, fontSize: 12, paddingTop: "1rem", borderTop: "0.5px solid #F5F5F7", marginBottom: ".5rem" }}>
+                        <span style={{ fontWeight: 500, color: "#6E6E73", flexShrink: 0 }}>Referencia:</span>
+                        <span style={{ color: "#AEAEB2" }}>{result.ref}</span>
                       </div>
-                      <a
-                        className="amazon-btn"
-                        href={"https://www.amazon.es/s?k=" + encodeURIComponent(result.t + " " + result.a) + "&tag=catolicum-21"}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
+                      <a href={"https://www.amazon.es/s?k=" + encodeURIComponent(result.t + " " + result.a) + "&tag=catolicum-21"} target="_blank" rel="noopener noreferrer" style={{ display: "inline-flex", alignItems: "center", gap: 7, marginTop: ".75rem", padding: "8px 16px", background: "#F5F5F7", border: "0.5px solid #D1D1D6", borderRadius: 8, fontSize: 13, color: "#3A3A3C", textDecoration: "none" }}>
                         Encontrar en Amazon
                       </a>
                     </div>
                   </div>
                 ) : (
-                  <div className="not-found">
-                    <div className="nf-icon">⏳</div>
-                    <h3 className="nf-title">Libro en analisis</h3>
-                    <p className="nf-text">Este libro aun no esta en nuestra base de datos. Estamos ampliando continuamente la coleccion.</p>
-                    <p className="nf-retry">Vuelve a intentarlo mas tarde.</p>
+                  <div style={{ background: "#FFFFFF", border: "0.5px dashed #D1D1D6", borderRadius: 14, padding: "2.5rem 1.5rem", textAlign: "center" }}>
+                    <div style={{ fontSize: 28, marginBottom: 12 }}>⏳</div>
+                    <h3 style={{ fontFamily: "EB Garamond, serif", fontSize: 22, fontWeight: 500, marginBottom: 8, color: "#1D1D1F" }}>Libro en analisis</h3>
+                    <p style={{ fontSize: 13, color: "#6E6E73", lineHeight: 1.6, marginBottom: 6 }}>Este libro aun no esta en nuestra base de datos. Estamos ampliando continuamente la coleccion.</p>
+                    <p style={{ fontSize: 13, fontWeight: 500, color: "#3A3A3C" }}>Vuelve a intentarlo mas tarde.</p>
                   </div>
                 )}
               </div>
             )}
 
-            {searched && !loading && (
-              <div className="ad-banner ad-mid">
-                <span className="ad-label">Publicidad</span>
-                <div className="ad-placeholder">[ Google AdSense ]</div>
-              </div>
-            )}
-
             {!searched && (
-              <div>
-                <div className="rec-section">
-                  <h2 className="rec-title">Recomendados para catolicos</h2>
-                  <div className="rec-grid">
-                    {recommended.map(function(b) {
-                      var rs = getScoreStyle(b.s);
-                      return (
-                        <div key={b.t} className="rec-card" onClick={function() { setQuery(b.t); handleSearch(b.t); }}>
-                          <div className="rec-score" style={{ background: rs.bg, color: rs.text }}>{b.s}</div>
-                          <div className="rec-info">
-                            <div className="rec-book-title">{b.t}</div>
-                            <div className="rec-author">{b.a}</div>
-                          </div>
+              <div style={{ marginTop: "1rem" }}>
+                <h2 style={{ fontFamily: "EB Garamond, serif", fontSize: 22, fontWeight: 500, marginBottom: "1rem", color: "#1D1D1F" }}>Recomendados para catolicos</h2>
+                <div style={{ display: "flex", flexDirection: "column", gap: ".4rem" }}>
+                  {recommended.map(function(b) {
+                    var rs = getScoreStyle(b.s);
+                    return (
+                      <div key={b.t} onClick={function() { setQuery(b.t); handleSearch(b.t); }} style={{ display: "flex", alignItems: "center", gap: 12, background: "#FFFFFF", border: "0.5px solid #D1D1D6", borderRadius: 10, padding: ".75rem 1rem", cursor: "pointer" }}>
+                        <div style={{ width: 34, height: 34, borderRadius: "50%", background: rs.bg, color: rs.text, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, fontWeight: 500, flexShrink: 0 }}>{b.s}</div>
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <div style={{ fontSize: 13, fontWeight: 500, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", color: "#1D1D1F" }}>{b.t}</div>
+                          <div style={{ fontSize: 12, color: "#6E6E73" }}>{b.a}</div>
                         </div>
-                      );
-                    })}
-                  </div>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
             )}
 
           </main>
 
-          <footer className="footer">
-            <p className="disclaimer">
+          <footer style={{ maxWidth: 680, margin: "0 auto", width: "100%", padding: "1.5rem" }}>
+            <p style={{ fontSize: 11, color: "#AEAEB2", lineHeight: 1.65, textAlign: "center", marginBottom: 8 }}>
               Proyecto independiente, no afiliado a la Iglesia Catolica ni a ninguna institucion religiosa oficial.
-              Las valoraciones se basan en analisis de fuentes publicas y no representan posiciones doctrinales oficiales.
             </p>
-            <div className="footer-links">
-              <Link href="/acerca">Acerca de</Link>
-              <span>·</span>
-              <Link href="/privacidad">Politica de Privacidad</Link>
-              <span>·</span>
-              <Link href="/contacto">Contacto</Link>
+            <div style={{ display: "flex", justifyContent: "center", gap: 12, fontSize: 12 }}>
+              <Link href="/acerca" style={{ color: "#AEAEB2", textDecoration: "none" }}>Acerca de</Link>
+              <span style={{ color: "#D1D1D6" }}>·</span>
+              <Link href="/privacidad" style={{ color: "#AEAEB2", textDecoration: "none" }}>Privacidad</Link>
+              <span style={{ color: "#D1D1D6" }}>·</span>
+              <Link href="/contacto" style={{ color: "#AEAEB2", textDecoration: "none" }}>Contacto</Link>
             </div>
           </footer>
 
-          <div className="ad-banner">
-            <span className="ad-label">Publicidad</span>
-            <div className="ad-placeholder">[ Google AdSense ]</div>
+          <div style={{ width: "100%", background: "#FFFFFF", borderTop: "0.5px solid #D1D1D6", padding: "8px 16px", display: "flex", alignItems: "center", gap: 12 }}>
+            <span style={{ fontSize: 10, color: "#AEAEB2", textTransform: "uppercase", letterSpacing: ".06em", flexShrink: 0 }}>Publicidad</span>
+            <div style={{ flex: 1, textAlign: "center", fontSize: 12, color: "#AEAEB2", padding: "18px 0", border: "0.5px dashed #D1D1D6", borderRadius: 6 }}>[ Google AdSense ]</div>
           </div>
 
         </div>
@@ -353,107 +311,8 @@ export default function Home() {
       `}</style>
 
       <style jsx>{`
-        .layout { display: flex; min-height: 100vh; flex-direction: row; }
-
-        .mobile-header { display: none; align-items: center; justify-content: space-between; padding: 10px 16px; background: #FFFFFF; border-bottom: 0.5px solid #D1D1D6; position: sticky; top: 0; z-index: 10; width: 100%; }
-        .mobile-logo { display: flex; align-items: center; gap: 10px; }
-        .logo-icon-sm { width: 30px; height: 30px; border-radius: 7px; background: #1D1D1F; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-        .mobile-title { font-family: 'EB Garamond', serif; font-size: 19px; font-weight: 500; color: #1D1D1F; }
-        .burger { background: none; border: none; cursor: pointer; padding: 4px; display: flex; align-items: center; justify-content: center; }
-        .burger-lines { display: flex; flex-direction: column; gap: 5px; align-items: center; }
-        .burger-line { display: block; width: 18px; height: 1.5px; background: #1D1D1F; border-radius: 1px; }
-        .mobile-menu { display: flex; flex-direction: column; background: #FFFFFF; border-bottom: 0.5px solid #D1D1D6; padding: .5rem 1rem 1rem; width: 100%; }
-        .mobile-nav-item { padding: 10px 0; font-size: 14px; color: #1D1D1F; text-decoration: none; border-bottom: 0.5px solid #F5F5F7; }
-
-        .content { flex: 1; display: flex; flex-direction: column; min-width: 0; overflow-x: hidden; width: 100%; }
-        .main { flex: 1; max-width: 680px; margin: 0 auto; width: 100%; padding: 2rem 1rem 1rem; }
-
-        .ad-banner { width: 100%; background: #FFFFFF; border-bottom: 0.5px solid #D1D1D6; padding: 8px 16px; display: flex; align-items: center; gap: 12px; }
-        .ad-mid { border-top: 0.5px solid #D1D1D6; border-bottom: 0.5px solid #D1D1D6; margin: 1.5rem 0; }
-        .ad-label { font-size: 10px; color: #AEAEB2; text-transform: uppercase; letter-spacing: .06em; flex-shrink: 0; }
-        .ad-placeholder { flex: 1; text-align: center; font-size: 12px; color: #AEAEB2; padding: 18px 0; border: 0.5px dashed #D1D1D6; border-radius: 6px; }
-
-        .search-wrap { margin-bottom: 1.5rem; position: relative; }
-        .search-row { display: flex; gap: 8px; margin-bottom: .75rem; position: relative; }
-        .search-input { flex: 1; height: 48px; padding: 0 16px; border: 0.5px solid #D1D1D6; border-radius: 10px; background: #FFFFFF; color: #1D1D1F; font-size: 14px; font-family: 'DM Sans', sans-serif; transition: border-color .15s; }
-        .search-input:focus { outline: none; border-color: #6E6E73; }
-        .search-btn { height: 48px; padding: 0 22px; background: #1D1D1F; color: #F5F5F7; border: none; border-radius: 10px; font-size: 14px; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: background .15s; white-space: nowrap; }
-        .search-btn:hover { background: #3A3A3C; }
-        .suggestions-box { position: absolute; top: 52px; left: 0; right: 90px; background: #FFFFFF; border: 0.5px solid #D1D1D6; border-radius: 10px; z-index: 100; overflow: hidden; box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
-        .suggestion-item { display: flex; align-items: center; gap: 10px; padding: 10px 14px; cursor: pointer; border-bottom: 0.5px solid #F5F5F7; transition: background .1s; }
-        .suggestion-item:last-child { border-bottom: none; }
-        .suggestion-item:hover { background: #F5F5F7; }
-        .suggestion-score { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 500; flex-shrink: 0; }
-        .suggestion-title { font-size: 13px; font-weight: 500; flex: 1; }
-        .suggestion-author { font-size: 12px; color: #6E6E73; }
-
-        .examples-row { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
-        .examples-label { font-size: 12px; color: #6E6E73; }
-        .chip { font-size: 12px; padding: 4px 12px; border: 0.5px solid #D1D1D6; border-radius: 20px; background: #FFFFFF; color: #3A3A3C; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all .15s; }
-        .chip:hover { border-color: #6E6E73; color: #1D1D1F; }
-
-        .loading-msg { text-align: center; padding: 2rem; font-size: 14px; color: #6E6E73; }
-        .back-btn { display: inline-flex; align-items: center; gap: 6px; margin-bottom: 1rem; padding: 6px 14px; background: #FFFFFF; border: 0.5px solid #D1D1D6; border-radius: 20px; font-size: 13px; color: #6E6E73; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all .15s; }
-        .back-btn:hover { border-color: #6E6E73; color: #1D1D1F; }
-
-        .result-area { margin-bottom: 1rem; }
-        .result-card { background: #FFFFFF; border: 0.5px solid #D1D1D6; border-radius: 14px; overflow: hidden; }
-        .result-header { padding: 1.25rem; border-bottom: 0.5px solid #F5F5F7; }
-        .result-meta { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 1rem; }
-        .book-info { flex: 1; }
-        .book-title { font-family: 'EB Garamond', serif; font-size: 22px; font-weight: 500; margin-bottom: 4px; color: #1D1D1F; }
-        .book-title:hover { text-decoration: underline; cursor: pointer; }
-        .book-author { font-size: 13px; color: #6E6E73; margin-bottom: 8px; }
-        .category-pill { font-size: 12px; padding: 3px 10px; border-radius: 20px; font-weight: 500; }
-        .score-box { text-align: center; flex-shrink: 0; }
-        .score-num { font-family: 'EB Garamond', serif; font-size: 44px; font-weight: 500; line-height: 1; }
-        .score-denom { font-size: 12px; color: #6E6E73; }
-        .score-bar-track { height: 4px; background: #F5F5F7; border-radius: 2px; overflow: hidden; }
-        .score-bar-fill { height: 100%; border-radius: 2px; transition: width .5s ease; }
-        .score-legend { display: flex; justify-content: space-between; font-size: 10px; color: #AEAEB2; margin-top: 4px; }
-        .result-body { padding: 1.25rem; }
-        .section-label { font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: .07em; color: #AEAEB2; margin-bottom: 6px; }
-        .analysis-text { font-size: 14px; color: #3A3A3C; line-height: 1.7; margin-bottom: 1.1rem; }
-        .tags-row { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 1.1rem; }
-        .tag { font-size: 12px; padding: 3px 9px; border: 0.5px solid #D1D1D6; border-radius: 20px; color: #6E6E73; }
-        .ref-row { display: flex; gap: 6px; font-size: 12px; padding-top: 1rem; border-top: 0.5px solid #F5F5F7; margin-bottom: .5rem; }
-        .ref-label { font-weight: 500; color: #6E6E73; flex-shrink: 0; }
-        .ref-text { color: #AEAEB2; }
-        .amazon-btn { display: inline-flex; align-items: center; gap: 7px; margin-top: .75rem; padding: 8px 16px; background: #F5F5F7; border: 0.5px solid #D1D1D6; border-radius: 8px; font-size: 13px; color: #3A3A3C; text-decoration: none; transition: all .15s; }
-        .amazon-btn:hover { border-color: #6E6E73; color: #1D1D1F; }
-
-        .not-found { background: #FFFFFF; border: 0.5px dashed #D1D1D6; border-radius: 14px; padding: 2.5rem 1.5rem; text-align: center; }
-        .nf-icon { font-size: 28px; margin-bottom: 12px; }
-        .nf-title { font-family: 'EB Garamond', serif; font-size: 22px; font-weight: 500; margin-bottom: 8px; color: #1D1D1F; }
-        .nf-text { font-size: 13px; color: #6E6E73; line-height: 1.6; margin-bottom: 6px; }
-        .nf-retry { font-size: 13px; font-weight: 500; color: #3A3A3C; }
-
-        .rec-section { margin-top: 1rem; }
-        .rec-title { font-family: 'EB Garamond', serif; font-size: 22px; font-weight: 500; margin-bottom: 1rem; color: #1D1D1F; }
-        .rec-grid { display: flex; flex-direction: column; gap: .4rem; }
-        .rec-card { display: flex; align-items: center; gap: 12px; background: #FFFFFF; border: 0.5px solid #D1D1D6; border-radius: 10px; padding: .75rem 1rem; cursor: pointer; transition: border-color .15s; }
-        .rec-card:hover { border-color: #6E6E73; }
-        .rec-score { width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 500; flex-shrink: 0; }
-        .rec-info { flex: 1; min-width: 0; }
-        .rec-book-title { font-size: 13px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #1D1D1F; }
-        .rec-author { font-size: 12px; color: #6E6E73; }
-
-        .footer { max-width: 680px; margin: 0 auto; width: 100%; padding: 1.5rem 1rem; }
-        .disclaimer { font-size: 11px; color: #AEAEB2; line-height: 1.65; text-align: center; margin-bottom: 8px; }
-        .footer-links { display: flex; justify-content: center; gap: 12px; font-size: 12px; }
-        .footer-links a { color: #AEAEB2; text-decoration: none; }
-        .footer-links a:hover { color: #6E6E73; }
-        .footer-links span { color: #D1D1D6; }
-
         @media (max-width: 768px) {
-           aside  { display: none; }
-          .mobile-header { display: flex; }
-          .layout { flex-direction: column; }
-          .content { width: 100%; }
-          .main { padding: 1rem; }
-          .search-btn { padding: 0 14px; font-size: 13px; }
-          .ad-banner { padding: 6px 10px; }
-          .ad-placeholder { padding: 10px 0; }
+          aside { display: none !important; }
         }
       `}</style>
     </div>
