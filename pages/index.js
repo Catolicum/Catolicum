@@ -28,7 +28,7 @@ export default function Home() {
   const [query, setQuery] = useState("");
   const [result, setResult] = useState(null);
   const [searched, setSearched] = useState(false);
-  const [lang, setLang] = useState("es");
+  const lang = "es";
   const [menuOpen, setMenuOpen] = useState(false);
 
   function handleSearch(q) {
@@ -48,10 +48,7 @@ export default function Home() {
     if (e.key === "Enter") handleSearch(query);
   }
 
-  const examples =
-    lang === "es"
-      ? ["El Código Da Vinci", "Summa Theologica", "Harry Potter", "El Alquimista", "Sapiens"]
-      : ["The Da Vinci Code", "Lord of the Rings", "Harry Potter", "The God Delusion", "Sapiens"];
+  const examples = ["El Código Da Vinci", "Summa Theologica", "Harry Potter", "El Alquimista", "Sapiens"];
 
   const st = result ? getScoreStyle(result.s) : null;
 
@@ -130,21 +127,6 @@ export default function Home() {
           </div>
 
           <main className="main">
-
-            <div className="lang-row">
-              <button
-                className={`lang-btn ${lang === "es" ? "active" : ""}`}
-                onClick={() => { setLang("es"); setSearched(false); setResult(null); setQuery(""); }}
-              >
-                Español
-              </button>
-              <button
-                className={`lang-btn ${lang === "en" ? "active" : ""}`}
-                onClick={() => { setLang("en"); setSearched(false); setResult(null); setQuery(""); }}
-              >
-                English
-              </button>
-            </div>
 
             <div className="search-wrap">
               <div className="search-row">
@@ -406,16 +388,6 @@ export default function Home() {
           flex: 1; text-align: center; font-size: 12px; color: #B4B2A9;
           padding: 18px 0; border: 0.5px dashed #D3D1C7; border-radius: 6px;
         }
-
-        .lang-row { display: flex; gap: 6px; justify-content: center; margin-bottom: 1.5rem; }
-        .lang-btn {
-          padding: 5px 18px; border-radius: 20px; font-size: 13px;
-          border: 0.5px solid #D3D1C7; background: #fff;
-          color: #888780; cursor: pointer; transition: all .15s;
-          font-family: 'DM Sans', sans-serif;
-        }
-        .lang-btn.active { background: #2C2C2A; color: #FAF8F4; border-color: #2C2C2A; }
-
         .search-wrap { margin-bottom: 1.5rem; }
         .search-row { display: flex; gap: 8px; margin-bottom: .75rem; }
         .search-input {
