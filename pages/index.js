@@ -355,19 +355,6 @@ export default function Home() {
       <style jsx>{`
         .layout { display: flex; min-height: 100vh; flex-direction: row; }
 
-        .sidebar { width: 220px; flex-shrink: 0; background: #FFFFFF; border-right: 0.5px solid #D1D1D6; display: flex; flex-direction: column; padding: 1.5rem 1rem; position: sticky; top: 0; height: 100vh; overflow-y: auto; }
-        .sidebar-logo { display: flex; align-items: center; gap: 12px; margin-bottom: 2rem; cursor: pointer; }
-        .logo-icon { width: 38px; height: 38px; border-radius: 9px; background: #1D1D1F; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-        .sidebar-divider { width: 1px; height: 28px; background: #D1D1D6; flex-shrink: 0; }
-        .logo-title { font-family: 'EB Garamond', serif; font-size: 19px; font-weight: 500; color: #1D1D1F; line-height: 1.1; }
-        .logo-tagline { font-family: 'EB Garamond', serif; font-size: 11px; font-style: italic; color: #6E6E73; margin-top: 2px; }
-        .sidebar-nav { display: flex; flex-direction: column; gap: 2px; flex: 1; }
-        .nav-item { display: flex; align-items: center; padding: 9px 10px; border-radius: 8px; font-size: 14px; color: #3A3A3C; text-decoration: none; transition: all .15s; }
-        .nav-item:hover { background: #F5F5F7; color: #1D1D1F; }
-        .sidebar-footer { display: flex; flex-direction: column; gap: 4px; padding-top: 1rem; border-top: 0.5px solid #D1D1D6; }
-        .sidebar-link { font-size: 11px; color: #AEAEB2; text-decoration: none; padding: 3px 0; }
-        .sidebar-link:hover { color: #6E6E73; }
-
         .mobile-header { display: none; align-items: center; justify-content: space-between; padding: 10px 16px; background: #FFFFFF; border-bottom: 0.5px solid #D1D1D6; position: sticky; top: 0; z-index: 10; width: 100%; }
         .mobile-logo { display: flex; align-items: center; gap: 10px; }
         .logo-icon-sm { width: 30px; height: 30px; border-radius: 7px; background: #1D1D1F; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
@@ -459,7 +446,7 @@ export default function Home() {
         .footer-links span { color: #D1D1D6; }
 
         @media (max-width: 768px) {
-          .sidebar { display: none; }
+           aside  { display: none; }
           .mobile-header { display: flex; }
           .layout { flex-direction: column; }
           .content { width: 100%; }
