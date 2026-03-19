@@ -59,8 +59,16 @@ export default function Home() {
     <>
       <Head>
         <title>Catolicum — La Librería Católica</title>
-        <meta name="description" content="Descubre si un libro es compatible con la fe católica. Análisis doctrinal basado en fuentes públicas." />
+        <meta name="description" content="Descubre si un libro es compatible con la fe católica. Análisis doctrinal de más de 150 libros basado en el Catecismo y fuentes públicas." />
+        <meta name="keywords" content="libros católicos, análisis doctrinal, fe católica, libros recomendados católicos, catecismo, doctrina católica" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="robots" content="index, follow" />
+        <meta property="og:title" content="Catolicum — La Librería Católica" />
+        <meta property="og:description" content="Análisis doctrinal de libros desde la perspectiva católica. Más de 150 libros analizados." />
+        <meta property="og:url" content="https://catolicum.vercel.app" />
+        <meta property="og:type" content="website" />
+        <meta property="og:locale" content="es_ES" />
+        <link rel="canonical" href="https://catolicum.vercel.app" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="true" />
         <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
