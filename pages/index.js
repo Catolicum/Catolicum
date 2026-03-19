@@ -100,31 +100,31 @@ export default function Home() {
 
       <div className="layout">
 
-        <aside className="sidebar">
+        <aside style={{ width: 220, flexShrink: 0, background: "#FFFFFF", borderRight: "0.5px solid #D1D1D6", display: "flex", flexDirection: "column", padding: "1.5rem 1rem", position: "sticky", top: 0, height: "100vh", overflowY: "auto" }}>
           <Link href="/" style={{ textDecoration: "none", color: "inherit" }}>
-            <div className="sidebar-logo">
-              <div className="logo-icon">
+            <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: "2rem", cursor: "pointer" }}>
+              <div style={{ width: 38, height: 38, borderRadius: 9, background: "#1D1D1F", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                 <CrossIcon size={14} color="#F5F5F7" />
               </div>
-              <div className="sidebar-divider" />
+              <div style={{ width: 1, height: 28, background: "#D1D1D6", flexShrink: 0 }} />
               <div>
-                <div className="logo-title">Catolicum</div>
-                <div className="logo-tagline">La Libreria Catolica</div>
+                <div style={{ fontFamily: "EB Garamond, serif", fontSize: 19, fontWeight: 500, color: "#1D1D1F", lineHeight: 1.1 }}>Catolicum</div>
+                <div style={{ fontFamily: "EB Garamond, serif", fontSize: 11, fontStyle: "italic", color: "#6E6E73", marginTop: 2 }}>La Libreria Catolica</div>
               </div>
             </div>
           </Link>
-          <nav className="sidebar-nav">
+          <nav style={{ display: "flex", flexDirection: "column", gap: 2, flex: 1 }}>
             {NAV.map(function(item) {
               return (
-                <Link key={item.href} href={item.href} className="nav-item">
+                <Link key={item.href} href={item.href} style={{ display: "flex", alignItems: "center", padding: "9px 10px", borderRadius: 8, fontSize: 14, color: "#3A3A3C", textDecoration: "none" }}>
                   {item.label}
                 </Link>
               );
             })}
           </nav>
-          <div className="sidebar-footer">
-            <Link href="/privacidad" className="sidebar-link">Privacidad</Link>
-            <Link href="/acerca" className="sidebar-link">Acerca de</Link>
+          <div style={{ display: "flex", flexDirection: "column", gap: 4, paddingTop: "1rem", borderTop: "0.5px solid #D1D1D6" }}>
+            <Link href="/privacidad" style={{ fontSize: 11, color: "#AEAEB2", textDecoration: "none", padding: "3px 0" }}>Privacidad</Link>
+            <Link href="/acerca" style={{ fontSize: 11, color: "#AEAEB2", textDecoration: "none", padding: "3px 0" }}>Acerca de</Link>
           </div>
         </aside>
 
