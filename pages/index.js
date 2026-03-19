@@ -22,7 +22,7 @@ const NAV = [
   { label: "Contacto", href: "/contacto" },
 ];
 
-const EXAMPLES = ["El Codigo Da Vinci", "Summa Theologica", "Harry Potter", "El Alquimista", "Sapiens"];
+const EXAMPLES = ["El Código Da Vinci", "1984", "Harry Potter", "El espejismo de Dios", "Cincuenta Sombras de Grey"];
 
 export default function Home() {
   const [query, setQuery] = useState("");
