@@ -1,6 +1,6 @@
 import Head from "next/head";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const CrossIcon = () => (
   <svg width="14" height="14" viewBox="0 0 14 14">
@@ -17,9 +17,17 @@ const NAV = [
 ];
 
 export default function Contacto() {
-  var formInit = { nombre: "", email: "", mensaje: "" };
-  var [sent, setSent] = useState(false);
-  var [form, setForm] = useState(formInit);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+  const [sent, setSent] = useState(false);
+  const [form, setForm] = useState({ nombre: "", email: "", mensaje: "" });
+
+  useEffect(function() {
+    function checkMobile() { setIsMobile(window.innerWidth <= 768); }
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return function() { window.removeEventListener("resize", checkMobile); };
+  }, []);
 
   function handleChange(e) {
     setForm(Object.assign({}, form, { [e.target.name]: e.target.value }));
@@ -43,49 +51,55 @@ export default function Contacto() {
         <meta name="description" content="Contacta con Catolicum para sugerir libros o reportar errores." />
         <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
       </Head>
-
       <div style={{ display: "flex", minHeight: "100vh" }}>
-
-        <aside style={{ width: 220, flexShrink: 0, background: "#FFFFFF", borderRight: "0.5px solid #D1D1D6", display: "flex", flexDirection: "column", padding: "1.5rem 1rem", position: "sticky", top: 0, height: "100vh", overflowY: "auto" }}>
-          <Link href="/" style={{ textDecoration: "none", color: "inherit" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: "2rem", cursor: "pointer" }}>
-              <div style={{ width: 38, height: 38, borderRadius: 9, background: "#1D1D1F", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                <CrossIcon />
+        {!isMobile && (
+          <aside style={{ width: 220, flexShrink: 0, background: "#FFFFFF", borderRight: "0.5px solid #D1D1D6", display: "flex", flexDirection: "column", padding: "1.5rem 1rem", position: "sticky", top: 0, height: "100vh", overflowY: "auto" }}>
+            <Link href="/" style={{ textDecoration: "none", color: "inherit" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: "2rem", cursor: "pointer" }}>
+                <div style={{ width: 38, height: 38, borderRadius: 9, background: "#1D1D1F", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}><CrossIcon /></div>
+                <div style={{ width: 1, height: 28, background: "#D1D1D6", flexShrink: 0 }} />
+                <div>
+                  <div style={{ fontFamily: "EB Garamond, serif", fontSize: 19, fontWeight: 500, color: "#1D1D1F", lineHeight: 1.1 }}>Catolicum</div>
+                  <div style={{ fontFamily: "EB Garamond, serif", fontSize: 11, fontStyle: "italic", color: "#6E6E73", marginTop: 2 }}>La Libreria Catolica</div>
+                </div>
               </div>
-              <div style={{ width: 1, height: 28, background: "#D1D1D6", flexShrink: 0 }} />
-              <div>
-                <div style={{ fontFamily: "EB Garamond, serif", fontSize: 19, fontWeight: 500, color: "#1D1D1F", lineHeight: 1.1 }}>Catolicum</div>
-                <div style={{ fontFamily: "EB Garamond, serif", fontSize: 11, fontStyle: "italic", color: "#6E6E73", marginTop: 2 }}>La Libreria Catolica</div>
-              </div>
+            </Link>
+            <nav style={{ display: "flex", flexDirection: "column", gap: 2, flex: 1 }}>
+              {NAV.map(function(item) {
+                return (<Link key={item.href} href={item.href} style={{ display: "flex", alignItems: "center", padding: "9px 10px", borderRadius: 8, fontSize: 14, color: "#3A3A3C", textDecoration: "none" }}>{item.label}</Link>);
+              })}
+            </nav>
+            <div style={{ display: "flex", flexDirection: "column", gap: 4, paddingTop: "1rem", borderTop: "0.5px solid #D1D1D6" }}>
+              <Link href="/privacidad" style={{ fontSize: 11, color: "#AEAEB2", textDecoration: "none", padding: "3px 0" }}>Privacidad</Link>
+              <Link href="/acerca" style={{ fontSize: 11, color: "#AEAEB2", textDecoration: "none", padding: "3px 0" }}>Acerca de</Link>
             </div>
-          </Link>
-          <nav style={{ display: "flex", flexDirection: "column", gap: 2, flex: 1 }}>
-            {NAV.map(function(item) {
-              return (
-                <Link key={item.href} href={item.href} style={{ display: "flex", alignItems: "center", padding: "9px 10px", borderRadius: 8, fontSize: 14, color: "#3A3A3C", textDecoration: "none" }}>
-                  {item.label}
-                </Link>
-              );
-            })}
-          </nav>
-          <div style={{ display: "flex", flexDirection: "column", gap: 4, paddingTop: "1rem", borderTop: "0.5px solid #D1D1D6" }}>
-            <Link href="/privacidad" style={{ fontSize: 11, color: "#AEAEB2", textDecoration: "none", padding: "3px 0" }}>Privacidad</Link>
-            <Link href="/acerca" style={{ fontSize: 11, color: "#AEAEB2", textDecoration: "none", padding: "3px 0" }}>Acerca de</Link>
-          </div>
-        </aside>
-
+          </aside>
+        )}
         <div style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column" }}>
-          <div style={{ width: "100%", background: "#FFFFFF", borderBottom: "0.5px solid #D1D1D6", padding: "8px 16px", display: "flex", alignItems: "center", gap: 12 }}>
-            <span style={{ fontSize: 10, color: "#AEAEB2", textTransform: "uppercase", letterSpacing: ".06em", flexShrink: 0 }}>Publicidad</span>
-            <div style={{ flex: 1, textAlign: "center", fontSize: 12, color: "#AEAEB2", padding: "18px 0", border: "0.5px dashed #D1D1D6", borderRadius: 6 }}>[ Google AdSense ]</div>
-          </div>
-          <div style={{ maxWidth: 680, margin: "0 auto", padding: "2.5rem 1.5rem", flex: 1 }}>
+          {isMobile && (
+            <div style={{ background: "#FFFFFF", borderBottom: "0.5px solid #D1D1D6", padding: "10px 16px", display: "flex", alignItems: "center", justifyContent: "space-between", position: "sticky", top: 0, zIndex: 100 }}>
+              <Link href="/" style={{ textDecoration: "none", display: "flex", alignItems: "center", gap: 10 }}>
+                <div style={{ width: 30, height: 30, borderRadius: 7, background: "#1D1D1F", display: "flex", alignItems: "center", justifyContent: "center" }}><CrossIcon /></div>
+                <span style={{ fontFamily: "EB Garamond, serif", fontSize: 19, fontWeight: 500, color: "#1D1D1F" }}>Catolicum</span>
+              </Link>
+              <button onClick={function() { setMenuOpen(!menuOpen); }} style={{ background: "none", border: "none", cursor: "pointer", padding: 4, display: "flex", flexDirection: "column", gap: 5 }}>
+                <span style={{ display: "block", width: 18, height: 1.5, background: "#1D1D1F", borderRadius: 1 }} />
+                <span style={{ display: "block", width: 18, height: 1.5, background: "#1D1D1F", borderRadius: 1 }} />
+                <span style={{ display: "block", width: 18, height: 1.5, background: "#1D1D1F", borderRadius: 1 }} />
+              </button>
+            </div>
+          )}
+          {isMobile && menuOpen && (
+            <div style={{ background: "#FFFFFF", borderBottom: "0.5px solid #D1D1D6", padding: ".5rem 1rem 1rem" }}>
+              {NAV.map(function(item) {
+                return (<Link key={item.href} href={item.href} onClick={function() { setMenuOpen(false); }} style={{ display: "block", padding: "10px 0", fontSize: 14, color: "#1D1D1F", textDecoration: "none", borderBottom: "0.5px solid #F5F5F7" }}>{item.label}</Link>);
+              })}
+            </div>
+          )}
+          <div style={{ maxWidth: 560, margin: "0 auto", padding: isMobile ? "1.25rem 1rem" : "2.5rem 1.5rem", width: "100%" }}>
             <Link href="/" style={{ fontSize: 13, color: "#6E6E73", textDecoration: "none" }}>← Volver</Link>
             <h1 style={{ fontFamily: "EB Garamond, serif", fontSize: 36, fontWeight: 500, margin: "1.5rem 0 .5rem", color: "#1D1D1F" }}>Contacto</h1>
-            <p style={{ fontSize: 14, color: "#6E6E73", marginBottom: "2rem", lineHeight: 1.6 }}>
-              Sugerir un libro, reportar un error en un analisis o simplemente escribirnos.
-            </p>
-
+            <p style={{ fontSize: 14, color: "#6E6E73", marginBottom: "2rem", lineHeight: 1.6 }}>Sugerir un libro, reportar un error en un analisis o simplemente escribirnos.</p>
             {sent ? (
               <div style={{ background: "#EAF3DE", border: "0.5px solid #5DCAA5", borderRadius: 12, padding: "1.5rem", textAlign: "center" }}>
                 <p style={{ fontSize: 16, fontWeight: 500, color: "#085041", marginBottom: 6 }}>Mensaje preparado</p>
@@ -111,7 +125,6 @@ export default function Contacto() {
                 </button>
               </form>
             )}
-
             <div style={{ borderTop: "0.5px solid #D1D1D6", marginTop: "2rem", paddingTop: "1rem", display: "flex", gap: 16, fontSize: 12, color: "#AEAEB2" }}>
               <Link href="/privacidad" style={{ color: "#AEAEB2", textDecoration: "none" }}>Privacidad</Link>
               <span>·</span>
