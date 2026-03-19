@@ -15,6 +15,15 @@ function normalize(str) {
   return str.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 }
 
+function toSlug(str) {
+  return str
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "");
+}
+
 const NAV = [
   { label: "Home", href: "/", icon: "⌂" },
   { label: "Misión", href: "/mision", icon: "✦" },
@@ -159,7 +168,9 @@ export default function Home() {
                     <div className="result-header">
                       <div className="result-meta">
                         <div className="book-info">
+                          <Link href={"/libro/" + toSlug(result.t)} style={{ textDecoration: "none", color: "inherit" }}>
                           <h2 className="book-title">{result.t}</h2>
+                          </Link>
                           <p className="book-author">{result.a}{result.y ? ` · ${result.y}` : ""}</p>
                           <span className="category-pill" style={{ background: st.bg, color: st.text }}>
                             {st.label}
