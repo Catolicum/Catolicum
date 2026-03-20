@@ -32,6 +32,25 @@ const CrossIcon = () => (
   </svg>
 );
 
+const BarcodeIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
+    <rect x="2" y="4" width="2" height="12" fill="#1D1D1F"/>
+    <rect x="5" y="4" width="1" height="12" fill="#1D1D1F"/>
+    <rect x="7" y="4" width="2" height="12" fill="#1D1D1F"/>
+    <rect x="10" y="4" width="1" height="12" fill="#1D1D1F"/>
+    <rect x="12" y="4" width="3" height="12" fill="#1D1D1F"/>
+    <rect x="16" y="4" width="2" height="12" fill="#1D1D1F"/>
+    <rect x="1" y="2" width="4" height="1" fill="#1D1D1F"/>
+    <rect x="1" y="2" width="1" height="4" fill="#1D1D1F"/>
+    <rect x="15" y="2" width="4" height="1" fill="#1D1D1F"/>
+    <rect x="18" y="2" width="1" height="4" fill="#1D1D1F"/>
+    <rect x="1" y="17" width="4" height="1" fill="#1D1D1F"/>
+    <rect x="1" y="14" width="1" height="4" fill="#1D1D1F"/>
+    <rect x="15" y="17" width="4" height="1" fill="#1D1D1F"/>
+    <rect x="18" y="14" width="1" height="4" fill="#1D1D1F"/>
+  </svg>
+);
+
 export default function Home() {
   const [query, setQuery] = useState("");
   const [result, setResult] = useState(null);
@@ -83,6 +102,12 @@ export default function Home() {
     handleSearch(titulo);
   }
 
+  function handleBarcodeDetected(isbn) {
+    setShowScanner(false);
+    setQuery(isbn);
+    handleSearch(isbn);
+  }
+
   var st = result ? getScoreStyle(result.s) : null;
 
   return (
@@ -107,14 +132,11 @@ export default function Home() {
 
       <div style={{ display: "flex", minHeight: "100vh", flexDirection: "row" }}>
 
-        {/* SIDEBAR - solo desktop */}
         {!isMobile && (
           <aside style={{ width: 220, flexShrink: 0, background: "#FFFFFF", borderRight: "0.5px solid #D1D1D6", display: "flex", flexDirection: "column", padding: "1.5rem 1rem", position: "sticky", top: 0, height: "100vh", overflowY: "auto" }}>
             <Link href="/" style={{ textDecoration: "none", color: "inherit" }}>
               <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: "2rem", cursor: "pointer" }}>
-                <div style={{ width: 38, height: 38, borderRadius: 9, background: "#1D1D1F", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                  <CrossIcon />
-                </div>
+                <div style={{ width: 38, height: 38, borderRadius: 9, background: "#1D1D1F", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}><CrossIcon /></div>
                 <div style={{ width: 1, height: 28, background: "#D1D1D6", flexShrink: 0 }} />
                 <div>
                   <div style={{ fontFamily: "EB Garamond, serif", fontSize: 19, fontWeight: 500, color: "#1D1D1F", lineHeight: 1.1 }}>Catolicum</div>
@@ -124,11 +146,7 @@ export default function Home() {
             </Link>
             <nav style={{ display: "flex", flexDirection: "column", gap: 2, flex: 1 }}>
               {NAV.map(function(item) {
-                return (
-                  <Link key={item.href} href={item.href} style={{ display: "flex", alignItems: "center", padding: "9px 10px", borderRadius: 8, fontSize: 14, color: "#3A3A3C", textDecoration: "none" }}>
-                    {item.label}
-                  </Link>
-                );
+                return (<Link key={item.href} href={item.href} style={{ display: "flex", alignItems: "center", padding: "9px 10px", borderRadius: 8, fontSize: 14, color: "#3A3A3C", textDecoration: "none" }}>{item.label}</Link>);
               })}
             </nav>
             <div style={{ display: "flex", flexDirection: "column", gap: 4, paddingTop: "1rem", borderTop: "0.5px solid #D1D1D6" }}>
@@ -138,19 +156,15 @@ export default function Home() {
           </aside>
         )}
 
-        {/* CONTENIDO */}
         <div style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column" }}>
 
-          {/* HEADER MÓVIL */}
           {isMobile && (
             <div style={{ background: "#FFFFFF", borderBottom: "0.5px solid #D1D1D6", padding: "10px 16px", display: "flex", alignItems: "center", justifyContent: "space-between", position: "sticky", top: 0, zIndex: 100 }}>
               <Link href="/" style={{ textDecoration: "none", display: "flex", alignItems: "center", gap: 10 }}>
-                <div style={{ width: 30, height: 30, borderRadius: 7, background: "#1D1D1F", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                  <CrossIcon />
-                </div>
+                <div style={{ width: 30, height: 30, borderRadius: 7, background: "#1D1D1F", display: "flex", alignItems: "center", justifyContent: "center" }}><CrossIcon /></div>
                 <span style={{ fontFamily: "EB Garamond, serif", fontSize: 19, fontWeight: 500, color: "#1D1D1F" }}>Catolicum</span>
               </Link>
-              <button onClick={function() { setMenuOpen(!menuOpen); }} style={{ background: "none", border: "none", cursor: "pointer", padding: 4, display: "flex", flexDirection: "column", gap: 5, alignItems: "center", justifyContent: "center" }}>
+              <button onClick={function() { setMenuOpen(!menuOpen); }} style={{ background: "none", border: "none", cursor: "pointer", padding: 4, display: "flex", flexDirection: "column", gap: 5 }}>
                 <span style={{ display: "block", width: 18, height: 1.5, background: "#1D1D1F", borderRadius: 1 }} />
                 <span style={{ display: "block", width: 18, height: 1.5, background: "#1D1D1F", borderRadius: 1 }} />
                 <span style={{ display: "block", width: 18, height: 1.5, background: "#1D1D1F", borderRadius: 1 }} />
@@ -158,20 +172,14 @@ export default function Home() {
             </div>
           )}
 
-          {/* MENÚ MÓVIL DESPLEGABLE */}
           {isMobile && menuOpen && (
             <div style={{ background: "#FFFFFF", borderBottom: "0.5px solid #D1D1D6", padding: ".5rem 1rem 1rem" }}>
               {NAV.map(function(item) {
-                return (
-                  <Link key={item.href} href={item.href} onClick={function() { setMenuOpen(false); }} style={{ display: "block", padding: "10px 0", fontSize: 14, color: "#1D1D1F", textDecoration: "none", borderBottom: "0.5px solid #F5F5F7" }}>
-                    {item.label}
-                  </Link>
-                );
+                return (<Link key={item.href} href={item.href} onClick={function() { setMenuOpen(false); }} style={{ display: "block", padding: "10px 0", fontSize: 14, color: "#1D1D1F", textDecoration: "none", borderBottom: "0.5px solid #F5F5F7" }}>{item.label}</Link>);
               })}
             </div>
           )}
 
-          {/* BANNER PUBLICIDAD */}
           <div style={{ width: "100%", background: "#FFFFFF", borderBottom: "0.5px solid #D1D1D6", padding: "8px 16px", display: "flex", alignItems: "center", gap: 12 }}>
             <span style={{ fontSize: 10, color: "#AEAEB2", textTransform: "uppercase", letterSpacing: ".06em", flexShrink: 0 }}>Publicidad</span>
             <div style={{ flex: 1, textAlign: "center", fontSize: 12, color: "#AEAEB2", padding: "18px 0", border: "0.5px dashed #D1D1D6", borderRadius: 6 }}>[ Google AdSense ]</div>
@@ -180,6 +188,7 @@ export default function Home() {
           <main style={{ flex: 1, maxWidth: 680, margin: "0 auto", width: "100%", padding: isMobile ? "1.25rem 1rem" : "2rem 1.5rem 1rem" }}>
 
             <div style={{ marginBottom: "1.5rem", position: "relative" }}>
+
               <div style={{ display: "flex", gap: 8, marginBottom: ".75rem", position: "relative" }}>
                 <input
                   type="text"
@@ -189,40 +198,27 @@ export default function Home() {
                   onKeyDown={handleKey}
                   onBlur={function() { setTimeout(function() { setShowSuggestions(false); }, 150); }}
                   onFocus={function() { if (suggestions.length > 0) setShowSuggestions(true); }}
-                  style={{ flex: 1, height: 48, padding: "0 16px", border: "0.5px solid #D1D1D6", borderRadius: 10, background: "#FFFFFF", color: "#1D1D1F", fontSize: 14, fontFamily: "DM Sans, sans-serif" }}
+                  style={{ flex: 1, height: 48, padding: "0 16px", border: "0.5px solid #D1D1D6", borderRadius: 10, background: "#FFFFFF", color: "#1D1D1F", fontSize: 14, fontFamily: "DM Sans, sans-serif", minWidth: 0 }}
                 />
-                <button
-  onClick={function() { handleSearch(query); }}
-  style={{ height: 48, padding: "0 18px", background: "#1D1D1F", color: "#F5F5F7", border: "none", borderRadius: 10, fontSize: 14, cursor: "pointer", fontFamily: "DM Sans, sans-serif", whiteSpace: "nowrap" }}
-                >
+                <button onClick={function() { handleSearch(query); }} style={{ height: 48, padding: "0 18px", background: "#1D1D1F", color: "#F5F5F7", border: "none", borderRadius: 10, fontSize: 14, cursor: "pointer", fontFamily: "DM Sans, sans-serif", whiteSpace: "nowrap", flexShrink: 0 }}>
                   Analizar
                 </button>
-                <button
-                  onClick={function() { setShowScanner(true); }}
-                  title="Escanear codigo de barras"
-                  style={{ height: 48, width: 48, background: "#FFFFFF", border: "0.5px solid #D1D1D6", borderRadius: 10, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}
-                >
-                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                    <rect x="2" y="4" width="2" height="12" fill="#1D1D1F"/>
-                    <rect x="5" y="4" width="1" height="12" fill="#1D1D1F"/>
-                    <rect x="7" y="4" width="2" height="12" fill="#1D1D1F"/>
-                    <rect x="10" y="4" width="1" height="12" fill="#1D1D1F"/>
-                    <rect x="12" y="4" width="3" height="12" fill="#1D1D1F"/>
-                    <rect x="16" y="4" width="2" height="12" fill="#1D1D1F"/>
-                    <rect x="1" y="2" width="4" height="1" fill="#1D1D1F"/>
-                    <rect x="1" y="2" width="1" height="4" fill="#1D1D1F"/>
-                    <rect x="15" y="2" width="4" height="1" fill="#1D1D1F"/>
-                    <rect x="18" y="2" width="1" height="4" fill="#1D1D1F"/>
-                    <rect x="1" y="17" width="4" height="1" fill="#1D1D1F"/>
-                    <rect x="1" y="14" width="1" height="4" fill="#1D1D1F"/>
-                    <rect x="15" y="17" width="4" height="1" fill="#1D1D1F"/>
-                    <rect x="18" y="14" width="1" height="4" fill="#1D1D1F"/>
-                  </svg>
-                </button>
+                {!isMobile && (
+                  <button onClick={function() { setShowScanner(true); }} title="Escanear codigo de barras" style={{ height: 48, width: 48, background: "#FFFFFF", border: "0.5px solid #D1D1D6", borderRadius: 10, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                    <BarcodeIcon />
+                  </button>
+                )}
               </div>
 
+              {isMobile && (
+                <button onClick={function() { setShowScanner(true); }} style={{ width: "100%", height: 44, background: "#FFFFFF", border: "0.5px solid #D1D1D6", borderRadius: 10, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 8, marginBottom: ".75rem", fontFamily: "DM Sans, sans-serif", fontSize: 14, color: "#3A3A3C" }}>
+                  <BarcodeIcon />
+                  Escanear codigo de barras
+                </button>
+              )}
+
               {showSuggestions && (
-                <div style={{ position: "absolute", top: 52, left: 0, right: 0, background: "#FFFFFF", border: "0.5px solid #D1D1D6", borderRadius: 10, zIndex: 100, overflow: "hidden", boxShadow: "0 4px 16px rgba(0,0,0,0.08)" }}>
+                <div style={{ position: "absolute", top: 52, left: 0, right: isMobile ? 0 : 90, background: "#FFFFFF", border: "0.5px solid #D1D1D6", borderRadius: 10, zIndex: 100, overflow: "hidden", boxShadow: "0 4px 16px rgba(0,0,0,0.08)" }}>
                   {suggestions.map(function(s) {
                     var sc = getScoreStyle(s.puntuacion);
                     return (
@@ -332,16 +328,6 @@ export default function Home() {
                     );
                   })}
                 </div>
-                              {showScanner && (
-                <BarcodeScanner
-                  onDetected={function(isbn) {
-                    setShowScanner(false);
-                    setQuery(isbn);
-                    handleSearch(isbn);
-                  }}
-                  onClose={function() { setShowScanner(false); }}
-                />
-              )}
               </div>
             )}
 
@@ -367,6 +353,14 @@ export default function Home() {
 
         </div>
       </div>
+
+      {showScanner && (
+        <BarcodeScanner
+          onDetected={handleBarcodeDetected}
+          onClose={function() { setShowScanner(false); }}
+        />
+      )}
+
     </div>
   );
 }
