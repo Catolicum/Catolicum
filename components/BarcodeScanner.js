@@ -34,7 +34,12 @@ export default function BarcodeScanner({ onDetected, onClose }) {
             setScanning(false);
             return;
           }
-          Quagga.start();
+                    Quagga.start();var video = scannerRef.current.querySelector("video");
+            if (video) {
+            video.style.width = "100%";
+            video.style.height = "100%";
+            video.style.objectFit = "cover";
+            }
         });
 
         Quagga.onDetected(function(result) {
@@ -77,7 +82,7 @@ export default function BarcodeScanner({ onDetected, onClose }) {
           </div>
         ) : (
           <div style={{ position: "relative", borderRadius: 12, overflow: "hidden", background: "#000" }}>
-            <div ref={scannerRef} style={{ width: "100%", height: 280, overflow: "hidden" }} />
+            <div ref={scannerRef} style={{ width: "100%", height: 280, overflow: "hidden", position: "relative" }} />
             <div style={{ position: "absolute", top: "50%", left: "10%", right: "10%", height: 2, background: "#1D9E75", transform: "translateY(-50%)", boxShadow: "0 0 8px #1D9E75" }} />
             {!scanning && (
               <div style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
