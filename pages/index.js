@@ -343,7 +343,7 @@ export default function Home() {
 
                 <div style={{ marginBottom: "2rem" }}>
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: "1rem" }}>
-                    <h2 style={{ fontFamily: "EB Garamond, serif", fontSize: 20, fontWeight: 500, color: "#1D1D1F" }}>Los mas buscados</h2>
+                    <h2 style={{ fontFamily: "EB Garamond, serif", fontSize: 20, fontWeight: 500, color: "#1D1D1F" }}>Los más buscados</h2>
                     <span style={{ fontSize: 12, color: "#AEAEB2" }}>Libros populares analizados</span>
                   </div>
                   <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr 1fr" : "repeat(3, 1fr)", gap: 8 }}>
@@ -362,7 +362,7 @@ export default function Home() {
 
                 <div style={{ borderTop: "0.5px solid #D1D1D6", paddingTop: "2rem", marginBottom: "2rem" }}>
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: "1rem" }}>
-                    <h2 style={{ fontFamily: "EB Garamond, serif", fontSize: 20, fontWeight: 500, color: "#1D1D1F" }}>Para el lector catolico</h2>
+                    <h2 style={{ fontFamily: "EB Garamond, serif", fontSize: 20, fontWeight: 500, color: "#1D1D1F" }}>Libros recomendados por Catolicum</h2>
                     <Link href="/recomendados" style={{ fontSize: 12, color: "#1D9E75", textDecoration: "none" }}>Ver todos →</Link>
                   </div>
                   <div style={{ display: "flex", flexDirection: "column", gap: ".4rem" }}>
