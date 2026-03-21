@@ -232,7 +232,7 @@ export default function RecomendadoPage({ libro }) {
                   <a href={libro.amazon_url} target="_blank" rel="noopener noreferrer" style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "12px 28px", background: "#F5F5F7", color: "#1D1D1F", borderRadius: 10, fontSize: 15, textDecoration: "none", fontFamily: "DM Sans, sans-serif", fontWeight: 500 }}>
                     Comprar en Amazon
                   </a>
-                  <p style={{ fontSize: 11, color: "#6E6E73", marginTop: 8 }}>Enlace de afiliado - Catolicum recibe una pequeña comision sin coste para ti</p>
+                  <p style={{ fontSize: 11, color: "#6E6E73", marginTop: 8 }}>Enlace de afiliado - Catolicum recibe una pequeña comision para seguir con este proyecto sin ningun coste para ti</p>
                 </div>
               )}
 
