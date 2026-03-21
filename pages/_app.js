@@ -15,6 +15,11 @@ export default function App({ Component, pageProps }) {
 
   return (
     <>
+      <style>{`
+        #interactive.viewport { width: 100% !important; height: 100% !important; }
+        #interactive.viewport video { width: 100% !important; height: 100% !important; object-fit: cover !important; }
+        #interactive.viewport canvas { width: 100% !important; height: 100% !important; object-fit: cover !important; }
+      `}</style>
       <Component {...pageProps} />
       <CookieBanner />
     </>
