@@ -49,10 +49,11 @@ export default function RecomendadoPage({ libro }) {
   var slug = toSlug(libro.titulo);
   var similares = libro.libros_similares ? libro.libros_similares.split("|") : [];
 
-  useEffect(function() {
-    function checkMobile() { setIsMobile(window.innerWidth <= 768); }
-    checkMobile();
-    window.addEventListener("resize", checkMobile);
+  useEffect(function() {function checkMobile() { setIsMobile(window.innerWidth <= 768); }
+  checkMobile();
+  window.addEventListener("resize", checkMobile);
+  if (libro.imagen_url) setCoverUrl(libro.imagen_url);
+  return function() { window.removeEventListener("resize", checkMobile); }
 
     var query = encodeURIComponent(libro.titulo + " " + libro.autor);
         fetch("https://openlibrary.org/search.json?q=" + query + "&limit=1&fields=cover_i,title")
