@@ -21,22 +21,24 @@ export default function BarcodeScanner({ onDetected, onClose }) {
             target: scannerRef.current,
             constraints: {
               facingMode: "environment",
-              width: { ideal: 640 },
-              height: { ideal: 480 },
-            },
-            area: {
-              top: "20%",
-              right: "10%",
-              left: "10%",
-              bottom: "20%",
+              width: { ideal: 1280 },
+              height: { ideal: 720 },
             },
           },
           decoder: {
-            readers: ["ean_reader", "ean_8_reader"],
+            readers: [
+              "ean_reader",
+              "ean_8_reader",
+              "upc_reader",
+              "upc_e_reader",
+              "code_128_reader",
+            ],
+            multiple: false,
           },
           locate: true,
-          numOfWorkers: 2,
-          frequency: 10,
+          numOfWorkers: 4,
+          frequency: 5,
+          patchSize: "medium",
         }, function(err) {
           if (err || stopped) {
             if (!stopped) setError("No se pudo acceder a la camara. Comprueba los permisos del navegador.");
@@ -58,14 +60,32 @@ export default function BarcodeScanner({ onDetected, onClose }) {
           }, 500);
         });
 
-        Quagga.onDetected(function(result) {
-          var code = result.codeResult.code;
-          if (code && code.length >= 10 && !stopped) {
-            stopped = true;
-            Quagga.stop();
+              Quagga.onDetected(async function(result) {
+        if (stopped) return;
+        var code = result.codeResult.code;
+        var confidence = result.codeResult.decodedCodes
+          .filter(function(c) { return c.error !== undefined; })
+          .reduce(function(acc, c) { return acc + c.error; }, 0);
+        var total = result.codeResult.decodedCodes.filter(function(c) { return c.error !== undefined; }).length;
+        var avgError = total > 0 ? confidence / total : 1;
+
+        if (code && avgError < 0.15) {
+          stopped = true;
+          Quagga.stop();
+          try {
+            var res = await fetch("https://openlibrary.org/api/books?bibkeys=ISBN:" + code + "&format=json&jscmd=data");
+            var data = await res.json();
+            var key = "ISBN:" + code;
+            if (data[key] && data[key].title) {
+              onDetected(data[key].title);
+            } else {
+              onDetected(code);
+            }
+          } catch(e) {
             onDetected(code);
           }
-        });
+        }
+      });
 
       } catch(e) {
         setError("Error al iniciar el escaner. Intenta recargar la pagina.");
