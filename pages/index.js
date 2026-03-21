@@ -207,11 +207,11 @@ export default function Home() {
             {!searched && (
               <div style={{ marginBottom: "2rem", paddingBottom: "2rem", borderBottom: "0.5px solid #D1D1D6" }}>
                 <h1 style={{ fontFamily: "EB Garamond, serif", fontSize: isMobile ? 28 : 36, fontWeight: 500, color: "#1D1D1F", lineHeight: 1.2, marginBottom: 10 }}>
-                  ¿Que dice la fe catolica sobre este libro?
-                </h1>
-                <p style={{ fontSize: 15, color: "#6E6E73", lineHeight: 1.65, marginBottom: 0 }}>
-                  Analisis de mas de {totalLibros || 200} libros: bestsellers polemicos clasicos espirituales y todo lo que te preguntas antes de leer.
-                </p>
+                ¿Que hay detras de cada libro? Lee con criterio. Lee con fe.
+              </h1>
+              <p style={{ fontSize: 15, color: "#6E6E73", lineHeight: 1.65, marginBottom: 0 }}>
+                Analizamos los {totalLibros || 145} libros mas vendidos, mas buscados y mas controvertidos desde una perspectiva que pocos conocen.
+              </p>
               </div>
             )}
 
