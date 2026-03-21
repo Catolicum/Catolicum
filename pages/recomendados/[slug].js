@@ -55,16 +55,15 @@ export default function RecomendadoPage({ libro }) {
     window.addEventListener("resize", checkMobile);
 
     var query = encodeURIComponent(libro.titulo + " " + libro.autor);
-    fetch("https://www.googleapis.com/books/v1/volumes?q=" + query + "&maxResults=1")
-      .then(function(r) { return r.json(); })
-      .then(function(data) {
-        if (data.items && data.items[0] && data.items[0].volumeInfo.imageLinks) {
-          var img = data.items[0].volumeInfo.imageLinks.thumbnail;
-          img = img.replace("http://", "https://").replace("&edge=curl", "");
-          setCoverUrl(img);
-        }
-      })
-      .catch(function() {});
+        fetch("https://openlibrary.org/search.json?q=" + query + "&limit=1&fields=cover_i,title")
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+            if (data.docs && data.docs[0] && data.docs[0].cover_i) {
+            var coverId = data.docs[0].cover_i;
+            setCoverUrl("https://covers.openlibrary.org/b/id/" + coverId + "-L.jpg");
+            }
+        })
+  .catch(function() {});
 
     return function() { window.removeEventListener("resize", checkMobile); };
   }, []);
