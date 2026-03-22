@@ -71,6 +71,46 @@ export default function LibroPage(props) {
         <meta property="og:type" content="article" />
         <link rel="canonical" href={canonicalUrl} />
         <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+        <script
+              type="application/ld+json"
+              dangerouslySetInnerHTML={{
+                __html: JSON.stringify({
+                  "@context": "https://schema.org",
+                  "@type": "Book",
+                  "name": book.t,
+                  "author": {
+                    "@type": "Person",
+                    "name": book.a
+                  },
+                  "datePublished": book.y ? String(book.y) : undefined,
+                  "description": book.an,
+                  "inLanguage": "es",
+                  "url": canonicalUrl,
+                  "aggregateRating": {
+                    "@type": "AggregateRating",
+                    "ratingValue": String(book.s),
+                    "bestRating": "10",
+                    "worstRating": "1",
+                    "ratingCount": "1",
+                    "reviewCount": "1"
+                  },
+                  "review": {
+                    "@type": "Review",
+                    "reviewRating": {
+                      "@type": "Rating",
+                      "ratingValue": String(book.s),
+                      "bestRating": "10",
+                      "worstRating": "1"
+                    },
+                    "author": {
+                      "@type": "Organization",
+                      "name": "Catolicum"
+                    },
+                    "reviewBody": book.an
+                  }
+                })
+              }}
+            />
       </Head>
 
       {isMobile && (
