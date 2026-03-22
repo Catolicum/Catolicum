@@ -197,7 +197,7 @@ export default function Home() {
           {!searched && (
             <div style={{ background: "#FFFFFF", borderBottom: "0.5px solid #D1D1D6", padding: isMobile ? "2rem 1.25rem 1.75rem" : "2.5rem 2rem 2rem", textAlign: "center" }}>
               <h1 style={{ fontFamily: "EB Garamond, serif", fontSize: isMobile ? 28 : 36, fontWeight: 500, color: "#1D1D1F", lineHeight: 1.2, marginBottom: ".6rem" }}>
-                ¿Que hay detras de cada libro?
+                ¿Qué hay detrás de cada libro?
               </h1>
               <p style={{ fontFamily: "EB Garamond, serif", fontSize: isMobile ? 15 : 17, fontStyle: "italic", color: "#6E6E73", marginBottom: "1.5rem", borderLeft: "2px solid #D1D1D6", borderRight: "2px solid #D1D1D6", display: "inline-block", padding: "0 1rem" }}>
                 Lee con criterio. Lee con fe.
@@ -359,7 +359,7 @@ export default function Home() {
               <div style={{ background: "#EBEBED", padding: isMobile ? "1.25rem 1rem" : "1.5rem 2rem", borderBottom: "0.5px solid #D1D1D6" }}>
                 <div style={{ maxWidth: 680, margin: "0 auto" }}>
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: ".75rem" }}>
-                    <p style={{ fontSize: 11, fontWeight: 500, textTransform: "uppercase", letterSpacing: ".07em", color: "#6E6E73" }}>Los mas buscados</p>
+                    <p style={{ fontSize: 11, fontWeight: 500, textTransform: "uppercase", letterSpacing: ".07em", color: "#6E6E73" }}>Los más buscados</p>
                     <p style={{ fontSize: 12, color: "#AEAEB2" }}>Libros populares analizados</p>
                   </div>
                   <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr 1fr" : "repeat(3, 1fr)", gap: 8 }}>
