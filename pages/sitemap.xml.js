@@ -9,7 +9,7 @@ export async function getServerSideProps({ res }) {
   const staticPages = [
     { url: base, priority: "1.0", changefreq: "weekly" },
     { url: base + "/recomendados", priority: "0.9", changefreq: "weekly" },
-    { url: base + "/mision", priority: "0.8", changefreq: "monthly" },
+    { url: base + "/misión", priority: "0.8", changefreq: "monthly" },
     { url: base + "/acerca", priority: "0.7", changefreq: "monthly" },
     { url: base + "/contacto", priority: "0.6", changefreq: "monthly" },
     { url: base + "/privacidad", priority: "0.5", changefreq: "yearly" },

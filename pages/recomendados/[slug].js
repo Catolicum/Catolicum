@@ -23,7 +23,7 @@ const CrossIcon = () => (
 
 const NAV = [
   { label: "Home", href: "/" },
-  { label: "Mision", href: "/mision" },
+  { label: "Mision", href: "/misión" },
   { label: "Libros recomendados", href: "/recomendados" },
   { label: "Contacto", href: "/contacto" },
 ];
