@@ -83,7 +83,7 @@ git push -u origin main
 2. Haz clic en "Add New Project"
 3. Selecciona el repositorio `catolicum`
 4. Haz clic en "Deploy"
-5. En 2 minutos tendrás tu web en: **https://catolicum.vercel.app**
+5. En 2 minutos tendrás tu web en: **https://www.catolicum.com**
 
 ---
 

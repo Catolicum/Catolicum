@@ -56,7 +56,7 @@ export default function LibroPage(props) {
   var slug = toSlug(book.t);
   var barWidth = (book.s * 10) + "%";
   var metaDesc = book.t + " de " + book.a + " — Puntuación " + book.s + "/10. Análisis completo: qué hay detrás de este libro y todo lo que debes saber antes de leerlo.";
-  var canonicalUrl = "https://catolicum.vercel.app/libro/" + slug;
+  var canonicalUrl = "https://www.catolicum.com/libro/" + slug;
 
   return (
     <div style={{ minHeight: "100vh", background: "#F5F5F7", fontFamily: "DM Sans, sans-serif", color: "#1D1D1F" }}>

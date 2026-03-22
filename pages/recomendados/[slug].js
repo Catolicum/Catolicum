@@ -23,7 +23,7 @@ const CrossIcon = () => (
 
 const NAV = [
   { label: "Home", href: "/" },
-  { label: "Mision", href: "/misión" },
+  { label: "Mision", href: "/mision" },
   { label: "Libros recomendados", href: "/recomendados" },
   { label: "Contacto", href: "/contacto" },
 ];
@@ -81,9 +81,9 @@ export default function RecomendadoPage({ libro }) {
         <meta name="robots" content="index, follow" />
         <meta property="og:title" content={libro.titulo + " - Recomendado - Catolicum"} />
         <meta property="og:description" content={(libro.analisis || "").slice(0, 150)} />
-        <meta property="og:url" content={"https://catolicum.vercel.app/recomendados/" + slug} />
+        <meta property="og:url" content={"https://www.catolicum.com/recomendados/" + slug} />
         <meta property="og:type" content="article" />
-        <link rel="canonical" href={"https://catolicum.vercel.app/recomendados/" + slug} />
+        <link rel="canonical" href={"https://www.catolicum.com/recomendados/" + slug} />
         <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
       </Head>
 

@@ -135,10 +135,10 @@ export default function Home() {
         <meta name="google-site-verification" content="DJgtQhrJpw86EiMeHjn-XjbOAYSsebWi-QaTPUl6dA8" />
         <meta property="og:title" content="Catolicum - Analisis de libros desde la perspectiva catolica" />
         <meta property="og:description" content="Descubre que hay detras de cada libro. Lee con criterio. Lee con fe." />
-        <meta property="og:url" content="https://catolicum.vercel.app" />
+        <meta property="og:url" content="https://www.catolicum.com" />
         <meta property="og:type" content="website" />
         <meta property="og:locale" content="es_ES" />
-        <link rel="canonical" href="https://catolicum.vercel.app" />
+        <link rel="canonical" href="https://www.catolicum.com" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="true" />
         <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />

@@ -6,7 +6,7 @@ function toSlug(str) {
 }
 
 export async function getServerSideProps({ res }) {
-  const base = "https://catolicum.vercel.app";
+  const base = "https://www.catolicum.com";
 
   const staticPages = [
     { url: base, priority: "1.0", changefreq: "weekly" },
