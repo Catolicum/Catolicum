@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { getRecomendadoBySlug, getRecomendadosRicos } from "../../lib/search";
 
 function toSlug(str) {
+  if (!str) return "";
   return str.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 }
 
@@ -29,9 +30,11 @@ const NAV = [
 
 export async function getStaticPaths() {
   var libros = await getRecomendadosRicos();
-  var paths = libros.map(function(b) {
-    return { params: { slug: toSlug(b.titulo) } };
-  });
+  var paths = libros
+    .filter(function(b) { return b.titulo; })
+    .map(function(b) {
+      return { params: { slug: toSlug(b.titulo) } };
+    });
   return { paths: paths, fallback: false };
 }
 
