@@ -55,13 +55,13 @@ export default function LibroPage(props) {
   var amazonUrl = "https://www.amazon.es/s?k=" + encodeURIComponent(book.t + " " + book.a) + "&tag=catolicum-21";
   var slug = toSlug(book.t);
   var barWidth = (book.s * 10) + "%";
-  var metaDesc = (book.an || "").slice(0, 140);
+  var metaDesc = book.t + " de " + book.a + " — Puntuación " + book.s + "/10. Análisis completo: qué hay detrás de este libro y todo lo que debes saber antes de leerlo.";
   var canonicalUrl = "https://catolicum.vercel.app/libro/" + slug;
 
   return (
     <div style={{ minHeight: "100vh", background: "#F5F5F7", fontFamily: "DM Sans, sans-serif", color: "#1D1D1F" }}>
       <Head>
-        <title>{book.t} - Analisis catolico - Catolicum</title>
+        <title>{book.t} — ¿Deberías leerlo? Análisis y puntuación - Catolicum</title>
         <meta name="description" content={metaDesc} />
         <meta name="keywords" content={book.t + ", " + book.a + ", analisis catolico, fe catolica"} />
         <meta name="robots" content="index, follow" />
@@ -139,6 +139,9 @@ export default function LibroPage(props) {
                 <h1 style={{ fontFamily: "EB Garamond, serif", fontSize: isMobile ? 22 : 26, fontWeight: 500, marginBottom: 4, color: "#1D1D1F", lineHeight: 1.2 }}>
                   {book.t}
                 </h1>
+                <p style={{ fontFamily: "EB Garamond, serif", fontSize: 15, fontStyle: "italic", color: "#6E6E73", marginBottom: 8 }}>
+                  ¿Deberías leerlo? — Análisis y puntuación
+                </p>
                 <p style={{ fontSize: 13, color: "#6E6E73", marginBottom: 8 }}>
                   {book.a}{book.y ? " · " + book.y : ""}
                 </p>
