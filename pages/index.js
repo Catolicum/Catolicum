@@ -128,17 +128,17 @@ export default function Home() {
     <div style={{ minHeight: "100vh", background: "#F5F5F7", fontFamily: "DM Sans, sans-serif", color: "#1D1D1F" }}>
       <Head>
         <title>Catolicum - Analisis de libros desde la perspectiva catolica</title>
-        <meta name="description" content="Descubre que hay detras de cada libro. Analisis de mas de 145 libros desde la perspectiva catolica: bestsellers polemicos, clasicos espirituales y todo lo que te preguntas antes de leer." />
-        <meta name="keywords" content="analisis libros fe catolica, libros polemicos cristianismo, El Codigo Da Vinci verdad, libros recomendados catolicos" />
+        <meta name="description" content="Descubre que hay detras de cada libro. Análisis libros desde la perspectiva católica: bestsellers polemicos, clásicos espirituales y todo lo que te preguntas antes de leer." />
+        <meta name="keywords" content="analisis libros fe catolica, libros polemicos cristianismo, El Código Da Vinci verdad, libros recomendados catolicos" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta name="robots" content="index, follow" />
         <meta name="google-site-verification" content="DJgtQhrJpw86EiMeHjn-XjbOAYSsebWi-QaTPUl6dA8" />
-        <meta property="og:title" content="Catolicum - Analisis de libros desde la perspectiva catolica" />
+        <meta property="og:title" content="Catolicum - Análisis de libros desde la perspectiva católica" />
         <meta property="og:description" content="Descubre que hay detras de cada libro. Lee con criterio. Lee con fe." />
-        <meta property="og:url" content="https://www.catolicum.com" />
+        <meta property="og:url" content="https://catolicum.com" />
         <meta property="og:type" content="website" />
         <meta property="og:locale" content="es_ES" />
-        <link rel="canonical" href="https://www.catolicum.com" />
+        <link rel="canonical" href="https://catolicum.vercel.app" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="true" />
         <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
@@ -238,7 +238,7 @@ export default function Home() {
                   </div>
                 )}
                 <div style={{ display: "flex", gap: 6, flexWrap: "wrap", justifyContent: "center" }}>
-                  {["El Codigo Da Vinci", "Harry Potter", "Sapiens", "El Alquimista"].map(function(ex) {
+                  {["El Código Da Vinci", "Harry Potter", "Sapiens", "El Alquimista"].map(function(ex) {
                     return (
                       <button key={ex} onClick={function() { setQuery(ex); handleSearch(ex); }} style={{ fontSize: 12, padding: "4px 12px", border: "0.5px solid #D1D1D6", borderRadius: 20, background: "#FFFFFF", color: "#6E6E73", cursor: "pointer", fontFamily: "DM Sans, sans-serif" }}>
                         {ex}
