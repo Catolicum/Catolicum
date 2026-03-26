@@ -51,7 +51,7 @@ export default function Recomendados() {
         <meta name="description" content="Seleccion de libros recomendados para lectores catolicos. Analisis detallado con puntos fuertes debiles y para quien es cada libro." />
         <meta name="keywords" content="libros catolicos recomendados, libros espiritualidad catolica, lecturas recomendadas catolicos" />
         <meta name="robots" content="index, follow" />
-        <link rel="canonical" href="https://www.catolicum.com/recomendados" />
+        <link rel="canonical" href="https://catolicum.vercel.app/recomendados" />
         <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
       </Head>
 
