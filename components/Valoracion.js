@@ -5,7 +5,7 @@ import { signInWithGoogle, signOut, getValoracion, upsertValoracion, getEstadist
 function StarRating({ value, onChange, readonly = false }) {
   const [hovered, setHovered] = useState(0);
   return (
-    <div style={{ display: 'flex', gap: 6 }}>
+    <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
       {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(function(n) {
         const filled = n <= (hovered || value);
         return (
@@ -93,28 +93,31 @@ export default function Valoracion({ libroSlug }) {
 
   if (loading) return null;
 
+  const userName = session?.user?.user_metadata?.full_name || session?.user?.user_metadata?.name || session?.user?.email || '';
+  const userAvatar = session?.user?.user_metadata?.avatar_url || null;
+
   return (
     <div style={{ marginTop: '2rem' }}>
 
-      {/* ESTADÍSTICAS */}
-      <div style={{ background: '#1F3A5F', borderRadius: 12, padding: '1.25rem', marginBottom: '1rem' }}>
-        <p style={{ fontSize: 10, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '.07em', color: '#8AAFD4', marginBottom: 12 }}>
+      {/* ESTADÍSTICAS — fondo azul claro */}
+      <div style={{ background: '#EDF2F8', border: '0.5px solid #C8D4E0', borderRadius: 12, padding: '1.25rem', marginBottom: '1rem' }}>
+        <p style={{ fontSize: 10, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '.07em', color: '#1F3A5F', marginBottom: 12 }}>
           Opinión de la comunidad
         </p>
         {stats.total > 0 ? (
           <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
             <div style={{ textAlign: 'center' }}>
-              <div style={{ fontFamily: "'EB Garamond', Georgia, serif", fontSize: 40, fontWeight: 400, color: '#E1B955', lineHeight: 1 }}>
+              <div style={{ fontFamily: "'EB Garamond', Georgia, serif", fontSize: 40, fontWeight: 400, color: '#1F3A5F', lineHeight: 1 }}>
                 {stats.media}
               </div>
-              <div style={{ fontSize: 11, color: '#8AAFD4', marginTop: 2 }}>/10</div>
+              <div style={{ fontSize: 11, color: '#6E6E73', marginTop: 2 }}>/10</div>
             </div>
-            <div style={{ width: '0.5px', background: '#2A4E7F', alignSelf: 'stretch' }} />
+            <div style={{ width: '0.5px', background: '#C8D4E0', alignSelf: 'stretch' }} />
             <div>
-              <div style={{ fontFamily: "'EB Garamond', Georgia, serif", fontSize: 24, color: '#FAF7F0' }}>
+              <div style={{ fontFamily: "'EB Garamond', Georgia, serif", fontSize: 24, color: '#1F3A5F' }}>
                 {stats.total}
               </div>
-              <div style={{ fontSize: 11, color: '#8AAFD4' }}>
+              <div style={{ fontSize: 11, color: '#6E6E73' }}>
                 {stats.total === 1 ? 'valoración' : 'valoraciones'}
               </div>
             </div>
@@ -133,7 +136,7 @@ export default function Valoracion({ libroSlug }) {
             return (
               <div key={i} style={{ background: '#fff', border: '0.5px solid #C8D4E0', borderRadius: 10, padding: '1rem' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
-                  <div style={{ width: 24, height: 24, borderRadius: '50%', background: '#EDF2F8', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 500, color: '#1F3A5F', flexShrink: 0 }}>
+                  <div style={{ width: 26, height: 26, borderRadius: '50%', background: '#1F3A5F', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 500, color: '#FAF7F0', flexShrink: 0 }}>
                     {c.puntuacion}
                   </div>
                   <span style={{ fontSize: 11, color: '#8AAFD4' }}>
@@ -176,8 +179,20 @@ export default function Valoracion({ libroSlug }) {
               Continuar con Google
             </button>
           </div>
+
         ) : miValoracion && !modoEditar ? (
           <div>
+            {/* Usuario logueado — mostrar su nombre y avatar */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
+              {userAvatar ? (
+                <img src={userAvatar} alt="" style={{ width: 28, height: 28, borderRadius: '50%', flexShrink: 0 }} />
+              ) : (
+                <div style={{ width: 28, height: 28, borderRadius: '50%', background: '#1F3A5F', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, color: '#FAF7F0', flexShrink: 0 }}>
+                  {userName.charAt(0).toUpperCase()}
+                </div>
+              )}
+              <span style={{ fontSize: 13, fontWeight: 500, color: '#1F3A5F' }}>{userName}</span>
+            </div>
             <p style={{ fontSize: 13, color: '#3A3A3C', marginBottom: 8 }}>Tu puntuación:</p>
             <StarRating value={miValoracion.puntuacion} readonly />
             {miValoracion.comentario && (
@@ -185,15 +200,35 @@ export default function Valoracion({ libroSlug }) {
                 "{miValoracion.comentario}"
               </p>
             )}
-            <button
-              onClick={function() { setModoEditar(true); }}
-              style={{ marginTop: 12, fontSize: 12, padding: '5px 14px', border: '0.5px solid #C8D4E0', borderRadius: 20, background: '#EDF2F8', color: '#1F3A5F', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}
-            >
-              Editar valoración
-            </button>
+            <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
+              <button
+                onClick={function() { setModoEditar(true); }}
+                style={{ fontSize: 12, padding: '5px 14px', border: '0.5px solid #C8D4E0', borderRadius: 20, background: '#EDF2F8', color: '#1F3A5F', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}
+              >
+                Editar valoración
+              </button>
+              <button
+                onClick={signOut}
+                style={{ fontSize: 12, padding: '5px 14px', border: 'none', borderRadius: 20, background: 'none', color: '#8AAFD4', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}
+              >
+                Cerrar sesión
+              </button>
+            </div>
           </div>
+
         ) : (
           <div>
+            {/* Usuario logueado — formulario */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
+              {userAvatar ? (
+                <img src={userAvatar} alt="" style={{ width: 28, height: 28, borderRadius: '50%', flexShrink: 0 }} />
+              ) : (
+                <div style={{ width: 28, height: 28, borderRadius: '50%', background: '#1F3A5F', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, color: '#FAF7F0', flexShrink: 0 }}>
+                  {userName.charAt(0).toUpperCase()}
+                </div>
+              )}
+              <span style={{ fontSize: 13, fontWeight: 500, color: '#1F3A5F' }}>{userName}</span>
+            </div>
             <p style={{ fontSize: 13, color: '#3A3A3C', marginBottom: 8 }}>Tu puntuación:</p>
             <StarRating value={puntuacion} onChange={setPuntuacion} />
             <textarea
@@ -213,7 +248,8 @@ export default function Valoracion({ libroSlug }) {
                 onClick={handleEnviar}
                 disabled={enviando || !puntuacion}
                 style={{
-                  padding: '9px 20px', background: puntuacion ? '#1F3A5F' : '#C8D4E0',
+                  padding: '9px 20px',
+                  background: puntuacion ? '#1F3A5F' : '#C8D4E0',
                   color: '#FAF7F0', border: 'none', borderRadius: 8,
                   fontSize: 13, cursor: puntuacion ? 'pointer' : 'default',
                   fontFamily: 'DM Sans, sans-serif', fontWeight: 500,
