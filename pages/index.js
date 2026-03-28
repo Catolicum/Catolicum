@@ -4,6 +4,7 @@ import Link from "next/link";
 import { searchBook, getSuggestions } from "../lib/search";
 import { supabase } from "../lib/supabase";
 import BarcodeScanner from "../components/BarcodeScanner";
+import Valoracion from "../components/Valoracion";
 
 function getScoreStyle(s) {
   if (s >= 9) return { color: "#1D9E75", bg: "#EAF3DE", text: "#085041", label: "Muy afin" };
@@ -14,6 +15,7 @@ function getScoreStyle(s) {
 }
 
 function toSlug(str) {
+  if (!str) return "";
   return str.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 }
 
@@ -241,7 +243,7 @@ export default function Home() {
             </div>
           )}
 
-          {/* ── BLOQUE 1: HERO OSCURO — título + tagline + club ── */}
+          {/* ── BLOQUE 1: HERO OSCURO ── */}
           {!searched && (
             <div style={{
               background: "#1F3A5F",
@@ -279,7 +281,7 @@ export default function Home() {
             </div>
           )}
 
-          {/* ── BLOQUE 2: MARFIL — buscador ── */}
+          {/* ── BLOQUE 2: BUSCADOR ── */}
           {!searched && (
             <div style={{
               background: "#FAF7F0",
@@ -446,55 +448,60 @@ export default function Home() {
               {loading && <div style={{ textAlign: "center", padding: "2rem", fontSize: 14, color: "#6E6E73" }}>Analizando...</div>}
 
               {!loading && result && (
-                <div style={{ background: "#fff", border: "0.5px solid #C8D4E0", borderRadius: 14, overflow: "hidden" }}>
-                  <div style={{ padding: "1.25rem", borderBottom: "0.5px solid #EDF2F8" }}>
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 12, marginBottom: "1rem" }}>
-                      <div style={{ flex: 1, minWidth: 0 }}>
-                        <Link href={"/libro/" + toSlug(result.t)} style={{ textDecoration: "none", color: "inherit" }}>
-                          <h2 style={{ fontFamily: "'EB Garamond', Georgia, serif", fontSize: 22, fontWeight: 500, marginBottom: 4, color: "#1F3A5F" }}>{result.t}</h2>
-                        </Link>
-                        <p style={{ fontSize: 13, color: "#6E6E73", marginBottom: 8 }}>{result.a}{result.y ? " · " + result.y : ""}</p>
-                        <span style={{ fontSize: 12, padding: "3px 10px", borderRadius: 20, fontWeight: 500, background: st.bg, color: st.text }}>{st.label}</span>
-                      </div>
-                      <div style={{ textAlign: "center", flexShrink: 0 }}>
-                        <div style={{ fontFamily: "'EB Garamond', Georgia, serif", fontSize: 44, fontWeight: 500, lineHeight: 1, color: st.color }}>{result.s}</div>
-                        <div style={{ fontSize: 12, color: "#6E6E73" }}>/10</div>
-                      </div>
-                    </div>
-                    <div style={{ height: 4, background: "#EDF2F8", borderRadius: 2, overflow: "hidden" }}>
-                      <div style={{ height: "100%", borderRadius: 2, background: st.color, width: (result.s * 10) + "%" }} />
-                    </div>
-                    <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10, color: "#AEAEB2", marginTop: 4 }}>
-                      <span>Contrario</span><span>Neutral</span><span>Afin</span>
-                    </div>
-                  </div>
-                  <div style={{ padding: "1.25rem" }}>
-                    <p style={{ fontSize: 10, fontWeight: 500, textTransform: "uppercase", letterSpacing: ".07em", color: "#AEAEB2", marginBottom: 6 }}>Analisis doctrinal</p>
-                    <p style={{ fontSize: 14, color: "#3A3A3C", lineHeight: 1.7, marginBottom: "1.1rem" }}>{result.an}</p>
-                    {result.tags && result.tags.length > 0 && (
-                      <div style={{ marginBottom: "1.1rem" }}>
-                        <p style={{ fontSize: 10, fontWeight: 500, textTransform: "uppercase", letterSpacing: ".07em", color: "#AEAEB2", marginBottom: 6 }}>Temas presentes</p>
-                        <div style={{ display: "flex", flexWrap: "wrap", gap: 5 }}>
-                          {result.tags.map(function(tag) {
-                            return (<span key={tag} style={{ fontSize: 12, padding: "3px 9px", border: "0.5px solid #C8D4E0", borderRadius: 20, color: "#1F3A5F" }}>{tag}</span>);
-                          })}
+                <>
+                  <div style={{ background: "#fff", border: "0.5px solid #C8D4E0", borderRadius: 14, overflow: "hidden" }}>
+                    <div style={{ padding: "1.25rem", borderBottom: "0.5px solid #EDF2F8" }}>
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 12, marginBottom: "1rem" }}>
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <Link href={"/libro/" + toSlug(result.t)} style={{ textDecoration: "none", color: "inherit" }}>
+                            <h2 style={{ fontFamily: "'EB Garamond', Georgia, serif", fontSize: 22, fontWeight: 500, marginBottom: 4, color: "#1F3A5F" }}>{result.t}</h2>
+                          </Link>
+                          <p style={{ fontSize: 13, color: "#6E6E73", marginBottom: 8 }}>{result.a}{result.y ? " · " + result.y : ""}</p>
+                          <span style={{ fontSize: 12, padding: "3px 10px", borderRadius: 20, fontWeight: 500, background: st.bg, color: st.text }}>{st.label}</span>
+                        </div>
+                        <div style={{ textAlign: "center", flexShrink: 0 }}>
+                          <div style={{ fontFamily: "'EB Garamond', Georgia, serif", fontSize: 44, fontWeight: 500, lineHeight: 1, color: st.color }}>{result.s}</div>
+                          <div style={{ fontSize: 12, color: "#6E6E73" }}>/10</div>
                         </div>
                       </div>
-                    )}
-                    <div style={{ display: "flex", gap: 6, fontSize: 12, paddingTop: "1rem", borderTop: "0.5px solid #EDF2F8", marginBottom: ".5rem" }}>
-                      <span style={{ fontWeight: 500, color: "#6E6E73", flexShrink: 0 }}>Referencia:</span>
-                      <span style={{ color: "#AEAEB2" }}>{result.ref}</span>
+                      <div style={{ height: 4, background: "#EDF2F8", borderRadius: 2, overflow: "hidden" }}>
+                        <div style={{ height: "100%", borderRadius: 2, background: st.color, width: (result.s * 10) + "%" }} />
+                      </div>
+                      <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10, color: "#AEAEB2", marginTop: 4 }}>
+                        <span>Contrario</span><span>Neutral</span><span>Afin</span>
+                      </div>
                     </div>
-                    <a href={"https://www.amazon.es/s?k=" + encodeURIComponent(result.t + " " + result.a) + "&tag=catolicum-21"} target="_blank" rel="noopener noreferrer" style={{
-                      display: "inline-flex", alignItems: "center", gap: 7,
-                      marginTop: ".75rem", padding: "8px 16px",
-                      background: "#EEE8D8", border: "0.5px solid #D8D0BC",
-                      borderRadius: 8, fontSize: 13, color: "#1F3A5F", textDecoration: "none"
-                    }}>
-                      Encontrar en Amazon
-                    </a>
+                    <div style={{ padding: "1.25rem" }}>
+                      <p style={{ fontSize: 10, fontWeight: 500, textTransform: "uppercase", letterSpacing: ".07em", color: "#AEAEB2", marginBottom: 6 }}>Analisis doctrinal</p>
+                      <p style={{ fontSize: 14, color: "#3A3A3C", lineHeight: 1.7, marginBottom: "1.1rem" }}>{result.an}</p>
+                      {result.tags && result.tags.length > 0 && (
+                        <div style={{ marginBottom: "1.1rem" }}>
+                          <p style={{ fontSize: 10, fontWeight: 500, textTransform: "uppercase", letterSpacing: ".07em", color: "#AEAEB2", marginBottom: 6 }}>Temas presentes</p>
+                          <div style={{ display: "flex", flexWrap: "wrap", gap: 5 }}>
+                            {result.tags.map(function(tag) {
+                              return (<span key={tag} style={{ fontSize: 12, padding: "3px 9px", border: "0.5px solid #C8D4E0", borderRadius: 20, color: "#1F3A5F" }}>{tag}</span>);
+                            })}
+                          </div>
+                        </div>
+                      )}
+                      <div style={{ display: "flex", gap: 6, fontSize: 12, paddingTop: "1rem", borderTop: "0.5px solid #EDF2F8", marginBottom: ".5rem" }}>
+                        <span style={{ fontWeight: 500, color: "#6E6E73", flexShrink: 0 }}>Referencia:</span>
+                        <span style={{ color: "#AEAEB2" }}>{result.ref}</span>
+                      </div>
+                      <a href={"https://www.amazon.es/s?k=" + encodeURIComponent(result.t + " " + result.a) + "&tag=catolicum-21"} target="_blank" rel="noopener noreferrer" style={{
+                        display: "inline-flex", alignItems: "center", gap: 7,
+                        marginTop: ".75rem", padding: "8px 16px",
+                        background: "#EEE8D8", border: "0.5px solid #D8D0BC",
+                        borderRadius: 8, fontSize: 13, color: "#1F3A5F", textDecoration: "none"
+                      }}>
+                        Encontrar en Amazon
+                      </a>
+                    </div>
                   </div>
-                </div>
+
+                  {/* VALORACIONES */}
+                  <Valoracion libroSlug={toSlug(result.t)} />
+                </>
               )}
 
               {!loading && !result && (
@@ -508,7 +515,7 @@ export default function Home() {
             </div>
           )}
 
-          {/* ── BLOQUE 3: AZUL PÁLIDO — Los más buscados + Recomendados ── */}
+          {/* ── BLOQUE 3: LOS MÁS BUSCADOS + RECOMENDADOS ── */}
           {!searched && (
             <div>
               <div style={{ background: "#EDF2F8", padding: isMobile ? "1.25rem 1rem" : "1.5rem 2rem", borderBottom: "0.5px solid #D4DDE8" }}>
@@ -568,7 +575,7 @@ export default function Home() {
                 </div>
               </div>
 
-              {/* ── BLOQUE 4: AZUL MARINO — stats ── */}
+              {/* ── BLOQUE 4: STATS ── */}
               <div style={{ background: "#1F3A5F", padding: isMobile ? "1.25rem 1rem" : "1.5rem 2rem" }}>
                 <div style={{ maxWidth: 680, margin: "0 auto", display: "flex", justifyContent: "space-around", textAlign: "center" }}>
                   <div>
