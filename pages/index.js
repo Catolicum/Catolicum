@@ -147,14 +147,14 @@ export default function Home() {
   return (
     <div style={{ minHeight: "100vh", background: "#FAF7F0", fontFamily: "DM Sans, sans-serif", color: "#1F2937" }}>
       <Head>
-        <title>Catolicum - Analisis de libros desde la perspectiva catolica</title>
-        <meta name="description" content="Descubre que hay detras de cada libro. Análisis libros desde la perspectiva católica: bestsellers polemicos, clásicos espirituales y todo lo que te preguntas antes de leer." />
-        <meta name="keywords" content="analisis libros fe catolica, libros polemicos cristianismo, El Código Da Vinci verdad, libros recomendados catolicos" />
+        <title>Catolicum - Tu club de lectura católico</title>
+        <meta name="description" content="Tu club de lectura católico. Descubre y comparte si un libro es compatible con la fe antes de leerlo. Tu libreria católica. Análisis doctrinales de bestsellers, clásicos espirituales y mucho más." />
+        <meta name="keywords" content="analisis libros fe catolica, libros polemicos cristianismo, El Código Da Vinci verdad, libros recomendados catolicos, libreria catolica" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta name="robots" content="index, follow" />
         <meta name="google-site-verification" content="DJgtQhrJpw86EiMeHjn-XjbOAYSsebWi-QaTPUl6dA8" />
-        <meta property="og:title" content="Catolicum - Análisis de libros desde la perspectiva católica" />
-        <meta property="og:description" content="Descubre que hay detras de cada libro. Lee con criterio. Lee con fe." />
+        <meta property="og:title" content="Catolicum - Tu club de lectura católico" />
+        <meta property="og:description" content="Descubre y comparte que hay detras de cada libro. Lee con criterio. Lee con fe." />
         <meta property="og:url" content="https://catolicum.com" />
         <meta property="og:type" content="website" />
         <meta property="og:locale" content="es_ES" />
