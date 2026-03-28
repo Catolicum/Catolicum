@@ -1,7 +1,7 @@
 import Head from "next/head";
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import { getRecomendadosRicos } from "../lib/search";
+import { supabase } from "../lib/supabase";
 
 const NAV = [
   { label: "Home", href: "/" },
@@ -11,6 +11,7 @@ const NAV = [
 ];
 
 function toSlug(str) {
+  if (!str) return "";
   return str.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 }
 
@@ -21,7 +22,7 @@ function getScoreStyle(s) {
 }
 
 function LogoIcon({ size = 36 }) {
-  const rx = Math.round(size * 0.22);
+  var rx = Math.round(size * 0.22);
   return (
     <svg width={size} height={size} viewBox="0 0 64 64" style={{ flexShrink: 0 }}>
       <rect width="64" height="64" rx={rx} fill="#2A4E7F" />
@@ -47,29 +48,31 @@ function WordmarkTitle() {
   );
 }
 
-export async function getStaticProps() {
-  const lista = await getRecomendadosRicos();
-  return {
-    props: { lista: lista || [] },
-    revalidate: 3600,
-  };
-}
-
-export default function Recomendados({ lista }) {
+export default function Recomendados() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [lista, setLista] = useState([]);
 
   useEffect(function() {
     function checkMobile() { setIsMobile(window.innerWidth <= 768); }
     checkMobile();
     window.addEventListener("resize", checkMobile);
+
+    supabase
+      .from('recomendados')
+      .select('*')
+      .order('puntuacion', { ascending: false })
+      .then(function(res) {
+        if (res.data) setLista(res.data);
+      });
+
     return function() { window.removeEventListener("resize", checkMobile); };
   }, []);
 
   return (
     <div style={{ minHeight: "100vh", background: "#FAF7F0", fontFamily: "DM Sans, sans-serif", color: "#1F2937" }}>
       <Head>
-        <title>Libros Recomendados - Catolicum</title>
+        <title>Libros Recomendados - Católicum</title>
         <meta name="description" content="Los mejores libros para lectores católicos." />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="true" />
@@ -78,7 +81,7 @@ export default function Recomendados({ lista }) {
 
       <div style={{ display: "flex", minHeight: "100vh" }}>
 
-        {/* SIDEBAR escritorio */}
+        {/* SIDEBAR */}
         {!isMobile && (
           <aside style={{ width: 220, flexShrink: 0, background: "#1F3A5F", borderRight: "0.5px solid #2A4E7F", display: "flex", flexDirection: "column", padding: "1.5rem 1rem", position: "sticky", top: 0, height: "100vh", overflowY: "auto" }}>
             <Link href="/" style={{ textDecoration: "none", color: "inherit" }}>
@@ -111,7 +114,7 @@ export default function Recomendados({ lista }) {
             <div style={{ background: "#1F3A5F", borderBottom: "0.5px solid #2A4E7F", padding: "10px 16px", display: "flex", alignItems: "center", justifyContent: "space-between", position: "sticky", top: 0, zIndex: 100 }}>
               <Link href="/" style={{ textDecoration: "none", display: "flex", alignItems: "center", gap: 10 }}>
                 <LogoIcon size={28} />
-                <span style={{ fontFamily: "'EB Garamond', Georgia, serif", fontSize: 19, fontWeight: 500, color: "#FAF7F0" }}>Catolicum</span>
+                <span style={{ fontFamily: "'EB Garamond', Georgia, serif", fontSize: 19, fontWeight: 500, color: "#FAF7F0" }}>Católicum</span>
               </Link>
               <button onClick={function() { setMenuOpen(!menuOpen); }} style={{ background: "none", border: "none", cursor: "pointer", padding: 4, display: "flex", flexDirection: "column", gap: 5 }}>
                 <span style={{ display: "block", width: 18, height: 1.5, background: "#8AAFD4", borderRadius: 1 }} />
@@ -139,43 +142,35 @@ export default function Recomendados({ lista }) {
               Selección de libros compatibles o plenamente alineados con la fe católica.
             </p>
 
+            {lista.length === 0 && (
+              <p style={{ fontSize: 13, color: "#8AAFD4" }}>Cargando...</p>
+            )}
+
             <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
               {lista.map(function(b) {
-                var titulo = b.titulo || b.t || "";
-                var autor = b.autor || b.a || "";
-                var puntuacion = b.puntuacion || b.s || 0;
-                var imagen = b.imagen_url || null;
-                var slug = toSlug(titulo);
-                var st = getScoreStyle(puntuacion);
-                var amazonUrl = "https://www.amazon.es/s?k=" + encodeURIComponent(titulo + " " + autor) + "&tag=catolicum-21";
-
+                var slug = toSlug(b.titulo);
+                var st = getScoreStyle(b.puntuacion);
+                var amazonUrl = "https://www.amazon.es/s?k=" + encodeURIComponent(b.titulo + " " + b.autor) + "&tag=catolicum-21";
                 return (
-                  <div key={titulo + autor} style={{ display: "flex", alignItems: "center", gap: 12, background: "#fff", border: "0.5px solid #C8D4E0", borderRadius: 10, padding: "0.75rem 1rem" }}>
-                    {/* Portada */}
+                  <div key={b.id} style={{ display: "flex", alignItems: "center", gap: 12, background: "#fff", border: "0.5px solid #C8D4E0", borderRadius: 10, padding: "0.75rem 1rem" }}>
                     <Link href={"/recomendados/" + slug} style={{ textDecoration: "none", flexShrink: 0 }}>
-                      {imagen ? (
-                        <img src={imagen} alt={titulo} style={{ width: 36, height: 50, borderRadius: 4, objectFit: "cover" }} />
+                      {b.imagen_url ? (
+                        <img src={b.imagen_url} alt={b.titulo} style={{ width: 36, height: 50, borderRadius: 4, objectFit: "cover" }} />
                       ) : (
                         <div style={{ width: 36, height: 50, borderRadius: 4, background: "#EDF2F8", display: "flex", alignItems: "center", justifyContent: "center" }}>
                           <svg width="14" height="14" viewBox="0 0 14 14"><rect x="5.5" y="1" width="3" height="12" rx="1.5" fill="#2A4E7F"/><rect x="1" y="4.5" width="12" height="3" rx="1.5" fill="#2A4E7F"/></svg>
                         </div>
                       )}
                     </Link>
-
-                    {/* Info */}
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <Link href={"/recomendados/" + slug} style={{ textDecoration: "none" }}>
-                        <div style={{ fontSize: 13, fontWeight: 500, color: "#1F3A5F", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{titulo}</div>
+                        <div style={{ fontSize: 13, fontWeight: 500, color: "#1F3A5F", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{b.titulo}</div>
                       </Link>
-                      <div style={{ fontSize: 12, color: "#6E6E73" }}>{autor}</div>
+                      <div style={{ fontSize: 12, color: "#6E6E73" }}>{b.autor}</div>
                     </div>
-
-                    {/* Score */}
-                    <div style={{ width: 30, height: 30, borderRadius: "50%", background: st.bg, color: st.text, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 500, flexShrink: 0, fontFamily: "'EB Garamond', Georgia, serif" }}>
-                      {puntuacion}
+                    <div style={{ width: 30, height: 30, borderRadius: "50%", background: st.bg, color: st.text, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 500, flexShrink: 0 }}>
+                      {b.puntuacion}
                     </div>
-
-                    {/* Amazon */}
                     <a href={amazonUrl} target="_blank" rel="noopener noreferrer" style={{ fontSize: 12, padding: "5px 10px", border: "0.5px solid #D8D0BC", borderRadius: 6, color: "#1F3A5F", textDecoration: "none", flexShrink: 0, background: "#EEE8D8" }}>
                       Amazon
                     </a>
