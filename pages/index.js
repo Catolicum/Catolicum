@@ -5,6 +5,7 @@ import { searchBook, getSuggestions } from "../lib/search";
 import { supabase } from "../lib/supabase";
 import BarcodeScanner from "../components/BarcodeScanner";
 import Valoracion from "../components/Valoracion";
+import SidebarClub from "../components/SidebarClub";
 
 function getScoreStyle(s) {
   if (s >= 9) return { color: "#1D9E75", bg: "#EAF3DE", text: "#085041", label: "Muy afin" };
@@ -19,13 +20,6 @@ function toSlug(str) {
   return str.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 }
 
-const NAV = [
-  { label: "Home", href: "/" },
-  { label: "Misión", href: "/mision" },
-  { label: "Libros recomendados", href: "/recomendados" },
-  { label: "Contacto", href: "/contacto" },
-];
-
 const POLEMIC_BOOKS = [
   { titulo: "El Codigo Da Vinci", autor: "Dan Brown", puntuacion: 1 },
   { titulo: "Harry Potter y la Piedra Filosofal", autor: "J.K. Rowling", puntuacion: 5 },
@@ -34,33 +28,6 @@ const POLEMIC_BOOKS = [
   { titulo: "Los Pilares de la Tierra", autor: "Ken Follett", puntuacion: 4 },
   { titulo: "El Cuento de la Criada", autor: "Margaret Atwood", puntuacion: 2 },
 ];
-
-function LogoIcon({ size = 36 }) {
-  const rx = Math.round(size * 0.22);
-  return (
-    <svg width={size} height={size} viewBox="0 0 64 64" style={{ flexShrink: 0 }}>
-      <rect width="64" height="64" rx={rx} fill="#2A4E7F" />
-      <rect x="8" y="14" width="21" height="34" rx="3" fill="#16263F" />
-      <rect x="10" y="16" width="17" height="30" rx="2" fill="#8AAFD4" />
-      <rect x="30" y="14" width="21" height="34" rx="3" fill="#B8922A" />
-      <rect x="32" y="16" width="17" height="30" rx="2" fill="#F5E9C0" />
-      <rect x="28" y="12" width="4" height="38" rx="2" fill="#0F1E30" />
-      <rect x="39" y="21" width="3" height="16" rx="1" fill="#FAF7F0" />
-      <rect x="33.5" y="27" width="14" height="3" rx="1" fill="#FAF7F0" />
-    </svg>
-  );
-}
-
-function WordmarkTitle() {
-  return (
-    <svg width="120" height="26" viewBox="0 0 220 48" style={{ display: "block" }}>
-      <text x="0" y="38" fontFamily="'EB Garamond', Georgia, serif" fontSize="36" fill="#FAF7F0" fontWeight="400" letterSpacing="1">Ca</text>
-      <rect x="67" y="8" width="4" height="32" rx="2" fill="#E1B955" />
-      <rect x="57" y="16" width="22" height="4" rx="2" fill="#E1B955" />
-      <text x="83" y="38" fontFamily="'EB Garamond', Georgia, serif" fontSize="36" fill="#FAF7F0" fontWeight="400" letterSpacing="1">olicum</text>
-    </svg>
-  );
-}
 
 const BarcodeIcon = () => (
   <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
@@ -93,17 +60,62 @@ export default function Home() {
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [recomendados, setRecomendados] = useState([]);
   const [totalLibros, setTotalLibros] = useState(0);
+  const [controvertidos, setControvertidos] = useState([]);
 
   useEffect(function() {
     function checkMobile() { setIsMobile(window.innerWidth <= 768); }
     checkMobile();
     window.addEventListener("resize", checkMobile);
+
+    // Recomendados
     supabase.from('recomendados').select('titulo, autor, puntuacion, imagen_url').order('puntuacion', { ascending: false }).limit(4).then(function(res) {
       if (res.data) setRecomendados(res.data);
     });
+
+    // Total libros
     supabase.from('libros').select('id', { count: 'exact', head: true }).eq('idioma', 'es').then(function(res) {
       if (res.count) setTotalLibros(res.count);
     });
+
+    // Los más controvertidos: libros con valoraciones donde la media del usuario difiere de la puntuación católicum
+    supabase.from('valoraciones').select('libro_slug, puntuacion').then(function(res) {
+      if (!res.data || res.data.length === 0) return;
+      // Agrupar por libro_slug y calcular media
+      var grouped = {};
+      res.data.forEach(function(v) {
+        if (!grouped[v.libro_slug]) grouped[v.libro_slug] = [];
+        grouped[v.libro_slug].push(v.puntuacion);
+      });
+      // Solo libros con al menos 1 valoración
+      var slugsConValoraciones = Object.keys(grouped).filter(function(s) { return grouped[s].length >= 1; });
+      if (slugsConValoraciones.length === 0) return;
+
+      // Buscar esos libros en la tabla libros para obtener puntuacion católicum
+      supabase.from('libros').select('titulo, autor, puntuacion, idioma').eq('idioma', 'es').then(function(librosRes) {
+        if (!librosRes.data) return;
+        var resultados = [];
+        slugsConValoraciones.forEach(function(slug) {
+          var libro = librosRes.data.find(function(l) { return toSlug(l.titulo) === slug; });
+          if (!libro) return;
+          var votes = grouped[slug];
+          var mediaUsuarios = Math.round((votes.reduce(function(a, b) { return a + b; }, 0) / votes.length) * 10) / 10;
+          var diferencia = Math.abs(libro.puntuacion - mediaUsuarios);
+          resultados.push({
+            slug: slug,
+            titulo: libro.titulo,
+            autor: libro.autor,
+            puntuacionCatolicum: libro.puntuacion,
+            mediaUsuarios: mediaUsuarios,
+            numVotos: votes.length,
+            diferencia: diferencia,
+          });
+        });
+        // Ordenar por mayor diferencia
+        resultados.sort(function(a, b) { return b.diferencia - a.diferencia; });
+        setControvertidos(resultados.slice(0, 4));
+      });
+    });
+
     return function() { window.removeEventListener("resize", checkMobile); };
   }, []);
 
@@ -150,7 +162,7 @@ export default function Home() {
     <div style={{ minHeight: "100vh", background: "#FAF7F0", fontFamily: "DM Sans, sans-serif", color: "#1F2937" }}>
       <Head>
         <title>Catolicum - Tu club de lectura católico</title>
-        <meta name="description" content="Tu club de lectura católico. Descubre y comparte si un libro es compatible con la fe antes de leerlo. Tu libreria católica. Análisis doctrinales de bestsellers, clásicos espirituales y mucho más." />
+        <meta name="description" content="Tu club de lectura católico. Descubre y comparte si un libro es compatible con la fe antes de leerlo. Análisis doctrinales de bestsellers, clásicos espirituales y mucho más." />
         <meta name="keywords" content="analisis libros fe catolica, libros polemicos cristianismo, El Código Da Vinci verdad, libros recomendados catolicos, libreria catolica" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta name="robots" content="index, follow" />
@@ -160,7 +172,7 @@ export default function Home() {
         <meta property="og:url" content="https://catolicum.com" />
         <meta property="og:type" content="website" />
         <meta property="og:locale" content="es_ES" />
-        <link rel="canonical" href="https://catolicum.vercel.app" />
+        <link rel="canonical" href="https://catolicum.com" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="true" />
         <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
@@ -168,48 +180,12 @@ export default function Home() {
 
       <div style={{ display: "flex", minHeight: "100vh" }}>
 
-        {/* ── SIDEBAR ESCRITORIO ── */}
-        {!isMobile && (
-          <aside style={{
-            width: 220, flexShrink: 0,
-            background: "#1F3A5F",
-            borderRight: "0.5px solid #2A4E7F",
-            display: "flex", flexDirection: "column",
-            padding: "1.5rem 1rem",
-            position: "sticky", top: 0, height: "100vh", overflowY: "auto"
-          }}>
-            <Link href="/" style={{ textDecoration: "none", color: "inherit" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: "2rem", cursor: "pointer" }}>
-                <LogoIcon size={36} />
-                <div style={{ width: 1, height: 28, background: "#2A4E7F", flexShrink: 0 }} />
-                <WordmarkTitle />
-              </div>
-            </Link>
-            <nav style={{ display: "flex", flexDirection: "column", gap: 2, flex: 1 }}>
-              {NAV.map(function(item) {
-                return (
-                  <Link key={item.href} href={item.href} style={{
-                    display: "flex", alignItems: "center",
-                    padding: "9px 10px", borderRadius: 8,
-                    fontSize: 14, fontFamily: "'EB Garamond', Georgia, serif",
-                    color: "#8AAFD4", textDecoration: "none",
-                    transition: "all .15s"
-                  }}>
-                    {item.label}
-                  </Link>
-                );
-              })}
-            </nav>
-            <div style={{ display: "flex", flexDirection: "column", gap: 4, paddingTop: "1rem", borderTop: "0.5px solid #2A4E7F" }}>
-              <Link href="/privacidad" style={{ fontSize: 11, color: "#3A5A7A", textDecoration: "none", padding: "3px 0" }}>Privacidad</Link>
-              <Link href="/acerca" style={{ fontSize: 11, color: "#3A5A7A", textDecoration: "none", padding: "3px 0" }}>Acerca de</Link>
-            </div>
-          </aside>
-        )}
+        {/* SIDEBAR */}
+        {!isMobile && <SidebarClub currentPath="/" />}
 
         <div style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column" }}>
 
-          {/* ── MÓVIL HEADER ── */}
+          {/* MÓVIL HEADER */}
           {isMobile && (
             <div style={{
               background: "#1F3A5F", borderBottom: "0.5px solid #2A4E7F",
@@ -217,8 +193,7 @@ export default function Home() {
               justifyContent: "space-between", position: "sticky", top: 0, zIndex: 100
             }}>
               <Link href="/" style={{ textDecoration: "none", display: "flex", alignItems: "center", gap: 10 }}>
-                <LogoIcon size={28} />
-                <span style={{ fontFamily: "'EB Garamond', Georgia, serif", fontSize: 19, fontWeight: 500, color: "#FAF7F0" }}>Catolicum</span>
+                <span style={{ fontFamily: "'EB Garamond', Georgia, serif", fontSize: 19, fontWeight: 500, color: "#FAF7F0" }}>Católicum</span>
               </Link>
               <button onClick={function() { setMenuOpen(!menuOpen); }} style={{ background: "none", border: "none", cursor: "pointer", padding: 4, display: "flex", flexDirection: "column", gap: 5 }}>
                 <span style={{ display: "block", width: 18, height: 1.5, background: "#8AAFD4", borderRadius: 1 }} />
@@ -230,7 +205,13 @@ export default function Home() {
 
           {isMobile && menuOpen && (
             <div style={{ background: "#1F3A5F", borderBottom: "0.5px solid #2A4E7F", padding: ".5rem 1rem 1rem" }}>
-              {NAV.map(function(item) {
+              {[
+                { label: "Home", href: "/" },
+                { label: "Club de lectura", href: "/club" },
+                { label: "Libros recomendados", href: "/recomendados" },
+                { label: "Misión", href: "/mision" },
+                { label: "Contacto", href: "/contacto" },
+              ].map(function(item) {
                 return (
                   <Link key={item.href} href={item.href} onClick={function() { setMenuOpen(false); }} style={{
                     display: "block", padding: "10px 0", fontSize: 14,
@@ -243,7 +224,7 @@ export default function Home() {
             </div>
           )}
 
-          {/* ── BLOQUE 1: HERO OSCURO ── */}
+          {/* HERO */}
           {!searched && (
             <div style={{
               background: "#1F3A5F",
@@ -281,7 +262,7 @@ export default function Home() {
             </div>
           )}
 
-          {/* ── BLOQUE 2: BUSCADOR ── */}
+          {/* BUSCADOR */}
           {!searched && (
             <div style={{
               background: "#FAF7F0",
@@ -370,7 +351,7 @@ export default function Home() {
                   background: "#EEE8D8", border: "0.5px solid #D8D0BC",
                   borderRadius: 10, cursor: "pointer", display: "flex",
                   alignItems: "center", justifyContent: "center", gap: 8,
-                  marginTop: 8, fontFamily: "DM Sans, sans-serif",
+                  fontFamily: "DM Sans, sans-serif",
                   fontSize: 14, color: "#1F3A5F", margin: "8px auto 0"
                 }}>
                   <BarcodeIcon />
@@ -380,7 +361,7 @@ export default function Home() {
             </div>
           )}
 
-          {/* ── RESULTADOS ── */}
+          {/* RESULTADOS */}
           {searched && (
             <div style={{ maxWidth: 680, margin: "0 auto", width: "100%", padding: isMobile ? "1.25rem 1rem" : "2rem 1.5rem" }}>
               <div style={{ position: "relative", marginBottom: "1.5rem" }}>
@@ -442,7 +423,7 @@ export default function Home() {
                 borderRadius: 20, fontSize: 13, color: "#1F3A5F",
                 cursor: "pointer", fontFamily: "DM Sans, sans-serif"
               }}>
-                Nueva busqueda
+                ← Nueva búsqueda
               </button>
 
               {loading && <div style={{ textAlign: "center", padding: "2rem", fontSize: 14, color: "#6E6E73" }}>Analizando...</div>}
@@ -460,6 +441,7 @@ export default function Home() {
                           <span style={{ fontSize: 12, padding: "3px 10px", borderRadius: 20, fontWeight: 500, background: st.bg, color: st.text }}>{st.label}</span>
                         </div>
                         <div style={{ textAlign: "center", flexShrink: 0 }}>
+                          <div style={{ fontSize: 10, color: "#8AAFD4", textTransform: "uppercase", letterSpacing: ".06em", marginBottom: 2 }}>Católicum</div>
                           <div style={{ fontFamily: "'EB Garamond', Georgia, serif", fontSize: 44, fontWeight: 500, lineHeight: 1, color: st.color }}>{result.s}</div>
                           <div style={{ fontSize: 12, color: "#6E6E73" }}>/10</div>
                         </div>
@@ -472,7 +454,7 @@ export default function Home() {
                       </div>
                     </div>
                     <div style={{ padding: "1.25rem" }}>
-                      <p style={{ fontSize: 10, fontWeight: 500, textTransform: "uppercase", letterSpacing: ".07em", color: "#AEAEB2", marginBottom: 6 }}>Analisis doctrinal</p>
+                      <p style={{ fontSize: 10, fontWeight: 500, textTransform: "uppercase", letterSpacing: ".07em", color: "#AEAEB2", marginBottom: 6 }}>Análisis doctrinal</p>
                       <p style={{ fontSize: 14, color: "#3A3A3C", lineHeight: 1.7, marginBottom: "1.1rem" }}>{result.an}</p>
                       {result.tags && result.tags.length > 0 && (
                         <div style={{ marginBottom: "1.1rem" }}>
@@ -498,8 +480,6 @@ export default function Home() {
                       </a>
                     </div>
                   </div>
-
-                  {/* VALORACIONES */}
                   <Valoracion libroSlug={toSlug(result.t)} />
                 </>
               )}
@@ -507,22 +487,24 @@ export default function Home() {
               {!loading && !result && (
                 <div style={{ background: "#fff", border: "0.5px dashed #C8D4E0", borderRadius: 14, padding: "2.5rem 1.5rem", textAlign: "center" }}>
                   <div style={{ fontSize: 28, marginBottom: 12 }}>⏳</div>
-                  <h3 style={{ fontFamily: "'EB Garamond', Georgia, serif", fontSize: 22, fontWeight: 500, marginBottom: 8, color: "#1F3A5F" }}>Libro en analisis</h3>
-                  <p style={{ fontSize: 13, color: "#6E6E73", lineHeight: 1.6, marginBottom: 6 }}>Este libro aun no esta en nuestra base de datos. Estamos ampliando continuamente la coleccion.</p>
-                  <p style={{ fontSize: 13, fontWeight: 500, color: "#1F3A5F" }}>Vuelve a intentarlo mas tarde.</p>
+                  <h3 style={{ fontFamily: "'EB Garamond', Georgia, serif", fontSize: 22, fontWeight: 500, marginBottom: 8, color: "#1F3A5F" }}>Libro en análisis</h3>
+                  <p style={{ fontSize: 13, color: "#6E6E73", lineHeight: 1.6, marginBottom: 6 }}>Este libro aún no está en nuestra base de datos. Estamos ampliando continuamente la colección.</p>
+                  <p style={{ fontSize: 13, fontWeight: 500, color: "#1F3A5F" }}>Vuelve a intentarlo más tarde.</p>
                 </div>
               )}
             </div>
           )}
 
-          {/* ── BLOQUE 3: LOS MÁS BUSCADOS + RECOMENDADOS ── */}
+          {/* SECCIONES HOMEPAGE */}
           {!searched && (
             <div>
+
+              {/* LOS MÁS BUSCADOS */}
               <div style={{ background: "#EDF2F8", padding: isMobile ? "1.25rem 1rem" : "1.5rem 2rem", borderBottom: "0.5px solid #D4DDE8" }}>
                 <div style={{ maxWidth: 680, margin: "0 auto" }}>
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: ".75rem" }}>
-                    <p style={{ fontSize: 11, fontWeight: 500, textTransform: "uppercase", letterSpacing: ".07em", color: "#1F3A5F", fontFamily: "DM Sans, sans-serif" }}>Los más buscados</p>
-                    <p style={{ fontSize: 12, color: "#8A9AAA", fontFamily: "DM Sans, sans-serif" }}>Libros populares analizados</p>
+                    <p style={{ fontSize: 11, fontWeight: 500, textTransform: "uppercase", letterSpacing: ".07em", color: "#1F3A5F" }}>Los más buscados</p>
+                    <p style={{ fontSize: 12, color: "#8A9AAA" }}>Libros populares analizados</p>
                   </div>
                   <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr 1fr" : "repeat(3, 1fr)", gap: 8 }}>
                     {POLEMIC_BOOKS.map(function(b) {
@@ -542,11 +524,53 @@ export default function Home() {
                 </div>
               </div>
 
+              {/* LOS MÁS CONTROVERTIDOS */}
+              {controvertidos.length > 0 && (
+                <div style={{ background: "#FAF7F0", padding: isMobile ? "1.25rem 1rem" : "1.5rem 2rem", borderBottom: "0.5px solid #E8E2D4" }}>
+                  <div style={{ maxWidth: 680, margin: "0 auto" }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: ".75rem" }}>
+                      <p style={{ fontSize: 11, fontWeight: 500, textTransform: "uppercase", letterSpacing: ".07em", color: "#A32D2D" }}>🔥 Los más controvertidos</p>
+                      <p style={{ fontSize: 12, color: "#8A9AAA" }}>Donde el club debate más</p>
+                    </div>
+                    <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                      {controvertidos.map(function(b) {
+                        var stCat = getScoreStyle(b.puntuacionCatolicum);
+                        var stUser = getScoreStyle(Math.round(b.mediaUsuarios));
+                        return (
+                          <div key={b.slug} onClick={function() { setQuery(b.titulo); handleSearch(b.titulo); }} style={{
+                            display: "flex", alignItems: "center", gap: 12,
+                            background: "#fff", border: "0.5px solid #C8D4E0",
+                            borderRadius: 10, padding: ".75rem 1rem", cursor: "pointer"
+                          }}>
+                            <div style={{ flex: 1, minWidth: 0 }}>
+                              <div style={{ fontSize: 13, fontWeight: 500, color: "#1F3A5F", marginBottom: 2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{b.titulo}</div>
+                              <div style={{ fontSize: 11, color: "#6E6E73" }}>{b.autor} · {b.numVotos} {b.numVotos === 1 ? "voto" : "votos"}</div>
+                            </div>
+                            <div style={{ display: "flex", alignItems: "center", gap: 6, flexShrink: 0 }}>
+                              <div style={{ textAlign: "center" }}>
+                                <div style={{ fontSize: 9, color: "#8AAFD4", textTransform: "uppercase", letterSpacing: ".05em", marginBottom: 2 }}>Católicum</div>
+                                <div style={{ width: 32, height: 32, borderRadius: "50%", background: stCat.bg, color: stCat.text, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 600 }}>{b.puntuacionCatolicum}</div>
+                              </div>
+                              <div style={{ fontSize: 14, color: "#D8D0BC" }}>vs</div>
+                              <div style={{ textAlign: "center" }}>
+                                <div style={{ fontSize: 9, color: "#8AAFD4", textTransform: "uppercase", letterSpacing: ".05em", marginBottom: 2 }}>Club</div>
+                                <div style={{ width: 32, height: 32, borderRadius: "50%", background: stUser.bg, color: stUser.text, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 600 }}>{b.mediaUsuarios}</div>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* RECOMENDADOS */}
               <div style={{ background: "#FAF7F0", padding: isMobile ? "1.25rem 1rem" : "1.5rem 2rem", borderBottom: "0.5px solid #E8E2D4" }}>
                 <div style={{ maxWidth: 680, margin: "0 auto" }}>
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: ".75rem" }}>
-                    <p style={{ fontSize: 11, fontWeight: 500, textTransform: "uppercase", letterSpacing: ".07em", color: "#1F3A5F", fontFamily: "DM Sans, sans-serif" }}>Para el lector católico</p>
-                    <Link href="/recomendados" style={{ fontSize: 12, color: "#E1B955", textDecoration: "none", fontFamily: "DM Sans, sans-serif" }}>Ver todos →</Link>
+                    <p style={{ fontSize: 11, fontWeight: 500, textTransform: "uppercase", letterSpacing: ".07em", color: "#1F3A5F" }}>Para el lector católico</p>
+                    <Link href="/recomendados" style={{ fontSize: 12, color: "#E1B955", textDecoration: "none" }}>Ver todos →</Link>
                   </div>
                   <div style={{ display: "flex", flexDirection: "column", gap: ".4rem" }}>
                     {recomendados.map(function(b) {
@@ -575,25 +599,48 @@ export default function Home() {
                 </div>
               </div>
 
-              {/* ── BLOQUE 4: STATS ── */}
+              {/* CLUB CTA */}
+              <div style={{ background: "#EDF2F8", padding: isMobile ? "1.25rem 1rem" : "1.5rem 2rem", borderBottom: "0.5px solid #D4DDE8" }}>
+                <div style={{ maxWidth: 680, margin: "0 auto", display: "flex", alignItems: "center", gap: 16, flexWrap: "wrap" }}>
+                  <div style={{ flex: 1, minWidth: 200 }}>
+                    <p style={{ fontFamily: "'EB Garamond', Georgia, serif", fontSize: 20, color: "#1F3A5F", marginBottom: 4 }}>
+                      ¿Tu opinión importa?
+                    </p>
+                    <p style={{ fontSize: 13, color: "#6E6E73", lineHeight: 1.5 }}>
+                      Únete al club y valora cualquier libro. Gratis, con Google.
+                    </p>
+                  </div>
+                  <Link href="/club" style={{
+                    display: "inline-flex", alignItems: "center", gap: 6,
+                    padding: "10px 20px", background: "#1F3A5F", color: "#FAF7F0",
+                    borderRadius: 10, fontSize: 13, textDecoration: "none",
+                    fontFamily: "DM Sans, sans-serif", fontWeight: 500, flexShrink: 0
+                  }}>
+                    Ver el club →
+                  </Link>
+                </div>
+              </div>
+
+              {/* STATS */}
               <div style={{ background: "#1F3A5F", padding: isMobile ? "1.25rem 1rem" : "1.5rem 2rem" }}>
                 <div style={{ maxWidth: 680, margin: "0 auto", display: "flex", justifyContent: "space-around", textAlign: "center" }}>
                   <div>
                     <div style={{ fontFamily: "'EB Garamond', Georgia, serif", fontSize: 28, fontWeight: 400, color: "#FAF7F0" }}>{totalLibros || "200+"}</div>
-                    <div style={{ fontSize: 12, color: "#8AAFD4", marginTop: 2, fontFamily: "DM Sans, sans-serif" }}>libros analizados</div>
+                    <div style={{ fontSize: 12, color: "#8AAFD4", marginTop: 2 }}>libros analizados</div>
                   </div>
                   <div style={{ width: 1, background: "#2A4E7F" }} />
                   <div>
                     <div style={{ fontFamily: "'EB Garamond', Georgia, serif", fontSize: 28, fontWeight: 400, color: "#E1B955" }}>gratis</div>
-                    <div style={{ fontSize: 12, color: "#8AAFD4", marginTop: 2, fontFamily: "DM Sans, sans-serif" }}>sin registro</div>
+                    <div style={{ fontSize: 12, color: "#8AAFD4", marginTop: 2 }}>sin registro</div>
                   </div>
                   <div style={{ width: 1, background: "#2A4E7F" }} />
                   <div>
                     <div style={{ fontFamily: "'EB Garamond', Georgia, serif", fontSize: 28, fontWeight: 400, color: "#FAF7F0" }}>1-10</div>
-                    <div style={{ fontSize: 12, color: "#8AAFD4", marginTop: 2, fontFamily: "DM Sans, sans-serif" }}>escala de afinidad</div>
+                    <div style={{ fontSize: 12, color: "#8AAFD4", marginTop: 2 }}>escala de afinidad</div>
                   </div>
                 </div>
               </div>
+
             </div>
           )}
 
