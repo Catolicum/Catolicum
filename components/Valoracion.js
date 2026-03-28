@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
-import { signInWithGoogle, signOut, getValoracion, upsertValoracion, getEstadisticasValoraciones } from '../lib/auth';
+import { signInWithGoogle, signOut, getValoracion, upsertValoracion, getEstadisticasValoraciones, deleteValoracion } from '../lib/auth';
 
 function StarRating({ value, onChange, readonly = false }) {
   const [hovered, setHovered] = useState(0);
@@ -95,6 +95,17 @@ export default function Valoracion({ libroSlug }) {
 
   const userName = session?.user?.user_metadata?.full_name || session?.user?.user_metadata?.name || session?.user?.email || '';
   const userAvatar = session?.user?.user_metadata?.avatar_url || null;
+  const isAdmin = session?.user?.email === 'ivanundaa@gmail.com';
+
+  async function handleEliminar(userId) {
+    try {
+      await deleteValoracion(libroSlug, userId);
+      const nuevasStats = await getEstadisticasValoraciones(libroSlug);
+      setStats(nuevasStats);
+    } catch (e) {
+      setMensaje({ tipo: 'error', texto: 'Error al eliminar.' });
+    }
+  }
 
   return (
     <div style={{ marginTop: '2rem' }}>
@@ -142,6 +153,14 @@ export default function Valoracion({ libroSlug }) {
                   <span style={{ fontSize: 11, color: '#8AAFD4' }}>
                     {new Date(c.created_at).toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' })}
                   </span>
+                  {isAdmin && (
+                    <button
+                      onClick={function() { handleEliminar(c.user_id); }}
+                      style={{ marginLeft: 'auto', fontSize: 11, padding: '2px 10px', border: '0.5px solid #C8D4E0', borderRadius: 20, background: 'none', color: '#A32D2D', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}
+                    >
+                      Eliminar
+                    </button>
+                  )}
                 </div>
                 <p style={{ fontSize: 13, color: '#3A3A3C', lineHeight: 1.6, margin: 0 }}>{c.comentario}</p>
               </div>
