@@ -3,16 +3,9 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import { getRecomendadosRicos } from "../lib/search";
 
-const CrossIcon = () => (
-  <svg width="14" height="14" viewBox="0 0 14 14">
-    <rect x="5.5" y="1" width="3" height="12" rx="1.5" fill="#F5F5F7"/>
-    <rect x="1" y="4.5" width="12" height="3" rx="1.5" fill="#F5F5F7"/>
-  </svg>
-);
-
 const NAV = [
   { label: "Home", href: "/" },
-  { label: "Mision", href: "/mision" },
+  { label: "Misión", href: "/mision" },
   { label: "Libros recomendados", href: "/recomendados" },
   { label: "Contacto", href: "/contacto" },
 ];
@@ -22,151 +15,181 @@ function toSlug(str) {
 }
 
 function getScoreStyle(s) {
-  if (s >= 9) return { color: "#1D9E75", bg: "#EAF3DE", text: "#085041", label: "Muy afin" };
-  if (s >= 7) return { color: "#639922", bg: "#EAF3DE", text: "#27500A", label: "Favorable" };
-  return { color: "#6E6E73", bg: "#F5F5F7", text: "#3A3A3C", label: "Neutral" };
+  if (s >= 9) return { color: "#1D9E75", bg: "#EAF3DE", text: "#085041" };
+  if (s >= 7) return { color: "#639922", bg: "#EAF3DE", text: "#27500A" };
+  return { color: "#6E6E73", bg: "#F5F5F7", text: "#3A3A3C" };
 }
 
-export default function Recomendados() {
+function LogoIcon({ size = 36 }) {
+  const rx = Math.round(size * 0.22);
+  return (
+    <svg width={size} height={size} viewBox="0 0 64 64" style={{ flexShrink: 0 }}>
+      <rect width="64" height="64" rx={rx} fill="#2A4E7F" />
+      <rect x="8" y="14" width="21" height="34" rx="3" fill="#16263F" />
+      <rect x="10" y="16" width="17" height="30" rx="2" fill="#8AAFD4" />
+      <rect x="30" y="14" width="21" height="34" rx="3" fill="#B8922A" />
+      <rect x="32" y="16" width="17" height="30" rx="2" fill="#F5E9C0" />
+      <rect x="28" y="12" width="4" height="38" rx="2" fill="#0F1E30" />
+      <rect x="39" y="21" width="3" height="16" rx="1" fill="#FAF7F0" />
+      <rect x="33.5" y="27" width="14" height="3" rx="1" fill="#FAF7F0" />
+    </svg>
+  );
+}
+
+function WordmarkTitle() {
+  return (
+    <svg width="120" height="26" viewBox="0 0 220 48" style={{ display: "block" }}>
+      <text x="0" y="38" fontFamily="'EB Garamond', Georgia, serif" fontSize="36" fill="#FAF7F0" fontWeight="400" letterSpacing="1">Ca</text>
+      <rect x="67" y="8" width="4" height="32" rx="2" fill="#E1B955" />
+      <rect x="57" y="16" width="22" height="4" rx="2" fill="#E1B955" />
+      <text x="83" y="38" fontFamily="'EB Garamond', Georgia, serif" fontSize="36" fill="#FAF7F0" fontWeight="400" letterSpacing="1">olicum</text>
+    </svg>
+  );
+}
+
+export async function getStaticProps() {
+  const lista = await getRecomendadosRicos();
+  return {
+    props: { lista: lista || [] },
+    revalidate: 3600,
+  };
+}
+
+export default function Recomendados({ lista }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
-  const [libros, setLibros] = useState([]);
-  const [loading, setLoading] = useState(true);
 
   useEffect(function() {
     function checkMobile() { setIsMobile(window.innerWidth <= 768); }
     checkMobile();
     window.addEventListener("resize", checkMobile);
-    getRecomendadosRicos().then(function(data) {
-      setLibros(data);
-      setLoading(false);
-    });
     return function() { window.removeEventListener("resize", checkMobile); };
   }, []);
 
   return (
-    <div style={{ minHeight: "100vh", background: "#F5F5F7", fontFamily: "DM Sans, sans-serif", color: "#1D1D1F" }}>
+    <div style={{ minHeight: "100vh", background: "#FAF7F0", fontFamily: "DM Sans, sans-serif", color: "#1F2937" }}>
       <Head>
-        <title>Libros Recomendados para Catolicos - Catolicum</title>
-        <meta name="description" content="Seleccion de libros recomendados para lectores catolicos. Analisis detallado con puntos fuertes debiles y para quien es cada libro." />
-        <meta name="keywords" content="libros catolicos recomendados, libros espiritualidad catolica, lecturas recomendadas catolicos" />
-        <meta name="robots" content="index, follow" />
-        <link rel="canonical" href="https://catolicum.vercel.app/recomendados" />
+        <title>Libros Recomendados - Catolicum</title>
+        <meta name="description" content="Los mejores libros para lectores católicos." />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="true" />
         <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
       </Head>
 
       <div style={{ display: "flex", minHeight: "100vh" }}>
 
+        {/* SIDEBAR escritorio */}
         {!isMobile && (
-          <aside style={{ width: 220, flexShrink: 0, background: "#FFFFFF", borderRight: "0.5px solid #D1D1D6", display: "flex", flexDirection: "column", padding: "1.5rem 1rem", position: "sticky", top: 0, height: "100vh", overflowY: "auto" }}>
+          <aside style={{ width: 220, flexShrink: 0, background: "#1F3A5F", borderRight: "0.5px solid #2A4E7F", display: "flex", flexDirection: "column", padding: "1.5rem 1rem", position: "sticky", top: 0, height: "100vh", overflowY: "auto" }}>
             <Link href="/" style={{ textDecoration: "none", color: "inherit" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: "2rem", cursor: "pointer" }}>
-                <div style={{ width: 38, height: 38, borderRadius: 9, background: "#1D1D1F", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}><CrossIcon /></div>
-                <div style={{ width: 1, height: 28, background: "#D1D1D6", flexShrink: 0 }} />
-                <div>
-                  <div style={{ fontFamily: "EB Garamond, serif", fontSize: 19, fontWeight: 500, color: "#1D1D1F", lineHeight: 1.1 }}>Catolicum</div>
-                  <div style={{ fontFamily: "EB Garamond, serif", fontSize: 11, fontStyle: "italic", color: "#6E6E73", marginTop: 2 }}>La Libreria Catolica</div>
-                </div>
+              <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: "2rem", cursor: "pointer" }}>
+                <LogoIcon size={36} />
+                <div style={{ width: 1, height: 28, background: "#2A4E7F", flexShrink: 0 }} />
+                <WordmarkTitle />
               </div>
             </Link>
             <nav style={{ display: "flex", flexDirection: "column", gap: 2, flex: 1 }}>
               {NAV.map(function(item) {
-                return (<Link key={item.href} href={item.href} style={{ display: "flex", alignItems: "center", padding: "9px 10px", borderRadius: 8, fontSize: 14, color: "#3A3A3C", textDecoration: "none" }}>{item.label}</Link>);
+                return (
+                  <Link key={item.href} href={item.href} style={{ display: "flex", alignItems: "center", padding: "9px 10px", borderRadius: 8, fontSize: 14, fontFamily: "'EB Garamond', Georgia, serif", color: "#8AAFD4", textDecoration: "none" }}>
+                    {item.label}
+                  </Link>
+                );
               })}
             </nav>
-            <div style={{ display: "flex", flexDirection: "column", gap: 4, paddingTop: "1rem", borderTop: "0.5px solid #D1D1D6" }}>
-              <Link href="/privacidad" style={{ fontSize: 11, color: "#AEAEB2", textDecoration: "none", padding: "3px 0" }}>Privacidad</Link>
-              <Link href="/acerca" style={{ fontSize: 11, color: "#AEAEB2", textDecoration: "none", padding: "3px 0" }}>Acerca de</Link>
+            <div style={{ display: "flex", flexDirection: "column", gap: 4, paddingTop: "1rem", borderTop: "0.5px solid #2A4E7F" }}>
+              <Link href="/privacidad" style={{ fontSize: 11, color: "#3A5A7A", textDecoration: "none", padding: "3px 0" }}>Privacidad</Link>
+              <Link href="/acerca" style={{ fontSize: 11, color: "#3A5A7A", textDecoration: "none", padding: "3px 0" }}>Acerca de</Link>
             </div>
           </aside>
         )}
 
         <div style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column" }}>
 
+          {/* MÓVIL HEADER */}
           {isMobile && (
-            <div style={{ background: "#FFFFFF", borderBottom: "0.5px solid #D1D1D6", padding: "10px 16px", display: "flex", alignItems: "center", justifyContent: "space-between", position: "sticky", top: 0, zIndex: 100 }}>
+            <div style={{ background: "#1F3A5F", borderBottom: "0.5px solid #2A4E7F", padding: "10px 16px", display: "flex", alignItems: "center", justifyContent: "space-between", position: "sticky", top: 0, zIndex: 100 }}>
               <Link href="/" style={{ textDecoration: "none", display: "flex", alignItems: "center", gap: 10 }}>
-                <div style={{ width: 30, height: 30, borderRadius: 7, background: "#1D1D1F", display: "flex", alignItems: "center", justifyContent: "center" }}><CrossIcon /></div>
-                <span style={{ fontFamily: "EB Garamond, serif", fontSize: 19, fontWeight: 500, color: "#1D1D1F" }}>Catolicum</span>
+                <LogoIcon size={28} />
+                <span style={{ fontFamily: "'EB Garamond', Georgia, serif", fontSize: 19, fontWeight: 500, color: "#FAF7F0" }}>Catolicum</span>
               </Link>
               <button onClick={function() { setMenuOpen(!menuOpen); }} style={{ background: "none", border: "none", cursor: "pointer", padding: 4, display: "flex", flexDirection: "column", gap: 5 }}>
-                <span style={{ display: "block", width: 18, height: 1.5, background: "#1D1D1F", borderRadius: 1 }} />
-                <span style={{ display: "block", width: 18, height: 1.5, background: "#1D1D1F", borderRadius: 1 }} />
-                <span style={{ display: "block", width: 18, height: 1.5, background: "#1D1D1F", borderRadius: 1 }} />
+                <span style={{ display: "block", width: 18, height: 1.5, background: "#8AAFD4", borderRadius: 1 }} />
+                <span style={{ display: "block", width: 18, height: 1.5, background: "#8AAFD4", borderRadius: 1 }} />
+                <span style={{ display: "block", width: 18, height: 1.5, background: "#8AAFD4", borderRadius: 1 }} />
               </button>
             </div>
           )}
 
           {isMobile && menuOpen && (
-            <div style={{ background: "#FFFFFF", borderBottom: "0.5px solid #D1D1D6", padding: ".5rem 1rem 1rem" }}>
+            <div style={{ background: "#1F3A5F", borderBottom: "0.5px solid #2A4E7F", padding: ".5rem 1rem 1rem" }}>
               {NAV.map(function(item) {
-                return (<Link key={item.href} href={item.href} onClick={function() { setMenuOpen(false); }} style={{ display: "block", padding: "10px 0", fontSize: 14, color: "#1D1D1F", textDecoration: "none", borderBottom: "0.5px solid #F5F5F7" }}>{item.label}</Link>);
+                return (<Link key={item.href} href={item.href} onClick={function() { setMenuOpen(false); }} style={{ display: "block", padding: "10px 0", fontSize: 14, fontFamily: "'EB Garamond', Georgia, serif", color: "#8AAFD4", textDecoration: "none", borderBottom: "0.5px solid #2A4E7F" }}>{item.label}</Link>);
               })}
             </div>
           )}
 
-          <div style={{ maxWidth: 720, margin: "0 auto", padding: isMobile ? "1.25rem 1rem" : "2.5rem 1.5rem", width: "100%" }}>
+          {/* CONTENIDO */}
+          <div style={{ maxWidth: 680, margin: "0 auto", padding: isMobile ? "1.25rem 1rem" : "2rem 1.5rem", width: "100%" }}>
 
-            <Link href="/" style={{ fontSize: 13, color: "#6E6E73", textDecoration: "none" }}>← Volver</Link>
-            <h1 style={{ fontFamily: "EB Garamond, serif", fontSize: 36, fontWeight: 500, margin: "1.5rem 0 .5rem", color: "#1D1D1F" }}>Libros recomendados</h1>
-            <p style={{ fontSize: 14, color: "#6E6E73", marginBottom: "2rem", lineHeight: 1.6 }}>
-              Una seleccion personal de libros que pueden enriquecer tu fe y acompañarte en distintos momentos de la vida. Cada libro incluye analisis detallado para quien es y cuando puede ayudarte.
+            <h1 style={{ fontFamily: "'EB Garamond', Georgia, serif", fontSize: 34, fontWeight: 400, margin: "0 0 .4rem", color: "#1F3A5F" }}>
+              Libros recomendados
+            </h1>
+            <p style={{ fontSize: 15, fontFamily: "'EB Garamond', Georgia, serif", fontStyle: "italic", color: "#E1B955", marginBottom: "1.75rem", lineHeight: 1.6 }}>
+              Selección de libros compatibles o plenamente alineados con la fe católica.
             </p>
 
-            {loading ? (
-              <div style={{ textAlign: "center", padding: "2rem", color: "#6E6E73", fontSize: 14 }}>Cargando...</div>
-            ) : (
-              <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-                {libros.map(function(b) {
-                  var st = getScoreStyle(b.puntuacion);
-                  var slug = toSlug(b.titulo);
-                  return (
-                    <Link key={b.titulo} href={"/recomendados/" + slug} style={{ textDecoration: "none", color: "inherit" }}>
-                      <div style={{ background: "#FFFFFF", border: "0.5px solid #D1D1D6", borderRadius: 12, padding: "1.25rem", display: "flex", gap: 16, alignItems: "flex-start", cursor: "pointer", transition: "border-color .15s" }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+              {lista.map(function(b) {
+                var titulo = b.titulo || b.t || "";
+                var autor = b.autor || b.a || "";
+                var puntuacion = b.puntuacion || b.s || 0;
+                var imagen = b.imagen_url || null;
+                var slug = toSlug(titulo);
+                var st = getScoreStyle(puntuacion);
+                var amazonUrl = "https://www.amazon.es/s?k=" + encodeURIComponent(titulo + " " + autor) + "&tag=catolicum-21";
 
-                        <div style={{ flexShrink: 0 }}>
-                          {b.imagen_url ? (
-                            <img src={b.imagen_url} alt={"Portada " + b.titulo} style={{ width: 70, borderRadius: 6, display: "block", boxShadow: "0 2px 8px rgba(0,0,0,0.1)" }} />
-                          ) : (
-                            <div style={{ width: 70, height: 100, borderRadius: 6, background: "#1D1D1F", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                              <CrossIcon />
-                            </div>
-                          )}
+                return (
+                  <div key={titulo + autor} style={{ display: "flex", alignItems: "center", gap: 12, background: "#fff", border: "0.5px solid #C8D4E0", borderRadius: 10, padding: "0.75rem 1rem" }}>
+                    {/* Portada */}
+                    <Link href={"/recomendados/" + slug} style={{ textDecoration: "none", flexShrink: 0 }}>
+                      {imagen ? (
+                        <img src={imagen} alt={titulo} style={{ width: 36, height: 50, borderRadius: 4, objectFit: "cover" }} />
+                      ) : (
+                        <div style={{ width: 36, height: 50, borderRadius: 4, background: "#EDF2F8", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                          <svg width="14" height="14" viewBox="0 0 14 14"><rect x="5.5" y="1" width="3" height="12" rx="1.5" fill="#2A4E7F"/><rect x="1" y="4.5" width="12" height="3" rx="1.5" fill="#2A4E7F"/></svg>
                         </div>
-
-                        <div style={{ flex: 1, minWidth: 0 }}>
-                          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 8, marginBottom: 4 }}>
-                            <div>
-                              <p style={{ fontSize: 11, color: "#AEAEB2", textTransform: "uppercase", letterSpacing: ".06em", marginBottom: 3 }}>{b.categoria}</p>
-                              <h2 style={{ fontFamily: "EB Garamond, serif", fontSize: 18, fontWeight: 500, color: "#1D1D1F", lineHeight: 1.2, marginBottom: 3 }}>{b.titulo}</h2>
-                              <p style={{ fontSize: 13, color: "#6E6E73", marginBottom: 8 }}>{b.autor}{b.ano ? " · " + b.ano : ""}</p>
-                            </div>
-                            <div style={{ textAlign: "center", flexShrink: 0 }}>
-                              <div style={{ fontFamily: "EB Garamond, serif", fontSize: 28, fontWeight: 500, color: st.color, lineHeight: 1 }}>{b.puntuacion}</div>
-                              <div style={{ fontSize: 10, color: "#AEAEB2" }}>/10</div>
-                            </div>
-                          </div>
-                          <p style={{ fontSize: 13, color: "#6E6E73", lineHeight: 1.6, marginBottom: 10, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
-                            {b.analisis}
-                          </p>
-                          <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
-                            <span style={{ fontSize: 11, padding: "2px 8px", borderRadius: 20, fontWeight: 500, background: st.bg, color: st.text }}>{st.label}</span>
-                            <span style={{ fontSize: 12, color: "#1D9E75", fontWeight: 500 }}>Ver analisis completo →</span>
-                          </div>
-                        </div>
-
-                      </div>
+                      )}
                     </Link>
-                  );
-                })}
-              </div>
-            )}
 
-            <div style={{ borderTop: "0.5px solid #D1D1D6", marginTop: "2rem", paddingTop: "1rem", display: "flex", gap: 16, fontSize: 12, color: "#AEAEB2" }}>
-              <Link href="/privacidad" style={{ color: "#AEAEB2", textDecoration: "none" }}>Privacidad</Link>
-              <span>·</span>
+                    {/* Info */}
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <Link href={"/recomendados/" + slug} style={{ textDecoration: "none" }}>
+                        <div style={{ fontSize: 13, fontWeight: 500, color: "#1F3A5F", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{titulo}</div>
+                      </Link>
+                      <div style={{ fontSize: 12, color: "#6E6E73" }}>{autor}</div>
+                    </div>
+
+                    {/* Score */}
+                    <div style={{ width: 30, height: 30, borderRadius: "50%", background: st.bg, color: st.text, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 500, flexShrink: 0, fontFamily: "'EB Garamond', Georgia, serif" }}>
+                      {puntuacion}
+                    </div>
+
+                    {/* Amazon */}
+                    <a href={amazonUrl} target="_blank" rel="noopener noreferrer" style={{ fontSize: 12, padding: "5px 10px", border: "0.5px solid #D8D0BC", borderRadius: 6, color: "#1F3A5F", textDecoration: "none", flexShrink: 0, background: "#EEE8D8" }}>
+                      Amazon
+                    </a>
+                  </div>
+                );
+              })}
+            </div>
+
+            <div style={{ borderTop: "0.5px solid #D8D0BC", marginTop: "2rem", paddingTop: "1rem", display: "flex", gap: 16, fontSize: 12, color: "#AEAEB2" }}>
+              <Link href="/privacidad" style={{ color: "#AEAEB2", textDecoration: "none" }}>Política de Privacidad</Link>
+              <span style={{ color: "#D8D0BC" }}>·</span>
               <Link href="/contacto" style={{ color: "#AEAEB2", textDecoration: "none" }}>Contacto</Link>
             </div>
+
           </div>
         </div>
       </div>
