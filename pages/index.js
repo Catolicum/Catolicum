@@ -62,35 +62,35 @@ export default function Home() {
   const [totalLibros, setTotalLibros] = useState(0);
   const [controvertidos, setControvertidos] = useState([]);
 
+  function resetSearch() {
+    setSearched(false);
+    setResult(null);
+    setQuery("");
+    setShowSuggestions(false);
+  }
+
   useEffect(function() {
     function checkMobile() { setIsMobile(window.innerWidth <= 768); }
     checkMobile();
     window.addEventListener("resize", checkMobile);
 
-    // Recomendados
     supabase.from('recomendados').select('titulo, autor, puntuacion, imagen_url').order('puntuacion', { ascending: false }).limit(4).then(function(res) {
       if (res.data) setRecomendados(res.data);
     });
 
-    // Total libros
     supabase.from('libros').select('id', { count: 'exact', head: true }).eq('idioma', 'es').then(function(res) {
       if (res.count) setTotalLibros(res.count);
     });
 
-    // Los más controvertidos: libros con valoraciones donde la media del usuario difiere de la puntuación católicum
     supabase.from('valoraciones').select('libro_slug, puntuacion').then(function(res) {
       if (!res.data || res.data.length === 0) return;
-      // Agrupar por libro_slug y calcular media
       var grouped = {};
       res.data.forEach(function(v) {
         if (!grouped[v.libro_slug]) grouped[v.libro_slug] = [];
         grouped[v.libro_slug].push(v.puntuacion);
       });
-      // Solo libros con al menos 1 valoración
       var slugsConValoraciones = Object.keys(grouped).filter(function(s) { return grouped[s].length >= 1; });
       if (slugsConValoraciones.length === 0) return;
-
-      // Buscar esos libros en la tabla libros para obtener puntuacion católicum
       supabase.from('libros').select('titulo, autor, puntuacion, idioma').eq('idioma', 'es').then(function(librosRes) {
         if (!librosRes.data) return;
         var resultados = [];
@@ -100,17 +100,8 @@ export default function Home() {
           var votes = grouped[slug];
           var mediaUsuarios = Math.round((votes.reduce(function(a, b) { return a + b; }, 0) / votes.length) * 10) / 10;
           var diferencia = Math.abs(libro.puntuacion - mediaUsuarios);
-          resultados.push({
-            slug: slug,
-            titulo: libro.titulo,
-            autor: libro.autor,
-            puntuacionCatolicum: libro.puntuacion,
-            mediaUsuarios: mediaUsuarios,
-            numVotos: votes.length,
-            diferencia: diferencia,
-          });
+          resultados.push({ slug, titulo: libro.titulo, autor: libro.autor, puntuacionCatolicum: libro.puntuacion, mediaUsuarios, numVotos: votes.length, diferencia });
         });
-        // Ordenar por mayor diferencia
         resultados.sort(function(a, b) { return b.diferencia - a.diferencia; });
         setControvertidos(resultados.slice(0, 4));
       });
@@ -158,6 +149,14 @@ export default function Home() {
 
   var st = result ? getScoreStyle(result.s) : null;
 
+  const NAV_MOBILE = [
+    { label: "Home", href: "/" },
+    { label: "Club de lectura", href: "/club" },
+    { label: "Libros recomendados", href: "/recomendados" },
+    { label: "Misión", href: "/mision" },
+    { label: "Contacto", href: "/contacto" },
+  ];
+
   return (
     <div style={{ minHeight: "100vh", background: "#FAF7F0", fontFamily: "DM Sans, sans-serif", color: "#1F2937" }}>
       <Head>
@@ -180,21 +179,24 @@ export default function Home() {
 
       <div style={{ display: "flex", minHeight: "100vh" }}>
 
-        {/* SIDEBAR */}
-        {!isMobile && <SidebarClub currentPath="/" />}
+        {/* SIDEBAR — SidebarClub con onClick en logo para resetear búsqueda */}
+        {!isMobile && (
+          <div onClick={function(e) {
+            // Si el click viene del logo (Link href="/"), reseteamos la búsqueda
+            if (e.target.closest('a[href="/"]')) resetSearch();
+          }}>
+            <SidebarClub currentPath="/" />
+          </div>
+        )}
 
         <div style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column" }}>
 
           {/* MÓVIL HEADER */}
           {isMobile && (
-            <div style={{
-              background: "#1F3A5F", borderBottom: "0.5px solid #2A4E7F",
-              padding: "10px 16px", display: "flex", alignItems: "center",
-              justifyContent: "space-between", position: "sticky", top: 0, zIndex: 100
-            }}>
-              <Link href="/" style={{ textDecoration: "none", display: "flex", alignItems: "center", gap: 10 }}>
+            <div style={{ background: "#1F3A5F", borderBottom: "0.5px solid #2A4E7F", padding: "10px 16px", display: "flex", alignItems: "center", justifyContent: "space-between", position: "sticky", top: 0, zIndex: 100 }}>
+              <button onClick={resetSearch} style={{ background: "none", border: "none", cursor: "pointer", padding: 0 }}>
                 <span style={{ fontFamily: "'EB Garamond', Georgia, serif", fontSize: 19, fontWeight: 500, color: "#FAF7F0" }}>Católicum</span>
-              </Link>
+              </button>
               <button onClick={function() { setMenuOpen(!menuOpen); }} style={{ background: "none", border: "none", cursor: "pointer", padding: 4, display: "flex", flexDirection: "column", gap: 5 }}>
                 <span style={{ display: "block", width: 18, height: 1.5, background: "#8AAFD4", borderRadius: 1 }} />
                 <span style={{ display: "block", width: 18, height: 1.5, background: "#8AAFD4", borderRadius: 1 }} />
@@ -205,20 +207,9 @@ export default function Home() {
 
           {isMobile && menuOpen && (
             <div style={{ background: "#1F3A5F", borderBottom: "0.5px solid #2A4E7F", padding: ".5rem 1rem 1rem" }}>
-              {[
-                { label: "Home", href: "/" },
-                { label: "Club de lectura", href: "/club" },
-                { label: "Libros recomendados", href: "/recomendados" },
-                { label: "Misión", href: "/mision" },
-                { label: "Contacto", href: "/contacto" },
-              ].map(function(item) {
+              {NAV_MOBILE.map(function(item) {
                 return (
-                  <Link key={item.href} href={item.href} onClick={function() { setMenuOpen(false); }} style={{
-                    display: "block", padding: "10px 0", fontSize: 14,
-                    fontFamily: "'EB Garamond', Georgia, serif",
-                    color: "#8AAFD4", textDecoration: "none",
-                    borderBottom: "0.5px solid #2A4E7F"
-                  }}>{item.label}</Link>
+                  <Link key={item.href} href={item.href} onClick={function() { setMenuOpen(false); if (item.href === "/") resetSearch(); }} style={{ display: "block", padding: "10px 0", fontSize: 14, fontFamily: "'EB Garamond', Georgia, serif", color: "#8AAFD4", textDecoration: "none", borderBottom: "0.5px solid #2A4E7F" }}>{item.label}</Link>
                 );
               })}
             </div>
@@ -226,102 +217,46 @@ export default function Home() {
 
           {/* HERO */}
           {!searched && (
-            <div style={{
-              background: "#1F3A5F",
-              borderBottom: "0.5px solid #2A4E7F",
-              padding: isMobile ? "1.25rem 1.25rem 1rem" : "1.5rem 2rem 1.25rem",
-              textAlign: "center"
-            }}>
-              <h1 style={{
-                fontFamily: "'EB Garamond', Georgia, serif",
-                fontSize: isMobile ? 24 : 30, fontWeight: 400,
-                color: "#FAF7F0", lineHeight: 1.2, marginBottom: ".4rem"
-              }}>
+            <div style={{ background: "#1F3A5F", borderBottom: "0.5px solid #2A4E7F", padding: isMobile ? "1.25rem 1.25rem 1rem" : "1.5rem 2rem 1.25rem", textAlign: "center" }}>
+              <h1 style={{ fontFamily: "'EB Garamond', Georgia, serif", fontSize: isMobile ? 24 : 30, fontWeight: 400, color: "#FAF7F0", lineHeight: 1.2, marginBottom: ".4rem" }}>
                 ¿Qué hay detrás de cada libro?
               </h1>
-              <p style={{
-                fontFamily: "'EB Garamond', Georgia, serif",
-                fontSize: isMobile ? 14 : 15, fontStyle: "italic",
-                color: "#E1B955", marginBottom: ".65rem",
-                borderLeft: "2px solid #2A4E7F", borderRight: "2px solid #2A4E7F",
-                display: "inline-block", padding: "0 1rem"
-              }}>
+              <p style={{ fontFamily: "'EB Garamond', Georgia, serif", fontSize: isMobile ? 14 : 15, fontStyle: "italic", color: "#E1B955", marginBottom: ".65rem", borderLeft: "2px solid #2A4E7F", borderRight: "2px solid #2A4E7F", display: "inline-block", padding: "0 1rem" }}>
                 Lee con criterio. Lee con fe.
               </p>
-              <div style={{
-                borderTop: "0.5px solid #2A4E7F", borderBottom: "0.5px solid #2A4E7F",
-                padding: ".3rem 0", maxWidth: 340, margin: "0 auto"
-              }}>
-                <span style={{
-                  fontSize: 10, letterSpacing: ".1em", textTransform: "uppercase",
-                  color: "#8AAFD4", fontFamily: "DM Sans, sans-serif"
-                }}>
-                  Tu club de lectura católico
-                </span>
+              <div style={{ borderTop: "0.5px solid #2A4E7F", borderBottom: "0.5px solid #2A4E7F", padding: ".3rem 0", maxWidth: 340, margin: "0 auto" }}>
+                <span style={{ fontSize: 10, letterSpacing: ".1em", textTransform: "uppercase", color: "#8AAFD4" }}>Tu club de lectura católico</span>
               </div>
             </div>
           )}
 
           {/* BUSCADOR */}
           {!searched && (
-            <div style={{
-              background: "#FAF7F0",
-              borderBottom: "0.5px solid #E8E2D4",
-              padding: isMobile ? "1.75rem 1.25rem" : "2rem 2rem 1.75rem",
-              textAlign: "center"
-            }}>
+            <div style={{ background: "#FAF7F0", borderBottom: "0.5px solid #E8E2D4", padding: isMobile ? "1.75rem 1.25rem" : "2rem 2rem 1.75rem", textAlign: "center" }}>
               <div style={{ position: "relative", maxWidth: 520, margin: "0 auto" }}>
                 <div style={{ display: "flex", gap: 8, marginBottom: ".75rem" }}>
                   <input
-                    type="text"
-                    placeholder="Busca cualquier libro..."
-                    value={query}
-                    onChange={handleInputChange}
-                    onKeyDown={handleKey}
+                    type="text" placeholder="Busca cualquier libro..."
+                    value={query} onChange={handleInputChange} onKeyDown={handleKey}
                     onBlur={function() { setTimeout(function() { setShowSuggestions(false); }, 150); }}
                     onFocus={function() { if (suggestions.length > 0) setShowSuggestions(true); }}
-                    style={{
-                      flex: 1, height: 48, padding: "0 16px",
-                      border: "0.5px solid #D8D0BC", borderRadius: 10,
-                      background: "#fff", color: "#1F2937", fontSize: 14,
-                      fontFamily: "DM Sans, sans-serif", minWidth: 0
-                    }}
+                    style={{ flex: 1, height: 48, padding: "0 16px", border: "0.5px solid #D8D0BC", borderRadius: 10, background: "#fff", color: "#1F2937", fontSize: 14, fontFamily: "DM Sans, sans-serif", minWidth: 0 }}
                   />
-                  <button onClick={function() { handleSearch(query); }} style={{
-                    height: 48, padding: "0 22px",
-                    background: "#1F3A5F", color: "#FAF7F0",
-                    border: "none", borderRadius: 10, fontSize: 14, fontWeight: 500,
-                    cursor: "pointer", fontFamily: "DM Sans, sans-serif",
-                    whiteSpace: "nowrap", flexShrink: 0
-                  }}>
+                  <button onClick={function() { handleSearch(query); }} style={{ height: 48, padding: "0 22px", background: "#1F3A5F", color: "#FAF7F0", border: "none", borderRadius: 10, fontSize: 14, fontWeight: 500, cursor: "pointer", fontFamily: "DM Sans, sans-serif", whiteSpace: "nowrap", flexShrink: 0 }}>
                     Analizar
                   </button>
                   {!isMobile && (
-                    <button onClick={function() { setShowScanner(true); }} title="Escanear codigo de barras" style={{
-                      height: 48, width: 48, background: "#EEE8D8",
-                      border: "0.5px solid #D8D0BC", borderRadius: 10,
-                      cursor: "pointer", display: "flex", alignItems: "center",
-                      justifyContent: "center", flexShrink: 0
-                    }}>
+                    <button onClick={function() { setShowScanner(true); }} style={{ height: 48, width: 48, background: "#EEE8D8", border: "0.5px solid #D8D0BC", borderRadius: 10, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                       <BarcodeIcon />
                     </button>
                   )}
                 </div>
                 {showSuggestions && (
-                  <div style={{
-                    position: "absolute", top: 52, left: 0, right: 0,
-                    background: "#fff", border: "0.5px solid #D8D0BC",
-                    borderRadius: 10, zIndex: 100, overflow: "hidden",
-                    boxShadow: "0 4px 16px rgba(0,0,0,0.08)", textAlign: "left"
-                  }}>
+                  <div style={{ position: "absolute", top: 52, left: 0, right: 0, background: "#fff", border: "0.5px solid #D8D0BC", borderRadius: 10, zIndex: 100, overflow: "hidden", boxShadow: "0 4px 16px rgba(0,0,0,0.08)", textAlign: "left" }}>
                     {suggestions.map(function(s) {
                       var sc = getScoreStyle(s.puntuacion);
                       return (
-                        <div key={s.titulo} onMouseDown={function() { handleSelectSuggestion(s.titulo); }} style={{
-                          display: "flex", alignItems: "center", gap: 10,
-                          padding: "10px 14px", cursor: "pointer",
-                          borderBottom: "0.5px solid #FAF7F0"
-                        }}>
+                        <div key={s.titulo} onMouseDown={function() { handleSelectSuggestion(s.titulo); }} style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 14px", cursor: "pointer", borderBottom: "0.5px solid #FAF7F0" }}>
                           <span style={{ width: 28, height: 28, borderRadius: "50%", background: sc.bg, color: sc.text, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 500, flexShrink: 0 }}>{s.puntuacion}</span>
                           <span style={{ fontSize: 13, fontWeight: 500, flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{s.titulo}</span>
                           <span style={{ fontSize: 12, color: "#6E6E73", flexShrink: 0 }}>{s.autor}</span>
@@ -333,12 +268,7 @@ export default function Home() {
                 <div style={{ display: "flex", gap: 6, flexWrap: "wrap", justifyContent: "center" }}>
                   {["El Código Da Vinci", "Harry Potter", "Sapiens", "El Alquimista"].map(function(ex) {
                     return (
-                      <button key={ex} onClick={function() { setQuery(ex); handleSearch(ex); }} style={{
-                        fontSize: 12, padding: "4px 12px",
-                        border: "0.5px solid #D8D0BC", borderRadius: 20,
-                        background: "#EEE8D8", color: "#1F3A5F",
-                        cursor: "pointer", fontFamily: "DM Sans, sans-serif"
-                      }}>
+                      <button key={ex} onClick={function() { setQuery(ex); handleSearch(ex); }} style={{ fontSize: 12, padding: "4px 12px", border: "0.5px solid #D8D0BC", borderRadius: 20, background: "#EEE8D8", color: "#1F3A5F", cursor: "pointer", fontFamily: "DM Sans, sans-serif" }}>
                         {ex}
                       </button>
                     );
@@ -346,16 +276,8 @@ export default function Home() {
                 </div>
               </div>
               {isMobile && (
-                <button onClick={function() { setShowScanner(true); }} style={{
-                  width: "100%", maxWidth: 520, height: 44,
-                  background: "#EEE8D8", border: "0.5px solid #D8D0BC",
-                  borderRadius: 10, cursor: "pointer", display: "flex",
-                  alignItems: "center", justifyContent: "center", gap: 8,
-                  fontFamily: "DM Sans, sans-serif",
-                  fontSize: 14, color: "#1F3A5F", margin: "8px auto 0"
-                }}>
-                  <BarcodeIcon />
-                  Escanear codigo de barras
+                <button onClick={function() { setShowScanner(true); }} style={{ width: "100%", maxWidth: 520, height: 44, background: "#EEE8D8", border: "0.5px solid #D8D0BC", borderRadius: 10, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 8, fontFamily: "DM Sans, sans-serif", fontSize: 14, color: "#1F3A5F", margin: "8px auto 0" }}>
+                  <BarcodeIcon /> Escanear codigo de barras
                 </button>
               )}
             </div>
@@ -367,45 +289,22 @@ export default function Home() {
               <div style={{ position: "relative", marginBottom: "1.5rem" }}>
                 <div style={{ display: "flex", gap: 8, marginBottom: ".75rem" }}>
                   <input
-                    type="text"
-                    placeholder="Busca cualquier libro..."
-                    value={query}
-                    onChange={handleInputChange}
-                    onKeyDown={handleKey}
+                    type="text" placeholder="Busca cualquier libro..."
+                    value={query} onChange={handleInputChange} onKeyDown={handleKey}
                     onBlur={function() { setTimeout(function() { setShowSuggestions(false); }, 150); }}
                     onFocus={function() { if (suggestions.length > 0) setShowSuggestions(true); }}
-                    style={{
-                      flex: 1, height: 48, padding: "0 16px",
-                      border: "0.5px solid #D8D0BC", borderRadius: 10,
-                      background: "#fff", color: "#1F2937", fontSize: 14,
-                      fontFamily: "DM Sans, sans-serif", minWidth: 0
-                    }}
+                    style={{ flex: 1, height: 48, padding: "0 16px", border: "0.5px solid #D8D0BC", borderRadius: 10, background: "#fff", color: "#1F2937", fontSize: 14, fontFamily: "DM Sans, sans-serif", minWidth: 0 }}
                   />
-                  <button onClick={function() { handleSearch(query); }} style={{
-                    height: 48, padding: "0 18px",
-                    background: "#1F3A5F", color: "#FAF7F0",
-                    border: "none", borderRadius: 10, fontSize: 14, fontWeight: 500,
-                    cursor: "pointer", fontFamily: "DM Sans, sans-serif",
-                    whiteSpace: "nowrap", flexShrink: 0
-                  }}>
+                  <button onClick={function() { handleSearch(query); }} style={{ height: 48, padding: "0 18px", background: "#1F3A5F", color: "#FAF7F0", border: "none", borderRadius: 10, fontSize: 14, fontWeight: 500, cursor: "pointer", fontFamily: "DM Sans, sans-serif", whiteSpace: "nowrap", flexShrink: 0 }}>
                     Analizar
                   </button>
                 </div>
                 {showSuggestions && (
-                  <div style={{
-                    position: "absolute", top: 52, left: 0, right: 0,
-                    background: "#fff", border: "0.5px solid #D8D0BC",
-                    borderRadius: 10, zIndex: 100, overflow: "hidden",
-                    boxShadow: "0 4px 16px rgba(0,0,0,0.08)"
-                  }}>
+                  <div style={{ position: "absolute", top: 52, left: 0, right: 0, background: "#fff", border: "0.5px solid #D8D0BC", borderRadius: 10, zIndex: 100, overflow: "hidden", boxShadow: "0 4px 16px rgba(0,0,0,0.08)" }}>
                     {suggestions.map(function(s) {
                       var sc = getScoreStyle(s.puntuacion);
                       return (
-                        <div key={s.titulo} onMouseDown={function() { handleSelectSuggestion(s.titulo); }} style={{
-                          display: "flex", alignItems: "center", gap: 10,
-                          padding: "10px 14px", cursor: "pointer",
-                          borderBottom: "0.5px solid #FAF7F0"
-                        }}>
+                        <div key={s.titulo} onMouseDown={function() { handleSelectSuggestion(s.titulo); }} style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 14px", cursor: "pointer", borderBottom: "0.5px solid #FAF7F0" }}>
                           <span style={{ width: 28, height: 28, borderRadius: "50%", background: sc.bg, color: sc.text, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 500, flexShrink: 0 }}>{s.puntuacion}</span>
                           <span style={{ fontSize: 13, fontWeight: 500, flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{s.titulo}</span>
                           <span style={{ fontSize: 12, color: "#6E6E73", flexShrink: 0 }}>{s.autor}</span>
@@ -416,13 +315,7 @@ export default function Home() {
                 )}
               </div>
 
-              <button onClick={function() { setSearched(false); setResult(null); setQuery(""); }} style={{
-                display: "inline-flex", alignItems: "center", gap: 6,
-                marginBottom: "1rem", padding: "6px 14px",
-                background: "#EEE8D8", border: "0.5px solid #D8D0BC",
-                borderRadius: 20, fontSize: 13, color: "#1F3A5F",
-                cursor: "pointer", fontFamily: "DM Sans, sans-serif"
-              }}>
+              <button onClick={resetSearch} style={{ display: "inline-flex", alignItems: "center", gap: 6, marginBottom: "1rem", padding: "6px 14px", background: "#EEE8D8", border: "0.5px solid #D8D0BC", borderRadius: 20, fontSize: 13, color: "#1F3A5F", cursor: "pointer", fontFamily: "DM Sans, sans-serif" }}>
                 ← Nueva búsqueda
               </button>
 
@@ -470,12 +363,7 @@ export default function Home() {
                         <span style={{ fontWeight: 500, color: "#6E6E73", flexShrink: 0 }}>Referencia:</span>
                         <span style={{ color: "#AEAEB2" }}>{result.ref}</span>
                       </div>
-                      <a href={"https://www.amazon.es/s?k=" + encodeURIComponent(result.t + " " + result.a) + "&tag=catolicum-21"} target="_blank" rel="noopener noreferrer" style={{
-                        display: "inline-flex", alignItems: "center", gap: 7,
-                        marginTop: ".75rem", padding: "8px 16px",
-                        background: "#EEE8D8", border: "0.5px solid #D8D0BC",
-                        borderRadius: 8, fontSize: 13, color: "#1F3A5F", textDecoration: "none"
-                      }}>
+                      <a href={"https://www.amazon.es/s?k=" + encodeURIComponent(result.t + " " + result.a) + "&tag=catolicum-21"} target="_blank" rel="noopener noreferrer" style={{ display: "inline-flex", alignItems: "center", gap: 7, marginTop: ".75rem", padding: "8px 16px", background: "#EEE8D8", border: "0.5px solid #D8D0BC", borderRadius: 8, fontSize: 13, color: "#1F3A5F", textDecoration: "none" }}>
                         Encontrar en Amazon
                       </a>
                     </div>
@@ -498,7 +386,6 @@ export default function Home() {
           {/* SECCIONES HOMEPAGE */}
           {!searched && (
             <div>
-
               {/* LOS MÁS BUSCADOS */}
               <div style={{ background: "#EDF2F8", padding: isMobile ? "1.25rem 1rem" : "1.5rem 2rem", borderBottom: "0.5px solid #D4DDE8" }}>
                 <div style={{ maxWidth: 680, margin: "0 auto" }}>
@@ -510,10 +397,7 @@ export default function Home() {
                     {POLEMIC_BOOKS.map(function(b) {
                       var st2 = getScoreStyle(b.puntuacion);
                       return (
-                        <div key={b.titulo} onClick={function() { setQuery(b.titulo); handleSearch(b.titulo); }} style={{
-                          background: "#fff", border: "0.5px solid #C8D4E0",
-                          borderRadius: 10, padding: ".85rem", cursor: "pointer", position: "relative"
-                        }}>
+                        <div key={b.titulo} onClick={function() { setQuery(b.titulo); handleSearch(b.titulo); }} style={{ background: "#fff", border: "0.5px solid #C8D4E0", borderRadius: 10, padding: ".85rem", cursor: "pointer", position: "relative" }}>
                           <div style={{ position: "absolute", top: 8, right: 8, width: 26, height: 26, borderRadius: "50%", background: st2.bg, color: st2.text, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 500 }}>{b.puntuacion}</div>
                           <p style={{ fontSize: 13, fontWeight: 500, color: "#1F2937", lineHeight: 1.3, marginBottom: 3, paddingRight: 30 }}>{b.titulo}</p>
                           <p style={{ fontSize: 11, color: "#6E6E73" }}>{b.autor}</p>
@@ -537,11 +421,7 @@ export default function Home() {
                         var stCat = getScoreStyle(b.puntuacionCatolicum);
                         var stUser = getScoreStyle(Math.round(b.mediaUsuarios));
                         return (
-                          <div key={b.slug} onClick={function() { setQuery(b.titulo); handleSearch(b.titulo); }} style={{
-                            display: "flex", alignItems: "center", gap: 12,
-                            background: "#fff", border: "0.5px solid #C8D4E0",
-                            borderRadius: 10, padding: ".75rem 1rem", cursor: "pointer"
-                          }}>
+                          <div key={b.slug} onClick={function() { setQuery(b.titulo); handleSearch(b.titulo); }} style={{ display: "flex", alignItems: "center", gap: 12, background: "#fff", border: "0.5px solid #C8D4E0", borderRadius: 10, padding: ".75rem 1rem", cursor: "pointer" }}>
                             <div style={{ flex: 1, minWidth: 0 }}>
                               <div style={{ fontSize: 13, fontWeight: 500, color: "#1F3A5F", marginBottom: 2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{b.titulo}</div>
                               <div style={{ fontSize: 11, color: "#6E6E73" }}>{b.autor} · {b.numVotos} {b.numVotos === 1 ? "voto" : "votos"}</div>
@@ -603,19 +483,10 @@ export default function Home() {
               <div style={{ background: "#EDF2F8", padding: isMobile ? "1.25rem 1rem" : "1.5rem 2rem", borderBottom: "0.5px solid #D4DDE8" }}>
                 <div style={{ maxWidth: 680, margin: "0 auto", display: "flex", alignItems: "center", gap: 16, flexWrap: "wrap" }}>
                   <div style={{ flex: 1, minWidth: 200 }}>
-                    <p style={{ fontFamily: "'EB Garamond', Georgia, serif", fontSize: 20, color: "#1F3A5F", marginBottom: 4 }}>
-                      ¿Tu opinión importa?
-                    </p>
-                    <p style={{ fontSize: 13, color: "#6E6E73", lineHeight: 1.5 }}>
-                      Únete al club y valora cualquier libro. Gratis, con Google.
-                    </p>
+                    <p style={{ fontFamily: "'EB Garamond', Georgia, serif", fontSize: 20, color: "#1F3A5F", marginBottom: 4 }}>¿Tu opinión importa?</p>
+                    <p style={{ fontSize: 13, color: "#6E6E73", lineHeight: 1.5 }}>Únete al club y valora cualquier libro. Gratis, con Google.</p>
                   </div>
-                  <Link href="/club" style={{
-                    display: "inline-flex", alignItems: "center", gap: 6,
-                    padding: "10px 20px", background: "#1F3A5F", color: "#FAF7F0",
-                    borderRadius: 10, fontSize: 13, textDecoration: "none",
-                    fontFamily: "DM Sans, sans-serif", fontWeight: 500, flexShrink: 0
-                  }}>
+                  <Link href="/club" style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "10px 20px", background: "#1F3A5F", color: "#FAF7F0", borderRadius: 10, fontSize: 13, textDecoration: "none", fontFamily: "DM Sans, sans-serif", fontWeight: 500, flexShrink: 0 }}>
                     Ver el club →
                   </Link>
                 </div>
@@ -640,7 +511,6 @@ export default function Home() {
                   </div>
                 </div>
               </div>
-
             </div>
           )}
 
@@ -656,17 +526,12 @@ export default function Home() {
               <Link href="/contacto" style={{ color: "#AEAEB2", textDecoration: "none" }}>Contacto</Link>
             </div>
           </footer>
-
         </div>
       </div>
 
       {showScanner && (
-        <BarcodeScanner
-          onDetected={handleBarcodeDetected}
-          onClose={function() { setShowScanner(false); }}
-        />
+        <BarcodeScanner onDetected={handleBarcodeDetected} onClose={function() { setShowScanner(false); }} />
       )}
-
     </div>
   );
 }
