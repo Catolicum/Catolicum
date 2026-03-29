@@ -331,7 +331,7 @@ export default function Home() {
           {!searched && (
             <div style={{ background: "#1F3A5F", borderBottom: "0.5px solid #2A4E7F", padding: isMobile ? "1.25rem 1.25rem 1rem" : "1.5rem 2rem 1.25rem", textAlign: "center" }}>
               <h1 style={{ fontFamily: "'EB Garamond', Georgia, serif", fontSize: isMobile ? 24 : 30, fontWeight: 400, color: "#FAF7F0", lineHeight: 1.2, marginBottom: ".4rem" }}>
-                \Qué hay detrás de cada libro?
+                Qué hay detrás de cada libro?
               </h1>
               <p style={{ fontFamily: "'EB Garamond', Georgia, serif", fontSize: isMobile ? 14 : 15, fontStyle: "italic", color: "#E1B955", marginBottom: ".65rem", borderLeft: "2px solid #2A4E7F", borderRight: "2px solid #2A4E7F", display: "inline-block", padding: "0 1rem" }}>
                 Lee con criterio. Lee con fe.
@@ -440,7 +440,7 @@ export default function Home() {
                           <Link href={"/libro/" + toSlug(result.t)} style={{ textDecoration: "none", color: "inherit" }}>
                             <h2 style={{ fontFamily: "'EB Garamond', Georgia, serif", fontSize: 22, fontWeight: 500, marginBottom: 4, color: "#1F3A5F" }}>{result.t}</h2>
                           </Link>
-                          <p style={{ fontSize: 13, color: "#6E6E73", marginBottom: 8 }}>{result.a}{result.y ? " \u00b7 " + result.y : ""}</p>
+                          <p style={{ fontSize: 13, color: "#6E6E73", marginBottom: 8 }}>{result.a}{result.y ? " - " + result.y : ""}</p>
                           <span style={{ fontSize: 12, padding: "3px 10px", borderRadius: 20, fontWeight: 500, background: st.bg, color: st.text }}>{st.label}</span>
                         </div>
                         <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8, flexShrink: 0 }}>
@@ -570,7 +570,7 @@ export default function Home() {
                           <div key={b.slug} onClick={function() { setQuery(b.titulo); handleSearch(b.titulo); }} style={{ display: "flex", alignItems: "center", gap: 12, background: "#fff", border: "0.5px solid #C8D4E0", borderRadius: 10, padding: ".75rem 1rem", cursor: "pointer" }}>
                             <div style={{ flex: 1, minWidth: 0 }}>
                               <div style={{ fontSize: 13, fontWeight: 500, color: "#1F3A5F", marginBottom: 2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{b.titulo}</div>
-                              <div style={{ fontSize: 11, color: "#6E6E73" }}>{b.autor} \u00b7 {b.numVotos} {b.numVotos === 1 ? "voto" : "votos"}</div>
+                              <div style={{ fontSize: 11, color: "#6E6E73" }}>{b.autor} - {b.numVotos} {b.numVotos === 1 ? "voto" : "votos"}</div>
                             </div>
                             <div style={{ display: "flex", alignItems: "center", gap: 6, flexShrink: 0 }}>
                               <div style={{ textAlign: "center" }}>
@@ -633,7 +633,7 @@ export default function Home() {
                     <p style={{ fontSize: 13, color: "#6E6E73", lineHeight: 1.5 }}>Unete al club y valora cualquier libro. Gratis, con Google.</p>
                   </div>
                   <Link href="/club" style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "10px 20px", background: "#1F3A5F", color: "#FAF7F0", borderRadius: 10, fontSize: 13, textDecoration: "none", fontFamily: "DM Sans, sans-serif", fontWeight: 500, flexShrink: 0 }}>
-                    Ver el club \u2192
+                    Ver el club
                   </Link>
                 </div>
               </div>
@@ -665,9 +665,9 @@ export default function Home() {
             </p>
             <div style={{ display: "flex", justifyContent: "center", gap: 12, fontSize: 12 }}>
               <Link href="/acerca" style={{ color: "#AEAEB2", textDecoration: "none" }}>Acerca de</Link>
-              <span style={{ color: "#D8D0BC" }}>\u00b7</span>
+              <span style={{ color: "#D8D0BC" }}>-</span>
               <Link href="/privacidad" style={{ color: "#AEAEB2", textDecoration: "none" }}>Privacidad</Link>
-              <span style={{ color: "#D8D0BC" }}>\u00b7</span>
+              <span style={{ color: "#D8D0BC" }}>-</span>
               <Link href="/contacto" style={{ color: "#AEAEB2", textDecoration: "none" }}>Contacto</Link>
             </div>
           </footer>
