@@ -107,7 +107,7 @@ export default function SidebarClub({ currentPath = "/" }) {
                 <div style={{ fontSize: 10, color: "#8AAFD4" }}>Miembro del club</div>
               </div>
             </div>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
               <div style={{ textAlign: "center" }}>
                 <div style={{ fontFamily: "'EB Garamond', Georgia, serif", fontSize: 20, color: "#E1B955", lineHeight: 1 }}>{numValoraciones}</div>
                 <div style={{ fontSize: 9, color: "#8AAFD4", textTransform: "uppercase", letterSpacing: ".05em" }}>valoraciones</div>
@@ -119,6 +119,12 @@ export default function SidebarClub({ currentPath = "/" }) {
                 Salir
               </button>
             </div>
+            {/* BOTÓN MI PERFIL */}
+            <Link href="/perfil" style={{ textDecoration: "none" }}>
+              <div style={{ width: "100%", padding: "6px 0", background: "#2A4E7F", borderRadius: 7, fontSize: 11, fontWeight: 500, color: "#FAF7F0", textAlign: "center", cursor: "pointer", fontFamily: "DM Sans, sans-serif" }}>
+                ◎ Mi perfil
+              </div>
+            </Link>
           </div>
         ) : (
           <div style={{ textAlign: "center" }}>
