@@ -154,7 +154,7 @@ export default function Home() {
       await supabase.from("wishlist").insert({ user_id: user.id, libro_slug: libro.slug, libro_titulo: libro.titulo, libro_autor: libro.autor, libro_puntuacion: libro.puntuacion });
       setWishlistSlugs(function(prev) { return [...prev, libro.slug]; });
       setWishlistRefresh(function(n) { return n + 1; });
-      showToast("\u2764\ufe0f A\u00f1adido a tu lista");
+      showToast("\u2764\ufe0f Añadido a tu lista");
     }
   }
 
@@ -213,20 +213,20 @@ export default function Home() {
     { label: "Home", href: "/" },
     { label: "Club de lectura", href: "/club" },
     { label: "Libros recomendados", href: "/recomendados" },
-    { label: "Mi\u00f3n", href: "/mision" },
+    { label: "Misión", href: "/mision" },
     { label: "Contacto", href: "/contacto" },
   ];
 
   return (
     <div style={{ minHeight: "100vh", background: "#FAF7F0", fontFamily: "DM Sans, sans-serif", color: "#1F2937", overflowX: "hidden" }}>
       <Head>
-        <title>Catolicum - Tu club de lectura cat\u00f3lico</title>
-        <meta name="description" content="Tu club de lectura cat\u00f3lico. Descubre y comparte si un libro es compatible con la fe antes de leerlo." />
-        <meta name="keywords" content="analisis libros fe catolica, libros polemicos cristianismo, El C\u00f3digo Da Vinci verdad, libros recomendados catolicos, libreria catolica" />
+        <title>Catolicum - Tu club de lectura católico</title>
+        <meta name="description" content="Tu club de lectura católico. Descubre y comparte si un libro es compatible con la fe antes de leerlo." />
+        <meta name="keywords" content="analisis libros fe catolica, libros polemicos cristianismo, El Código Da Vinci verdad, libros recomendados catolicos, libreria catolica" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta name="robots" content="index, follow" />
         <meta name="google-site-verification" content="DJgtQhrJpw86EiMeHjn-XjbOAYSsebWi-QaTPUl6dA8" />
-        <meta property="og:title" content="Catolicum - Tu club de lectura cat\u00f3lico" />
+        <meta property="og:title" content="Catolicum - Tu club de lectura católico" />
         <meta property="og:description" content="Descubre y comparte que hay detras de cada libro. Lee con criterio. Lee con fe." />
         <meta property="og:url" content="https://catolicum.com" />
         <meta property="og:type" content="website" />
@@ -248,7 +248,7 @@ export default function Home() {
           <div style={{ background: "#fff", borderRadius: 16, padding: "2rem 1.5rem", maxWidth: 340, width: "100%", textAlign: "center", boxShadow: "0 8px 40px rgba(0,0,0,0.15)" }} onClick={function(e) { e.stopPropagation(); }}>
             <div style={{ fontSize: 32, color: "#e8788a", marginBottom: ".75rem" }}>\u2661</div>
             <h3 style={{ fontFamily: "'EB Garamond', Georgia, serif", fontSize: 22, fontWeight: 500, color: "#1F3A5F", marginBottom: ".5rem" }}>Guarda tu lista de lectura</h3>
-            <p style={{ fontSize: 13, color: "#6E6E73", lineHeight: 1.6, marginBottom: "1.25rem" }}>Inicia sesi\u00f3n con Google para guardar libros y acceder desde cualquier dispositivo.</p>
+            <p style={{ fontSize: 13, color: "#6E6E73", lineHeight: 1.6, marginBottom: "1.25rem" }}>Inicia sesión con Google para guardar libros y acceder desde cualquier dispositivo.</p>
             <button onClick={function() { signInWithGoogle(); setShowLoginPrompt(false); }} style={{ width: "100%", padding: 11, background: "#1F3A5F", color: "#FAF7F0", border: "none", borderRadius: 10, fontSize: 14, cursor: "pointer", fontFamily: "DM Sans, sans-serif", marginBottom: ".5rem" }}>
               Continuar con Google
             </button>
@@ -276,7 +276,7 @@ export default function Home() {
           {isMobile && (
             <div style={{ background: "#1F3A5F", borderBottom: "0.5px solid #2A4E7F", padding: "10px 16px", display: "flex", alignItems: "center", justifyContent: "space-between", position: "sticky", top: 0, zIndex: 100 }}>
               <button onClick={resetSearch} style={{ background: "none", border: "none", cursor: "pointer", padding: 0 }}>
-                <span style={{ fontFamily: "'EB Garamond', Georgia, serif", fontSize: 19, fontWeight: 500, color: "#FAF7F0" }}>Cat\u00f3licum</span>
+                <span style={{ fontFamily: "'EB Garamond', Georgia, serif", fontSize: 19, fontWeight: 500, color: "#FAF7F0" }}>Catolicum</span>
               </button>
               <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                 {user ? (
@@ -331,13 +331,13 @@ export default function Home() {
           {!searched && (
             <div style={{ background: "#1F3A5F", borderBottom: "0.5px solid #2A4E7F", padding: isMobile ? "1.25rem 1.25rem 1rem" : "1.5rem 2rem 1.25rem", textAlign: "center" }}>
               <h1 style={{ fontFamily: "'EB Garamond', Georgia, serif", fontSize: isMobile ? 24 : 30, fontWeight: 400, color: "#FAF7F0", lineHeight: 1.2, marginBottom: ".4rem" }}>
-                \u00bfQu\u00e9 hay detr\u00e1s de cada libro?
+                \Qué hay detrás de cada libro?
               </h1>
               <p style={{ fontFamily: "'EB Garamond', Georgia, serif", fontSize: isMobile ? 14 : 15, fontStyle: "italic", color: "#E1B955", marginBottom: ".65rem", borderLeft: "2px solid #2A4E7F", borderRight: "2px solid #2A4E7F", display: "inline-block", padding: "0 1rem" }}>
                 Lee con criterio. Lee con fe.
               </p>
               <div style={{ borderTop: "0.5px solid #2A4E7F", borderBottom: "0.5px solid #2A4E7F", padding: ".3rem 0", maxWidth: 340, margin: "0 auto" }}>
-                <span style={{ fontSize: 10, letterSpacing: ".1em", textTransform: "uppercase", color: "#8AAFD4" }}>Tu club de lectura cat\u00f3lico</span>
+                <span style={{ fontSize: 10, letterSpacing: ".1em", textTransform: "uppercase", color: "#8AAFD4" }}>Tu club de lectura católico</span>
               </div>
             </div>
           )}
@@ -377,7 +377,7 @@ export default function Home() {
                   </div>
                 )}
                 <div style={{ display: "flex", gap: 6, flexWrap: "wrap", justifyContent: "center" }}>
-                  {["El C\u00f3digo Da Vinci", "Harry Potter", "Sapiens", "El Alquimista"].map(function(ex) {
+                  {["El Código Da Vinci", "Harry Potter", "Sapiens", "El Alquimista"].map(function(ex) {
                     return (
                       <button key={ex} onClick={function() { setQuery(ex); handleSearch(ex); }} style={{ fontSize: 12, padding: "4px 12px", border: "0.5px solid #D8D0BC", borderRadius: 20, background: "#EEE8D8", color: "#1F3A5F", cursor: "pointer", fontFamily: "DM Sans, sans-serif" }}>
                         {ex}
@@ -426,7 +426,7 @@ export default function Home() {
               </div>
 
               <button onClick={resetSearch} style={{ display: "inline-flex", alignItems: "center", gap: 6, marginBottom: "1rem", padding: "6px 14px", background: "#EEE8D8", border: "0.5px solid #D8D0BC", borderRadius: 20, fontSize: 13, color: "#1F3A5F", cursor: "pointer", fontFamily: "DM Sans, sans-serif" }}>
-                \u2190 Nueva b\u00fasqueda
+                \u2190 Nueva búsqueda
               </button>
 
               {loading && <div style={{ textAlign: "center", padding: "2rem", fontSize: 14, color: "#6E6E73" }}>Analizando...</div>}
@@ -445,7 +445,7 @@ export default function Home() {
                         </div>
                         <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8, flexShrink: 0 }}>
                           <div style={{ textAlign: "center" }}>
-                            <div style={{ fontSize: 10, color: "#8AAFD4", textTransform: "uppercase", letterSpacing: ".06em", marginBottom: 2 }}>Cat\u00f3licum</div>
+                            <div style={{ fontSize: 10, color: "#8AAFD4", textTransform: "uppercase", letterSpacing: ".06em", marginBottom: 2 }}>Catolicum</div>
                             <div style={{ fontFamily: "'EB Garamond', Georgia, serif", fontSize: 44, fontWeight: 500, lineHeight: 1, color: st.color }}>{result.s}</div>
                             <div style={{ fontSize: 12, color: "#6E6E73" }}>/10</div>
                           </div>
@@ -466,7 +466,7 @@ export default function Home() {
                       </div>
                     </div>
                     <div style={{ padding: "1.25rem" }}>
-                      <p style={{ fontSize: 10, fontWeight: 500, textTransform: "uppercase", letterSpacing: ".07em", color: "#AEAEB2", marginBottom: 6 }}>An\u00e1lisis doctrinal</p>
+                      <p style={{ fontSize: 10, fontWeight: 500, textTransform: "uppercase", letterSpacing: ".07em", color: "#AEAEB2", marginBottom: 6 }}>Análisis doctrinal</p>
                       <p style={{ fontSize: 14, color: "#3A3A3C", lineHeight: 1.7, marginBottom: "1.1rem" }}>{result.an}</p>
                       {result.tags && result.tags.length > 0 && (
                         <div style={{ marginBottom: "1.1rem" }}>
@@ -500,15 +500,15 @@ export default function Home() {
                 <div style={{ background: "#fff", border: "0.5px solid #C8D4E0", borderRadius: 14, padding: "1.75rem 1.5rem" }}>
                   <div style={{ textAlign: "center", marginBottom: "1.5rem" }}>
                     <div style={{ fontSize: 28, marginBottom: 12 }}>\uD83D\uDD0D</div>
-                    <h3 style={{ fontFamily: "'EB Garamond', Georgia, serif", fontSize: 22, fontWeight: 500, marginBottom: 8, color: "#1F3A5F" }}>Libro en an\u00e1lisis</h3>
+                    <h3 style={{ fontFamily: "'EB Garamond', Georgia, serif", fontSize: 22, fontWeight: 500, marginBottom: 8, color: "#1F3A5F" }}>Libro en análisis</h3>
                     <p style={{ fontSize: 13, color: "#6E6E73", lineHeight: 1.6, marginBottom: 4 }}>
-                      <strong style={{ color: "#1F3A5F" }}>"{query}"</strong> a\u00fan no est\u00e1 en nuestra base de datos.
+                      <strong style={{ color: "#1F3A5F" }}>"{query}"</strong> aún no está en nuestra base de datos.
                     </p>
-                    <p style={{ fontSize: 13, color: "#6E6E73" }}>Estamos ampliando continuamente la colecci\u00f3n.</p>
+                    <p style={{ fontSize: 13, color: "#6E6E73" }}>Estamos ampliando continuamente la colección.</p>
                   </div>
                   {notFoundSuggestions.length > 0 && (
                     <div>
-                      <p style={{ fontSize: 10, fontWeight: 500, textTransform: "uppercase", letterSpacing: ".07em", color: "#AEAEB2", marginBottom: ".6rem" }}>Quiz\u00e1s te interese:</p>
+                      <p style={{ fontSize: 10, fontWeight: 500, textTransform: "uppercase", letterSpacing: ".07em", color: "#AEAEB2", marginBottom: ".6rem" }}>Quizás te interese:</p>
                       <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
                         {notFoundSuggestions.map(function(b) {
                           var ss = getScoreStyle(b.puntuacion);
@@ -537,7 +537,7 @@ export default function Home() {
               <div style={{ background: "#EDF2F8", padding: isMobile ? "1.25rem 1rem" : "1.5rem 2rem", borderBottom: "0.5px solid #D4DDE8" }}>
                 <div style={{ maxWidth: 680, margin: "0 auto" }}>
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: ".75rem" }}>
-                    <p style={{ fontSize: 11, fontWeight: 500, textTransform: "uppercase", letterSpacing: ".07em", color: "#1F3A5F" }}>Los m\u00e1s buscados</p>
+                    <p style={{ fontSize: 11, fontWeight: 500, textTransform: "uppercase", letterSpacing: ".07em", color: "#1F3A5F" }}>Los más buscados</p>
                     <p style={{ fontSize: 12, color: "#8A9AAA" }}>Libros populares analizados</p>
                   </div>
                   <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr 1fr" : "repeat(3, 1fr)", gap: 8 }}>
@@ -559,8 +559,8 @@ export default function Home() {
                 <div style={{ background: "#FAF7F0", padding: isMobile ? "1.25rem 1rem" : "1.5rem 2rem", borderBottom: "0.5px solid #E8E2D4" }}>
                   <div style={{ maxWidth: 680, margin: "0 auto" }}>
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: ".75rem" }}>
-                      <p style={{ fontSize: 11, fontWeight: 500, textTransform: "uppercase", letterSpacing: ".07em", color: "#A32D2D" }}>\uD83D\uDD25 Los m\u00e1s controvertidos</p>
-                      <p style={{ fontSize: 12, color: "#8A9AAA" }}>Donde el club debate m\u00e1s</p>
+                      <p style={{ fontSize: 11, fontWeight: 500, textTransform: "uppercase", letterSpacing: ".07em", color: "#A32D2D" }}>\uD83D\uDD25 Los más controvertidos</p>
+                      <p style={{ fontSize: 12, color: "#8A9AAA" }}>Donde el club debate más</p>
                     </div>
                     <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
                       {controvertidos.map(function(b) {
@@ -574,7 +574,7 @@ export default function Home() {
                             </div>
                             <div style={{ display: "flex", alignItems: "center", gap: 6, flexShrink: 0 }}>
                               <div style={{ textAlign: "center" }}>
-                                <div style={{ fontSize: 9, color: "#8AAFD4", textTransform: "uppercase", letterSpacing: ".05em", marginBottom: 2 }}>Cat\u00f3licum</div>
+                                <div style={{ fontSize: 9, color: "#8AAFD4", textTransform: "uppercase", letterSpacing: ".05em", marginBottom: 2 }}>Catolicum</div>
                                 <div style={{ width: 32, height: 32, borderRadius: "50%", background: stCat.bg, color: stCat.text, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 600 }}>{b.puntuacionCatolicum}</div>
                               </div>
                               <div style={{ fontSize: 14, color: "#D8D0BC" }}>vs</div>
@@ -594,7 +594,7 @@ export default function Home() {
               <div style={{ background: "#FAF7F0", padding: isMobile ? "1.25rem 1rem" : "1.5rem 2rem", borderBottom: "0.5px solid #E8E2D4" }}>
                 <div style={{ maxWidth: 680, margin: "0 auto" }}>
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: ".75rem" }}>
-                    <p style={{ fontSize: 11, fontWeight: 500, textTransform: "uppercase", letterSpacing: ".07em", color: "#1F3A5F" }}>Para el lector cat\u00f3lico</p>
+                    <p style={{ fontSize: 11, fontWeight: 500, textTransform: "uppercase", letterSpacing: ".07em", color: "#1F3A5F" }}>Para el lector católico</p>
                     <Link href="/recomendados" style={{ fontSize: 12, color: "#E1B955", textDecoration: "none" }}>Ver todos \u2192</Link>
                   </div>
                   <div style={{ display: "flex", flexDirection: "column", gap: ".4rem" }}>
@@ -629,8 +629,8 @@ export default function Home() {
               <div style={{ background: "#EDF2F8", padding: isMobile ? "1.25rem 1rem" : "1.5rem 2rem", borderBottom: "0.5px solid #D4DDE8" }}>
                 <div style={{ maxWidth: 680, margin: "0 auto", display: "flex", alignItems: "center", gap: 16, flexWrap: "wrap" }}>
                   <div style={{ flex: 1, minWidth: 200 }}>
-                    <p style={{ fontFamily: "'EB Garamond', Georgia, serif", fontSize: 20, color: "#1F3A5F", marginBottom: 4 }}>\u00bfTu opini\u00f3n importa?</p>
-                    <p style={{ fontSize: 13, color: "#6E6E73", lineHeight: 1.5 }}>U\u00fanete al club y valora cualquier libro. Gratis, con Google.</p>
+                    <p style={{ fontFamily: "'EB Garamond', Georgia, serif", fontSize: 20, color: "#1F3A5F", marginBottom: 4 }}>Tu opinión importa?</p>
+                    <p style={{ fontSize: 13, color: "#6E6E73", lineHeight: 1.5 }}>Unete al club y valora cualquier libro. Gratis, con Google.</p>
                   </div>
                   <Link href="/club" style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "10px 20px", background: "#1F3A5F", color: "#FAF7F0", borderRadius: 10, fontSize: 13, textDecoration: "none", fontFamily: "DM Sans, sans-serif", fontWeight: 500, flexShrink: 0 }}>
                     Ver el club \u2192
@@ -661,7 +661,7 @@ export default function Home() {
 
           <footer style={{ background: "#FAF7F0", borderTop: "0.5px solid #E8E2D4", padding: "1.5rem" }}>
             <p style={{ fontSize: 11, color: "#AEAEB2", lineHeight: 1.65, textAlign: "center", marginBottom: 8 }}>
-              Proyecto independiente, no afiliado a la Iglesia Cat\u00f3lica ni a ninguna instituci\u00f3n religiosa oficial.
+              Proyecto independiente, no afiliado a la Iglesia Católica ni a ninguna institución religiosa oficial.
             </p>
             <div style={{ display: "flex", justifyContent: "center", gap: 12, fontSize: 12 }}>
               <Link href="/acerca" style={{ color: "#AEAEB2", textDecoration: "none" }}>Acerca de</Link>
