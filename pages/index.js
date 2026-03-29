@@ -6,9 +6,9 @@ import { supabase } from "../lib/supabase";
 import BarcodeScanner from "../components/BarcodeScanner";
 import Valoracion from "../components/Valoracion";
 import SidebarClub from "../components/SidebarClub";
+import { signInWithGoogle } from "../lib/auth";
 import HeartButton from "../components/HeartButton";
 import WishlistPanel from "../components/WishlistPanel";
-import { signInWithGoogle } from "../lib/auth";
 
 function getScoreStyle(s) {
   if (s >= 9) return { color: "#1D9E75", bg: "#EAF3DE", text: "#085041", label: "Muy afin" };
@@ -64,11 +64,11 @@ export default function Home() {
   const [recomendados, setRecomendados] = useState([]);
   const [totalLibros, setTotalLibros] = useState(0);
   const [controvertidos, setControvertidos] = useState([]);
-  const [session, setSession] = useState(null);
+  const [user, setUser] = useState(null);
   const [wishlistSlugs, setWishlistSlugs] = useState([]);
-  const [showLoginModal, setShowLoginModal] = useState(false);
+  const [wishlistRefresh, setWishlistRefresh] = useState(0);
   const [toast, setToast] = useState(null);
-  const [showWishlist, setShowWishlist] = useState(false);
+  const [showLoginPrompt, setShowLoginPrompt] = useState(false);
   const [notFoundSuggestions, setNotFoundSuggestions] = useState([]);
 
   function resetSearch() {
@@ -116,45 +116,45 @@ export default function Home() {
       });
     });
 
-    function loadWishlist(userId) {
-      supabase.from('wishlist').select('libro_slug').eq('user_id', userId).then(function(res) {
-        if (res.data) setWishlistSlugs(res.data.map(function(r) { return r.libro_slug; }));
-      });
-    }
-
-    supabase.auth.getSession().then(function(res) {
-      var s = res.data.session;
-      setSession(s);
-      if (s) loadWishlist(s.user.id);
-    });
-
-    var { data: authListener } = supabase.auth.onAuthStateChange(function(event, s) {
-      setSession(s);
-      if (s) loadWishlist(s.user.id);
-      else setWishlistSlugs([]);
-    });
-
-    return function() {
-      window.removeEventListener("resize", checkMobile);
-      authListener.subscription.unsubscribe();
-    };
+    return function() { window.removeEventListener("resize", checkMobile); };
   }, []);
+
+  useEffect(function() {
+    supabase.auth.getSession().then(function(res) {
+      setUser(res.data?.session?.user ?? null);
+    });
+    var { data: listener } = supabase.auth.onAuthStateChange(function(_e, session) {
+      setUser(session?.user ?? null);
+    });
+    return function() { listener.subscription.unsubscribe(); };
+  }, []);
+
+  useEffect(function() {
+    if (!user) { setWishlistSlugs([]); return; }
+    supabase.from("wishlist").select("libro_slug").eq("user_id", user.id).then(function(res) {
+      setWishlistSlugs(res.data ? res.data.map(function(r) { return r.libro_slug; }) : []);
+    });
+  }, [user, wishlistRefresh]);
 
   function isInWishlist(slug) { return wishlistSlugs.includes(slug); }
 
-  async function toggleWishlist(libro) {
-    if (!session) { setShowLoginModal(true); return; }
-    var slug = libro.slug;
-    if (wishlistSlugs.includes(slug)) {
-      await supabase.from('wishlist').delete().eq('user_id', session.user.id).eq('libro_slug', slug);
-      setWishlistSlugs(function(prev) { return prev.filter(function(s) { return s !== slug; }); });
-      setToast('Eliminado de tu lista');
-    } else {
-      await supabase.from('wishlist').insert({ user_id: session.user.id, libro_slug: slug, libro_titulo: libro.titulo, libro_autor: libro.autor, libro_puntuacion: libro.puntuacion });
-      setWishlistSlugs(function(prev) { return [...prev, slug]; });
-      setToast('Añadido a tu lista ♥');
-    }
+  function showToast(msg) {
+    setToast(msg);
     setTimeout(function() { setToast(null); }, 2500);
+  }
+
+  async function toggleWishlist(libro) {
+    if (!user) { setShowLoginPrompt(true); return; }
+    if (isInWishlist(libro.slug)) {
+      await supabase.from("wishlist").delete().eq("user_id", user.id).eq("libro_slug", libro.slug);
+      setWishlistSlugs(function(prev) { return prev.filter(function(s) { return s !== libro.slug; }); });
+      showToast("Eliminado de tu lista");
+    } else {
+      await supabase.from("wishlist").insert({ user_id: user.id, libro_slug: libro.slug, libro_titulo: libro.titulo, libro_autor: libro.autor, libro_puntuacion: libro.puntuacion });
+      setWishlistSlugs(function(prev) { return [...prev, libro.slug]; });
+      setWishlistRefresh(function(n) { return n + 1; });
+      showToast("❤️ Añadido a tu lista");
+    }
   }
 
   async function handleSearch(q) {
@@ -167,15 +167,10 @@ export default function Home() {
     var match = await searchBook(term);
     setResult(match);
     if (!match) {
-      supabase.from('libros').select('titulo, autor, puntuacion').eq('idioma', 'es').gte('puntuacion', 7).then(function(res) {
-        if (res.data && res.data.length > 0) {
-          var shuffled = res.data.slice().sort(function() { return Math.random() - .5; });
-          setNotFoundSuggestions(shuffled.slice(0, 4));
-        }
+      supabase.from("libros").select("titulo, autor, puntuacion").eq("idioma", "es").gte("puntuacion", 7).limit(20).then(function(res) {
+        if (res.data) setNotFoundSuggestions(res.data.sort(function() { return Math.random() - 0.5; }).slice(0, 4));
       });
-    } else {
-      setNotFoundSuggestions([]);
-    }
+    } else { setNotFoundSuggestions([]); }
     setLoading(false);
   }
 
@@ -205,6 +200,7 @@ export default function Home() {
   }
 
   var st = result ? getScoreStyle(result.s) : null;
+  var resultLibro = result ? { slug: toSlug(result.t), titulo: result.t, autor: result.a, puntuacion: result.s } : null;
 
   const NAV_MOBILE = [
     { label: "Home", href: "/" },
@@ -233,6 +229,19 @@ export default function Home() {
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="true" />
         <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
       </Head>
+
+      {toast && <div style={{ position:"fixed", bottom:"1.5rem", left:"50%", transform:"translateX(-50%)", background:"#1F3A5F", color:"#FAF7F0", padding:"10px 20px", borderRadius:20, fontSize:13, zIndex:1000, whiteSpace:"nowrap", boxShadow:"0 4px 16px rgba(0,0,0,0.2)" }}>{toast}</div>}
+      {showLoginPrompt && (
+        <div style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.45)", display:"flex", alignItems:"center", justifyContent:"center", zIndex:999 }} onClick={function() { setShowLoginPrompt(false); }}>
+          <div style={{ background:"#fff", borderRadius:16, padding:"2rem 1.5rem", maxWidth:340, width:"100%", textAlign:"center" }} onClick={function(e) { e.stopPropagation(); }}>
+            <div style={{ fontSize:32, color:"#e8788a", marginBottom:".75rem" }}>♡</div>
+            <h3 style={{ fontFamily:"'EB Garamond',serif", fontSize:22, color:"#1F3A5F", marginBottom:".5rem" }}>Guarda tu lista de lectura</h3>
+            <p style={{ fontSize:13, color:"#6E6E73", lineHeight:1.6, marginBottom:"1.25rem" }}>Inicia sesión con Google para guardar libros y acceder desde cualquier dispositivo.</p>
+            <button onClick={function() { signInWithGoogle(); setShowLoginPrompt(false); }} style={{ width:"100%", padding:11, background:"#1F3A5F", color:"#FAF7F0", border:"none", borderRadius:10, fontSize:14, cursor:"pointer", marginBottom:".5rem" }}>Continuar con Google</button>
+            <button onClick={function() { setShowLoginPrompt(false); }} style={{ width:"100%", padding:8, background:"none", border:"none", fontSize:13, color:"#AEAEB2", cursor:"pointer" }}>Ahora no</button>
+          </div>
+        </div>
+      )}
 
       <div style={{ display: "flex", minHeight: "100vh" }}>
 
@@ -330,12 +339,6 @@ export default function Home() {
                       </button>
                     );
                   })}
-                  {session && (
-                    <button onClick={function() { setShowWishlist(true); }} style={{ fontSize: 12, padding: "4px 12px", border: "0.5px solid #C8D4E0", borderRadius: 20, background: "none", color: "#8AAFD4", cursor: "pointer", fontFamily: "DM Sans, sans-serif", display: "inline-flex", alignItems: "center", gap: 4 }}>
-                      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#8AAFD4" strokeWidth="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" /></svg>
-                      Mi lista
-                    </button>
-                  )}
                 </div>
               </div>
               {isMobile && (
@@ -378,17 +381,9 @@ export default function Home() {
                 )}
               </div>
 
-              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: "1rem" }}>
-                <button onClick={resetSearch} style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "6px 14px", background: "#EEE8D8", border: "0.5px solid #D8D0BC", borderRadius: 20, fontSize: 13, color: "#1F3A5F", cursor: "pointer", fontFamily: "DM Sans, sans-serif" }}>
-                  ← Nueva búsqueda
-                </button>
-                {session && (
-                  <button onClick={function() { setShowWishlist(true); }} style={{ display: "inline-flex", alignItems: "center", gap: 5, padding: "6px 14px", background: "none", border: "0.5px solid #C8D4E0", borderRadius: 20, fontSize: 13, color: "#8AAFD4", cursor: "pointer", fontFamily: "DM Sans, sans-serif" }}>
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#8AAFD4" strokeWidth="1.8"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" /></svg>
-                    Mi lista
-                  </button>
-                )}
-              </div>
+              <button onClick={resetSearch} style={{ display: "inline-flex", alignItems: "center", gap: 6, marginBottom: "1rem", padding: "6px 14px", background: "#EEE8D8", border: "0.5px solid #D8D0BC", borderRadius: 20, fontSize: 13, color: "#1F3A5F", cursor: "pointer", fontFamily: "DM Sans, sans-serif" }}>
+                ← Nueva búsqueda
+              </button>
 
               {loading && <div style={{ textAlign: "center", padding: "2rem", fontSize: 14, color: "#6E6E73" }}>Analizando...</div>}
 
@@ -409,6 +404,7 @@ export default function Home() {
                           <div style={{ fontFamily: "'EB Garamond', Georgia, serif", fontSize: 44, fontWeight: 500, lineHeight: 1, color: st.color }}>{result.s}</div>
                           <div style={{ fontSize: 12, color: "#6E6E73" }}>/10</div>
                         </div>
+                        <HeartButton libro={resultLibro} user={user} isInWishlist={isInWishlist} onToggle={toggleWishlist} onNeedLogin={function() { setShowLoginPrompt(true); }} />
                       </div>
                       <div style={{ height: 4, background: "#EDF2F8", borderRadius: 2, overflow: "hidden" }}>
                         <div style={{ height: "100%", borderRadius: 2, background: st.color, width: (result.s * 10) + "%" }} />
@@ -434,18 +430,9 @@ export default function Home() {
                         <span style={{ fontWeight: 500, color: "#6E6E73", flexShrink: 0 }}>Referencia:</span>
                         <span style={{ color: "#AEAEB2" }}>{result.ref}</span>
                       </div>
-                      <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: ".75rem" }}>
-                        <a href={"https://www.amazon.es/s?k=" + encodeURIComponent(result.t + " " + result.a) + "&tag=catolicum-21"} target="_blank" rel="noopener noreferrer" style={{ display: "inline-flex", alignItems: "center", gap: 7, padding: "8px 16px", background: "#EEE8D8", border: "0.5px solid #D8D0BC", borderRadius: 8, fontSize: 13, color: "#1F3A5F", textDecoration: "none" }}>
-                          Encontrar en Amazon
-                        </a>
-                        <HeartButton
-                          libro={{ slug: toSlug(result.t), titulo: result.t, autor: result.a, puntuacion: result.s }}
-                          isInWishlist={isInWishlist}
-                          onToggle={toggleWishlist}
-                          onNeedLogin={function() { setShowLoginModal(true); }}
-                          hasUser={!!session}
-                        />
-                      </div>
+                      <a href={"https://www.amazon.es/s?k=" + encodeURIComponent(result.t + " " + result.a) + "&tag=catolicum-21"} target="_blank" rel="noopener noreferrer" style={{ display: "inline-flex", alignItems: "center", gap: 7, marginTop: ".75rem", padding: "8px 16px", background: "#EEE8D8", border: "0.5px solid #D8D0BC", borderRadius: 8, fontSize: 13, color: "#1F3A5F", textDecoration: "none" }}>
+                        Encontrar en Amazon
+                      </a>
                     </div>
                   </div>
                   <Valoracion libroSlug={toSlug(result.t)} />
@@ -453,31 +440,29 @@ export default function Home() {
               )}
 
               {!loading && !result && (
-                <div>
-                  <div style={{ background: "#fff", border: "0.5px dashed #C8D4E0", borderRadius: 14, padding: "2rem 1.5rem", textAlign: "center", marginBottom: "1rem" }}>
-                    <div style={{ fontSize: 26, marginBottom: 10 }}>⏳</div>
-                    <h3 style={{ fontFamily: "'EB Garamond', Georgia, serif", fontSize: 20, fontWeight: 500, marginBottom: 6, color: "#1F3A5F" }}>
-                      "{query}" aún no está en nuestra base de datos
-                    </h3>
-                    <p style={{ fontSize: 13, color: "#6E6E73", lineHeight: 1.6 }}>Estamos ampliando continuamente la colección. Vuelve a intentarlo más tarde.</p>
+                <div style={{ background:"#fff", border:"0.5px solid #C8D4E0", borderRadius:14, padding:"1.75rem 1.5rem" }}>
+                  <div style={{ textAlign:"center", marginBottom:"1.5rem" }}>
+                    <div style={{ fontSize:28, marginBottom:12 }}>🔍</div>
+                    <h3 style={{ fontFamily:"'EB Garamond',serif", fontSize:22, fontWeight:500, color:"#1F3A5F", marginBottom:8 }}>Libro en análisis</h3>
+                    <p style={{ fontSize:13, color:"#6E6E73", lineHeight:1.6 }}><strong>"{query}"</strong> aún no está en nuestra base de datos.</p>
                   </div>
                   {notFoundSuggestions.length > 0 && (
                     <div>
-                      <p style={{ fontSize: 11, fontWeight: 500, textTransform: "uppercase", letterSpacing: ".07em", color: "#8AAFD4", marginBottom: 10 }}>Mientras tanto, prueba con estos</p>
-                      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                        {notFoundSuggestions.map(function(s) {
-                          var sc = getScoreStyle(s.puntuacion);
-                          return (
-                            <div key={s.titulo} onClick={function() { setQuery(s.titulo); handleSearch(s.titulo); }} style={{ display: "flex", alignItems: "center", gap: 10, background: "#fff", border: "0.5px solid #C8D4E0", borderRadius: 10, padding: ".75rem 1rem", cursor: "pointer" }}>
-                              <div style={{ width: 28, height: 28, borderRadius: "50%", background: sc.bg, color: sc.text, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 500, flexShrink: 0 }}>{s.puntuacion}</div>
-                              <div style={{ flex: 1, minWidth: 0 }}>
-                                <div style={{ fontSize: 13, fontWeight: 500, color: "#1F3A5F", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{s.titulo}</div>
-                                <div style={{ fontSize: 12, color: "#6E6E73" }}>{s.autor}</div>
-                              </div>
+                      <p style={{ fontSize:10, fontWeight:500, textTransform:"uppercase", letterSpacing:".07em", color:"#AEAEB2", marginBottom:".6rem" }}>Quizás te interese:</p>
+                      {notFoundSuggestions.map(function(b) {
+                        var ss = getScoreStyle(b.puntuacion);
+                        var sLibro = { slug: toSlug(b.titulo), titulo: b.titulo, autor: b.autor, puntuacion: b.puntuacion };
+                        return (
+                          <div key={b.titulo} style={{ display:"flex", alignItems:"center", gap:10, padding:".65rem .85rem", background:"#FAF7F0", border:"0.5px solid #E8E2D4", borderRadius:8, marginBottom:6 }}>
+                            <div style={{ width:28, height:28, borderRadius:"50%", background:ss.bg, color:ss.text, display:"flex", alignItems:"center", justifyContent:"center", fontSize:11, fontWeight:600, flexShrink:0 }}>{b.puntuacion}</div>
+                            <div style={{ flex:1, minWidth:0, cursor:"pointer" }} onClick={function() { setQuery(b.titulo); handleSearch(b.titulo); }}>
+                              <div style={{ fontSize:13, fontWeight:500, color:"#1F3A5F" }}>{b.titulo}</div>
+                              <div style={{ fontSize:11, color:"#6E6E73" }}>{b.autor}</div>
                             </div>
-                          );
-                        })}
-                      </div>
+                            <HeartButton libro={sLibro} user={user} isInWishlist={isInWishlist} onToggle={toggleWishlist} onNeedLogin={function() { setShowLoginPrompt(true); }} />
+                          </div>
+                        );
+                      })}
                     </div>
                   )}
                 </div>
@@ -559,8 +544,8 @@ export default function Home() {
                       var rs = getScoreStyle(b.puntuacion);
                       var slug = toSlug(b.titulo);
                       return (
-                        <div key={b.titulo} style={{ display: "flex", alignItems: "center", gap: 12, background: "#fff", border: "0.5px solid #D8D0BC", borderRadius: 10, padding: ".75rem 1rem" }}>
-                          <Link href={"/recomendados/" + slug} style={{ textDecoration: "none", color: "inherit", display: "flex", alignItems: "center", gap: 12, flex: 1, minWidth: 0 }}>
+                        <Link key={b.titulo} href={"/recomendados/" + slug} style={{ textDecoration: "none", color: "inherit" }}>
+                          <div style={{ display: "flex", alignItems: "center", gap: 12, background: "#fff", border: "0.5px solid #D8D0BC", borderRadius: 10, padding: ".75rem 1rem" }}>
                             {b.imagen_url ? (
                               <img src={b.imagen_url} alt={b.titulo} style={{ width: 36, height: 50, borderRadius: 4, objectFit: "cover", flexShrink: 0 }} />
                             ) : (
@@ -572,16 +557,9 @@ export default function Home() {
                               <div style={{ fontSize: 13, fontWeight: 500, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", color: "#1F2937" }}>{b.titulo}</div>
                               <div style={{ fontSize: 12, color: "#6E6E73" }}>{b.autor}</div>
                             </div>
-                          </Link>
-                          <div style={{ width: 30, height: 30, borderRadius: "50%", background: rs.bg, color: rs.text, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 500, flexShrink: 0 }}>{b.puntuacion}</div>
-                          <HeartButton
-                            libro={{ slug: slug, titulo: b.titulo, autor: b.autor, puntuacion: b.puntuacion }}
-                            isInWishlist={isInWishlist}
-                            onToggle={toggleWishlist}
-                            onNeedLogin={function() { setShowLoginModal(true); }}
-                            hasUser={!!session}
-                          />
-                        </div>
+                            <div style={{ width: 30, height: 30, borderRadius: "50%", background: rs.bg, color: rs.text, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 500, flexShrink: 0 }}>{b.puntuacion}</div>
+                          </div>
+                        </Link>
                       );
                     })}
                   </div>
@@ -640,48 +618,6 @@ export default function Home() {
 
       {showScanner && (
         <BarcodeScanner onDetected={handleBarcodeDetected} onClose={function() { setShowScanner(false); }} />
-      )}
-
-      {/* TOAST */}
-      {toast && (
-        <div style={{ position: "fixed", bottom: 24, left: "50%", transform: "translateX(-50%)", background: "#1F3A5F", color: "#FAF7F0", fontSize: 13, padding: "10px 20px", borderRadius: 20, zIndex: 2000, pointerEvents: "none", whiteSpace: "nowrap", boxShadow: "0 4px 16px rgba(0,0,0,.2)" }}>
-          {toast}
-        </div>
-      )}
-
-      {/* MODAL LOGIN */}
-      {showLoginModal && (
-        <div style={{ position: "fixed", inset: 0, zIndex: 1500, display: "flex", alignItems: "center", justifyContent: "center" }}>
-          <div onClick={function() { setShowLoginModal(false); }} style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,.4)" }} />
-          <div style={{ position: "relative", background: "#FAF7F0", borderRadius: 14, padding: "2rem 1.75rem", maxWidth: 340, width: "90%", textAlign: "center" }}>
-            <p style={{ fontFamily: "'EB Garamond', Georgia, serif", fontSize: 22, color: "#1F3A5F", marginBottom: 8 }}>Inicia sesión</p>
-            <p style={{ fontSize: 13, color: "#6E6E73", marginBottom: 20, lineHeight: 1.5 }}>Para guardar libros en tu lista necesitas una cuenta.</p>
-            <button
-              onClick={function() { setShowLoginModal(false); signInWithGoogle(); }}
-              style={{ display: "inline-flex", alignItems: "center", gap: 10, padding: "10px 20px", background: "#1F3A5F", color: "#FAF7F0", border: "none", borderRadius: 10, fontSize: 14, cursor: "pointer", fontFamily: "DM Sans, sans-serif", fontWeight: 500 }}
-            >
-              <svg width="18" height="18" viewBox="0 0 24 24">
-                <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
-                <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
-                <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
-                <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
-              </svg>
-              Continuar con Google
-            </button>
-            <button onClick={function() { setShowLoginModal(false); }} style={{ display: "block", margin: "12px auto 0", fontSize: 12, color: "#8AAFD4", background: "none", border: "none", cursor: "pointer", fontFamily: "DM Sans, sans-serif" }}>
-              Cancelar
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* WISHLIST PANEL */}
-      {showWishlist && session && (
-        <WishlistPanel
-          userId={session.user.id}
-          onClose={function() { setShowWishlist(false); }}
-          onRemove={function(slug) { setWishlistSlugs(function(prev) { return prev.filter(function(s) { return s !== slug; }); }); }}
-        />
       )}
     </div>
   );

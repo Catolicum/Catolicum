@@ -1,10 +1,10 @@
-export default function HeartButton({ libro, isInWishlist, onToggle, onNeedLogin, hasUser }) {
+export default function HeartButton({ libro, user, isInWishlist, onToggle, onNeedLogin }) {
   var active = isInWishlist(libro.slug);
 
   function handleClick(e) {
     e.preventDefault();
     e.stopPropagation();
-    if (!hasUser) { onNeedLogin(); return; }
+    if (!user) { onNeedLogin(); return; }
     onToggle(libro);
   }
 
