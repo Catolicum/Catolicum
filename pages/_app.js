@@ -16,6 +16,8 @@ export default function App({ Component, pageProps }) {
   return (
     <>
       <style>{`
+        *, *::before, *::after { box-sizing: border-box; }
+        html, body { max-width: 100vw; overflow-x: hidden; margin: 0; padding: 0; }
         #interactive.viewport { width: 100% !important; height: 100% !important; }
         #interactive.viewport video { width: 100% !important; height: 100% !important; object-fit: cover !important; }
         #interactive.viewport canvas { width: 100% !important; height: 100% !important; object-fit: cover !important; }
