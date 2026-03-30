@@ -3,14 +3,7 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
 import SidebarClub from "../components/SidebarClub";
-
-const MOBILE_NAV = [
-  { label: "Home", href: "/" },
-  { label: "Club de lectura", href: "/club" },
-  { label: "Libros recomendados", href: "/recomendados" },
-  { label: "Misión", href: "/mision" },
-  { label: "Contacto", href: "/contacto" },
-];
+import MobileHeader from "../components/MobileHeader";
 
 function toSlug(str) {
   if (!str) return "";
@@ -24,7 +17,6 @@ function getScoreStyle(s) {
 }
 
 export default function Recomendados() {
-  const [menuOpen, setMenuOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [lista, setLista] = useState([]);
 
@@ -39,7 +31,7 @@ export default function Recomendados() {
   }, []);
 
   return (
-    <div style={{ minHeight: "100vh", background: "#FAF7F0", fontFamily: "DM Sans, sans-serif", color: "#1F2937" }}>
+    <div style={{ minHeight: "100vh", background: "#FAF7F0", fontFamily: "DM Sans, sans-serif", color: "#1F2937", overflowX: "hidden" }}>
       <Head>
         <title>Libros Recomendados - Católicum</title>
         <meta name="description" content="Los mejores libros para lectores católicos. Selección del club de lectura católico." />
@@ -48,30 +40,13 @@ export default function Recomendados() {
         <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
       </Head>
 
-      <div style={{ display: "flex", minHeight: "100vh" }}>
+      <div style={{ display: "flex", minHeight: "100vh", maxWidth: "100vw", overflow: "hidden" }}>
         {!isMobile && <SidebarClub currentPath="/recomendados" />}
 
-        <div style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column" }}>
+        <div style={{ flex: 1, minWidth: 0, maxWidth: "100%", display: "flex", flexDirection: "column" }}>
 
-          {isMobile && (
-            <div style={{ background: "#1F3A5F", borderBottom: "0.5px solid #2A4E7F", padding: "10px 16px", display: "flex", alignItems: "center", justifyContent: "space-between", position: "sticky", top: 0, zIndex: 100 }}>
-              <Link href="/" style={{ textDecoration: "none" }}><span style={{ fontFamily: "'EB Garamond', Georgia, serif", fontSize: 19, fontWeight: 500, color: "#FAF7F0" }}>Católicum</span></Link>
-              <button onClick={function() { setMenuOpen(!menuOpen); }} style={{ background: "none", border: "none", cursor: "pointer", padding: 4, display: "flex", flexDirection: "column", gap: 5 }}>
-                <span style={{ display: "block", width: 18, height: 1.5, background: "#8AAFD4", borderRadius: 1 }} />
-                <span style={{ display: "block", width: 18, height: 1.5, background: "#8AAFD4", borderRadius: 1 }} />
-                <span style={{ display: "block", width: 18, height: 1.5, background: "#8AAFD4", borderRadius: 1 }} />
-              </button>
-            </div>
-          )}
-          {isMobile && menuOpen && (
-            <div style={{ background: "#1F3A5F", borderBottom: "0.5px solid #2A4E7F", padding: ".5rem 1rem 1rem" }}>
-              {MOBILE_NAV.map(function(item) {
-                return (<Link key={item.href} href={item.href} onClick={function() { setMenuOpen(false); }} style={{ display: "block", padding: "10px 0", fontSize: 14, fontFamily: "'EB Garamond', Georgia, serif", color: "#8AAFD4", textDecoration: "none", borderBottom: "0.5px solid #2A4E7F" }}>{item.label}</Link>);
-              })}
-            </div>
-          )}
+          {isMobile && <MobileHeader currentPath="/recomendados" />}
 
-          {/* HERO */}
           <div style={{ background: "#1F3A5F", borderBottom: "0.5px solid #2A4E7F", padding: isMobile ? "1.25rem 1.25rem 1rem" : "1.5rem 2rem 1.25rem", textAlign: "center" }}>
             <h1 style={{ fontFamily: "'EB Garamond', Georgia, serif", fontSize: isMobile ? 24 : 30, fontWeight: 400, color: "#FAF7F0", lineHeight: 1.2, marginBottom: ".4rem" }}>
               Libros recomendados
@@ -80,18 +55,12 @@ export default function Recomendados() {
               Selección del club de lectura católico
             </p>
             <div style={{ borderTop: "0.5px solid #2A4E7F", borderBottom: "0.5px solid #2A4E7F", padding: ".3rem 0", maxWidth: 340, margin: "0 auto" }}>
-              <span style={{ fontSize: 10, letterSpacing: ".1em", textTransform: "uppercase", color: "#8AAFD4" }}>
-                Compatible o plenamente alineados con la fe católica
-              </span>
+              <span style={{ fontSize: 10, letterSpacing: ".1em", textTransform: "uppercase", color: "#8AAFD4" }}>Compatible o plenamente alineados con la fe católica</span>
             </div>
           </div>
 
           <div style={{ maxWidth: 680, margin: "0 auto", padding: isMobile ? "1.25rem 1rem" : "2rem 1.5rem", width: "100%" }}>
-
-            {lista.length === 0 && (
-              <p style={{ fontSize: 13, color: "#8AAFD4" }}>Cargando...</p>
-            )}
-
+            {lista.length === 0 && <p style={{ fontSize: 13, color: "#8AAFD4" }}>Cargando...</p>}
             <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
               {lista.map(function(b) {
                 var slug = toSlug(b.titulo);
@@ -114,17 +83,12 @@ export default function Recomendados() {
                       </Link>
                       <div style={{ fontSize: 12, color: "#6E6E73" }}>{b.autor}</div>
                     </div>
-                    <div style={{ width: 30, height: 30, borderRadius: "50%", background: st.bg, color: st.text, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 500, flexShrink: 0 }}>
-                      {b.puntuacion}
-                    </div>
-                    <a href={amazonUrl} target="_blank" rel="noopener noreferrer" style={{ fontSize: 12, padding: "5px 10px", border: "0.5px solid #D8D0BC", borderRadius: 6, color: "#1F3A5F", textDecoration: "none", flexShrink: 0, background: "#EEE8D8" }}>
-                      Amazon
-                    </a>
+                    <div style={{ width: 30, height: 30, borderRadius: "50%", background: st.bg, color: st.text, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 500, flexShrink: 0 }}>{b.puntuacion}</div>
+                    <a href={amazonUrl} target="_blank" rel="noopener noreferrer" style={{ fontSize: 12, padding: "5px 10px", border: "0.5px solid #D8D0BC", borderRadius: 6, color: "#1F3A5F", textDecoration: "none", flexShrink: 0, background: "#EEE8D8" }}>Amazon</a>
                   </div>
                 );
               })}
             </div>
-
             <div style={{ borderTop: "0.5px solid #D8D0BC", marginTop: "2rem", paddingTop: "1rem", display: "flex", gap: 16, fontSize: 12, color: "#AEAEB2" }}>
               <Link href="/privacidad" style={{ color: "#AEAEB2", textDecoration: "none" }}>Política de Privacidad</Link>
               <span style={{ color: "#D8D0BC" }}>·</span>

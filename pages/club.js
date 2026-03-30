@@ -2,6 +2,7 @@ import Head from "next/head";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import SidebarClub from "../components/SidebarClub";
+import MobileHeader from "../components/MobileHeader";
 import { signInWithGoogle } from "../lib/auth";
 import { supabase } from "../lib/supabase";
 
@@ -21,16 +22,7 @@ const FAQS = [
   { q: "¿Cómo me uno al club?", a: "Solo necesitas una cuenta de Google. Es gratis, sin registro de contraseña, y te permite valorar cualquier libro de nuestra base de datos." },
 ];
 
-const MOBILE_NAV = [
-  { label: "Home", href: "/" },
-  { label: "Club de lectura", href: "/club" },
-  { label: "Libros recomendados", href: "/recomendados" },
-  { label: "Misión", href: "/mision" },
-  { label: "Contacto", href: "/contacto" },
-];
-
 export default function Club() {
-  const [menuOpen, setMenuOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [session, setSession] = useState(null);
   const [openFaq, setOpenFaq] = useState(null);
@@ -41,18 +33,18 @@ export default function Club() {
     checkMobile();
     window.addEventListener("resize", checkMobile);
     supabase.auth.getSession().then(function(res) { setSession(res.data.session); });
-    const { data: listener } = supabase.auth.onAuthStateChange(function(_, s) { setSession(s); });
+    var sub = supabase.auth.onAuthStateChange(function(_, s) { setSession(s); });
     supabase.from('libros').select('id', { count: 'exact', head: true }).eq('idioma', 'es').then(function(r) {
       if (r.count) setStats(function(p) { return Object.assign({}, p, { libros: r.count }); });
     });
     supabase.from('valoraciones').select('id', { count: 'exact', head: true }).then(function(r) {
       if (r.count) setStats(function(p) { return Object.assign({}, p, { valoraciones: r.count }); });
     });
-    return function() { window.removeEventListener("resize", checkMobile); listener.subscription.unsubscribe(); };
+    return function() { window.removeEventListener("resize", checkMobile); sub.data?.subscription?.unsubscribe(); };
   }, []);
 
   return (
-    <div style={{ minHeight: "100vh", background: "#FAF7F0", fontFamily: "DM Sans, sans-serif", color: "#1F2937" }}>
+    <div style={{ minHeight: "100vh", background: "#FAF7F0", fontFamily: "DM Sans, sans-serif", color: "#1F2937", overflowX: "hidden" }}>
       <Head>
         <title>Club de Lectura Católico - Católicum</title>
         <meta name="description" content="Únete al club de lectura católico. Valora libros, debate con otros lectores y lee con criterio de fe." />
@@ -61,30 +53,13 @@ export default function Club() {
         <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
       </Head>
 
-      <div style={{ display: "flex", minHeight: "100vh" }}>
+      <div style={{ display: "flex", minHeight: "100vh", maxWidth: "100vw", overflow: "hidden" }}>
         {!isMobile && <SidebarClub currentPath="/club" />}
 
-        <div style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column" }}>
+        <div style={{ flex: 1, minWidth: 0, maxWidth: "100%", display: "flex", flexDirection: "column" }}>
 
-          {isMobile && (
-            <div style={{ background: "#1F3A5F", borderBottom: "0.5px solid #2A4E7F", padding: "10px 16px", display: "flex", alignItems: "center", justifyContent: "space-between", position: "sticky", top: 0, zIndex: 100 }}>
-              <Link href="/" style={{ textDecoration: "none" }}><span style={{ fontFamily: "'EB Garamond', Georgia, serif", fontSize: 19, fontWeight: 500, color: "#FAF7F0" }}>Católicum</span></Link>
-              <button onClick={function() { setMenuOpen(!menuOpen); }} style={{ background: "none", border: "none", cursor: "pointer", padding: 4, display: "flex", flexDirection: "column", gap: 5 }}>
-                <span style={{ display: "block", width: 18, height: 1.5, background: "#8AAFD4", borderRadius: 1 }} />
-                <span style={{ display: "block", width: 18, height: 1.5, background: "#8AAFD4", borderRadius: 1 }} />
-                <span style={{ display: "block", width: 18, height: 1.5, background: "#8AAFD4", borderRadius: 1 }} />
-              </button>
-            </div>
-          )}
-          {isMobile && menuOpen && (
-            <div style={{ background: "#1F3A5F", borderBottom: "0.5px solid #2A4E7F", padding: ".5rem 1rem 1rem" }}>
-              {MOBILE_NAV.map(function(item) {
-                return (<Link key={item.href} href={item.href} onClick={function() { setMenuOpen(false); }} style={{ display: "block", padding: "10px 0", fontSize: 14, fontFamily: "'EB Garamond', Georgia, serif", color: "#8AAFD4", textDecoration: "none", borderBottom: "0.5px solid #2A4E7F" }}>{item.label}</Link>);
-              })}
-            </div>
-          )}
+          {isMobile && <MobileHeader currentPath="/club" />}
 
-          {/* HERO — mismo tamaño que el home */}
           <div style={{ background: "#1F3A5F", borderBottom: "0.5px solid #2A4E7F", padding: isMobile ? "1.25rem 1.25rem 1rem" : "1.5rem 2rem 1.25rem", textAlign: "center" }}>
             <h1 style={{ fontFamily: "'EB Garamond', Georgia, serif", fontSize: isMobile ? 24 : 30, fontWeight: 400, color: "#FAF7F0", lineHeight: 1.2, marginBottom: ".4rem" }}>
               Club de lectura católico
@@ -99,21 +74,20 @@ export default function Club() {
                   Unirme al club con Google
                 </button>
               ) : (
-                <span style={{ fontSize: 10, letterSpacing: ".1em", textTransform: "uppercase", color: "#8AAFD4" }}>✓ Ya eres miembro · {stats.libros || "200+"} libros · {stats.valoraciones} valoraciones</span>
+                <span style={{ fontSize: 10, letterSpacing: ".1em", textTransform: "uppercase", color: "#8AAFD4" }}>✔ Ya eres miembro · {stats.libros || "200+"} libros · {stats.valoraciones} valoraciones</span>
               )}
             </div>
           </div>
 
           <div style={{ maxWidth: 680, margin: "0 auto", width: "100%", padding: isMobile ? "1.5rem 1rem" : "2.5rem 1.5rem" }}>
 
-            {/* CÓMO FUNCIONA */}
             <div style={{ marginBottom: "3rem" }}>
               <p style={{ fontSize: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: ".1em", color: "#8AAFD4", marginBottom: "0.5rem" }}>El club</p>
               <h2 style={{ fontFamily: "'EB Garamond', Georgia, serif", fontSize: isMobile ? 26 : 32, fontWeight: 400, color: "#1F3A5F", marginBottom: "1.5rem" }}>Cómo funciona</h2>
               <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)", gap: "1rem" }}>
                 {[
                   { num: "01", titulo: "Busca cualquier libro", desc: "Más de 200 libros analizados — desde bestsellers polémicos hasta clásicos espirituales.", icon: "🔍" },
-                  { num: "02", titulo: "Lee el análisis doctrinal", desc: "Cada libro tiene una puntuación del 1 al 10 basada en el Catecismo, encíclicas y tradición teológica.", icon: "📖" },
+                  { num: "02", titulo: "Lee el análisis doctrinal", desc: "Cada libro tiene una puntuación del 1 al 10 basada en el Catecismo, encíclicas y tradición teológica.", icon: "📊" },
                   { num: "03", titulo: "Añade tu valoración", desc: "¿Estás de acuerdo? ¿No? Deja tu puntuación y comentario. El debate es la esencia del club.", icon: "⭐" },
                 ].map(function(paso) {
                   return (
@@ -130,7 +104,6 @@ export default function Club() {
               </div>
             </div>
 
-            {/* ESCALA */}
             <div style={{ marginBottom: "3rem" }}>
               <p style={{ fontSize: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: ".1em", color: "#8AAFD4", marginBottom: "0.5rem" }}>Criterio</p>
               <h2 style={{ fontFamily: "'EB Garamond', Georgia, serif", fontSize: isMobile ? 26 : 32, fontWeight: 400, color: "#1F3A5F", marginBottom: "1.5rem" }}>La escala de puntuación</h2>
@@ -153,7 +126,6 @@ export default function Club() {
               </div>
             </div>
 
-            {/* DOS PUNTUACIONES */}
             <div style={{ marginBottom: "3rem" }}>
               <p style={{ fontSize: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: ".1em", color: "#8AAFD4", marginBottom: "0.5rem" }}>Debate</p>
               <h2 style={{ fontFamily: "'EB Garamond', Georgia, serif", fontSize: isMobile ? 26 : 32, fontWeight: 400, color: "#1F3A5F", marginBottom: "1.5rem" }}>Dos puntuaciones, un debate</h2>
@@ -172,7 +144,6 @@ export default function Club() {
               <p style={{ fontSize: 14, color: "#6E6E73", lineHeight: 1.7 }}>Cuando ambas puntuaciones difieren significativamente, surge el debate más rico. ¿Tiene razón la comunidad o el análisis doctrinal? Ahí está la gracia del club.</p>
             </div>
 
-            {/* FAQ */}
             <div style={{ marginBottom: "3rem" }}>
               <p style={{ fontSize: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: ".1em", color: "#8AAFD4", marginBottom: "0.5rem" }}>Preguntas frecuentes</p>
               <h2 style={{ fontFamily: "'EB Garamond', Georgia, serif", fontSize: isMobile ? 26 : 32, fontWeight: 400, color: "#1F3A5F", marginBottom: "1.5rem" }}>Lo que nos preguntan</h2>
