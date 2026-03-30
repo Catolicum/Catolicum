@@ -30,16 +30,17 @@ export default function Contacto() {
   var labelStyle = { fontSize: 12, fontWeight: 500, color: "#1F3A5F", textTransform: "uppercase", letterSpacing: ".06em", display: "block", marginBottom: 6 };
 
   return (
-    <div style={{ minHeight: "100vh", background: "#FAF7F0", fontFamily: "DM Sans, sans-serif", color: "#1F2937", overflowX: "hidden" }}>
+    <div style={{ minHeight: "100vh", background: "#FAF7F0", fontFamily: "DM Sans, sans-serif", color: "#1F2937", overflowX: "clip" }}>
       <Head>
         <title>Contacto - Católicum</title>
         <meta name="description" content="Contacta con Católicum para sugerir libros o reportar errores." />
-        <link rel="preconnect" href="https://fonts.googleapis.com" /><link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="true" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="true" />
         <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
       </Head>
-      <div style={{ display: "flex", minHeight: "100vh", maxWidth: "100vw", overflow: "hidden" }}>
+      <div style={{ display: "flex", minHeight: "100vh" }}>
         {!isMobile && <SidebarClub currentPath="/contacto" />}
-        <div style={{ flex: 1, minWidth: 0, maxWidth: "100%", display: "flex", flexDirection: "column" }}>
+        <div style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column" }}>
           {isMobile && <MobileHeader currentPath="/contacto" />}
           <div style={{ background: "#1F3A5F", borderBottom: "0.5px solid #2A4E7F", padding: isMobile ? "1.25rem 1.25rem 1rem" : "1.5rem 2rem 1.25rem", textAlign: "center" }}>
             <h1 style={{ fontFamily: "'EB Garamond', Georgia, serif", fontSize: isMobile ? 24 : 30, fontWeight: 400, color: "#FAF7F0", lineHeight: 1.2, marginBottom: ".4rem" }}>Contacto</h1>

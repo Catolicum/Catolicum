@@ -31,7 +31,7 @@ export default function Recomendados() {
   }, []);
 
   return (
-    <div style={{ minHeight: "100vh", background: "#FAF7F0", fontFamily: "DM Sans, sans-serif", color: "#1F2937", overflowX: "hidden" }}>
+    <div style={{ minHeight: "100vh", background: "#FAF7F0", fontFamily: "DM Sans, sans-serif", color: "#1F2937", overflowX: "clip" }}>
       <Head>
         <title>Libros Recomendados - Católicum</title>
         <meta name="description" content="Los mejores libros para lectores católicos. Selección del club de lectura católico." />
@@ -40,20 +40,15 @@ export default function Recomendados() {
         <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
       </Head>
 
-      <div style={{ display: "flex", minHeight: "100vh", maxWidth: "100vw", overflow: "hidden" }}>
+      <div style={{ display: "flex", minHeight: "100vh" }}>
         {!isMobile && <SidebarClub currentPath="/recomendados" />}
 
-        <div style={{ flex: 1, minWidth: 0, maxWidth: "100%", display: "flex", flexDirection: "column" }}>
-
+        <div style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column" }}>
           {isMobile && <MobileHeader currentPath="/recomendados" />}
 
           <div style={{ background: "#1F3A5F", borderBottom: "0.5px solid #2A4E7F", padding: isMobile ? "1.25rem 1.25rem 1rem" : "1.5rem 2rem 1.25rem", textAlign: "center" }}>
-            <h1 style={{ fontFamily: "'EB Garamond', Georgia, serif", fontSize: isMobile ? 24 : 30, fontWeight: 400, color: "#FAF7F0", lineHeight: 1.2, marginBottom: ".4rem" }}>
-              Libros recomendados
-            </h1>
-            <p style={{ fontFamily: "'EB Garamond', Georgia, serif", fontSize: isMobile ? 14 : 15, fontStyle: "italic", color: "#E1B955", marginBottom: ".65rem", borderLeft: "2px solid #2A4E7F", borderRight: "2px solid #2A4E7F", display: "inline-block", padding: "0 1rem" }}>
-              Selección del club de lectura católico
-            </p>
+            <h1 style={{ fontFamily: "'EB Garamond', Georgia, serif", fontSize: isMobile ? 24 : 30, fontWeight: 400, color: "#FAF7F0", lineHeight: 1.2, marginBottom: ".4rem" }}>Libros recomendados</h1>
+            <p style={{ fontFamily: "'EB Garamond', Georgia, serif", fontSize: isMobile ? 14 : 15, fontStyle: "italic", color: "#E1B955", marginBottom: ".65rem", borderLeft: "2px solid #2A4E7F", borderRight: "2px solid #2A4E7F", display: "inline-block", padding: "0 1rem" }}>Selección del club de lectura católico</p>
             <div style={{ borderTop: "0.5px solid #2A4E7F", borderBottom: "0.5px solid #2A4E7F", padding: ".3rem 0", maxWidth: 340, margin: "0 auto" }}>
               <span style={{ fontSize: 10, letterSpacing: ".1em", textTransform: "uppercase", color: "#8AAFD4" }}>Compatible o plenamente alineados con la fe católica</span>
             </div>

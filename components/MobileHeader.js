@@ -29,9 +29,9 @@ export default function MobileHeader({ currentPath = "/" }) {
   var userName = user?.user_metadata?.full_name || user?.user_metadata?.name || "";
 
   return (
-    <>
-      {/* HEADER STICKY */}
-      <div style={{ background: "#1F3A5F", borderBottom: "0.5px solid #2A4E7F", padding: "10px 16px", display: "flex", alignItems: "center", justifyContent: "space-between", position: "sticky", top: 0, zIndex: 100 }}>
+    <div style={{ position: "sticky", top: 0, zIndex: 100 }}>
+      {/* HEADER */}
+      <div style={{ background: "#1F3A5F", borderBottom: "0.5px solid #2A4E7F", padding: "10px 16px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <Link href="/" style={{ textDecoration: "none" }}>
           <span style={{ fontFamily: "'EB Garamond', Georgia, serif", fontSize: 19, fontWeight: 500, color: "#FAF7F0" }}>Católicum</span>
         </Link>
@@ -59,9 +59,9 @@ export default function MobileHeader({ currentPath = "/" }) {
         </div>
       </div>
 
-      {/* MENÚ DESPLEGABLE */}
+      {/* MENÚ DESPLEGABLE — dentro del sticky wrapper */}
       {menuOpen && (
-        <div style={{ background: "#1F3A5F", borderBottom: "0.5px solid #2A4E7F", padding: ".5rem 1rem 1rem", position: "sticky", top: 49, zIndex: 99 }}>
+        <div style={{ background: "#1F3A5F", borderBottom: "0.5px solid #2A4E7F", padding: ".5rem 1rem 1rem" }}>
           {NAV.map(function(item) {
             var active = currentPath === item.href;
             return (
@@ -77,6 +77,6 @@ export default function MobileHeader({ currentPath = "/" }) {
           )}
         </div>
       )}
-    </>
+    </div>
   );
 }
