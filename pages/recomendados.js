@@ -43,7 +43,7 @@ export default function Recomendados() {
       <div style={{ display: "flex", minHeight: "100vh" }}>
         {!isMobile && <SidebarClub currentPath="/recomendados" />}
 
-        <div style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column" }}>
+        <div style={{ flex: 1, minWidth: 0, overflow: "hidden", display: "flex", flexDirection: "column" }}>
           {isMobile && <MobileHeader currentPath="/recomendados" />}
 
           <div style={{ background: "#1F3A5F", borderBottom: "0.5px solid #2A4E7F", padding: isMobile ? "1.25rem 1.25rem 1rem" : "1.5rem 2rem 1.25rem", textAlign: "center" }}>
