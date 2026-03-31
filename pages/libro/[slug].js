@@ -19,6 +19,22 @@ function toSlug(str) {
   return str.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 }
 
+function getMetaTitle(book) {
+  if (book.s >= 9) return book.t + " de " + book.a + " — Recomendado para católicos (" + book.s + "/10) | Católicum";
+  if (book.s >= 7) return book.t + " de " + book.a + " — Favorable para católicos (" + book.s + "/10) | Católicum";
+  if (book.s >= 5) return book.t + " de " + book.a + " — ¿Apto para católicos? Análisis completo | Católicum";
+  if (book.s >= 3) return book.t + " de " + book.a + " — Análisis católico: lo que debes saber | Católicum";
+  return book.t + " de " + book.a + " — Análisis católico: puntuación y controversia | Católicum";
+}
+
+function getMetaDesc(book) {
+  if (book.s >= 9) return "\"" + book.t + "\" recibe un " + book.s + "/10 en Católicum. Plenamente recomendado para lectores católicos. Lee el análisis doctrinal completo basado en el Catecismo y la tradición teológica.";
+  if (book.s >= 7) return "\"" + book.t + "\" de " + book.a + " recibe un " + book.s + "/10 en Católicum. Favorable desde la perspectiva católica. Análisis completo con referencias doctrinales.";
+  if (book.s >= 5) return "¿Es \"" + book.t + "\" de " + book.a + " apto para católicos? Puntuación " + book.s + "/10 — neutral, sin conflictos doctrinales graves. Lee el análisis completo en Católicum.";
+  if (book.s >= 3) return "\"" + book.t + "\" de " + book.a + " recibe un " + book.s + "/10 en Católicum. Contiene elementos problemáticos desde la perspectiva católica. Lee el análisis antes de decidir.";
+  return "\"" + book.t + "\" de " + book.a + " recibe un " + book.s + "/10 en Católicum. Análisis detallado sobre su compatibilidad con la doctrina católica. ¿Deberías leerlo?";
+}
+
 function getScoreLabel(s) {
   if (s >= 9) return "plenamente alineado con la doctrina católica";
   if (s >= 7) return "favorable desde la perspectiva católica";
@@ -67,10 +83,9 @@ export default function LibroPage(props) {
   var barWidth = (book.s * 10) + "%";
   var scoreLabel = getScoreLabel(book.s);
   var canonicalUrl = "https://catolicum.com/libro/" + slug;
-
-  var metaTitle = book.t + " de " + book.a + " — Análisis católico y puntuación | Católicum";
-  var metaDesc = "¿Es " + book.t + " compatible con la fe católica? Puntuación " + book.s + "/10 — " + scoreLabel + ". Análisis doctrinal completo basado en el Catecismo y fuentes teológicas.";
-  var metaKeywords = book.t + ", " + book.a + ", libro católico, análisis católico, compatible fe católica, " + (book.tags ? book.tags.join(", ") : "");
+  var metaTitle = getMetaTitle(book);
+  var metaDesc = getMetaDesc(book);
+  var metaKeywords = book.t + ", " + book.a + ", libro católico, análisis católico, compatible fe católica" + (book.tags ? ", " + book.tags.join(", ") : "");
 
   return (
     <div style={{ minHeight: "100vh", background: "#FAF7F0", fontFamily: "DM Sans, sans-serif", color: "#1F2937", overflowX: "clip" }}>
@@ -120,11 +135,8 @@ export default function LibroPage(props) {
       </Head>
 
       <div style={{ display: "flex", minHeight: "100vh" }}>
-
         {!isMobile && <SidebarClub currentPath="" />}
-
         <div style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column" }}>
-
           {isMobile && <MobileHeader currentPath="" />}
 
           <div style={{ maxWidth: 680, margin: "0 auto", padding: isMobile ? "1.25rem 1rem" : "2rem 1.5rem", width: "100%" }}>
@@ -132,7 +144,6 @@ export default function LibroPage(props) {
             <Link href="/" style={{ fontSize: 13, color: "#8AAFD4", textDecoration: "none" }}>← Volver</Link>
 
             <div style={{ marginTop: "1.5rem", background: "#FFFFFF", border: "0.5px solid #C8D4E0", borderRadius: 14, overflow: "hidden" }}>
-
               <div style={{ padding: "1.25rem", borderBottom: "0.5px solid #EDF2F8" }}>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 12, marginBottom: "1rem" }}>
                   <div style={{ flex: 1, minWidth: 0 }}>
@@ -189,10 +200,9 @@ export default function LibroPage(props) {
               </div>
             </div>
 
-            {/* VALORACIONES */}
             <Valoracion libroSlug={slug} />
 
-            {/* SECCIÓN SEO — texto con keywords naturales */}
+            {/* SECCIÓN SEO */}
             <div style={{ marginTop: "2rem", background: "#EDF2F8", borderRadius: 12, padding: "1.25rem", border: "0.5px solid #C8D4E0" }}>
               <h2 style={{ fontFamily: "'EB Garamond', Georgia, serif", fontSize: 18, fontWeight: 400, color: "#1F3A5F", marginBottom: ".75rem" }}>
                 ¿Es "{book.t}" un libro recomendable para católicos?
@@ -204,7 +214,7 @@ export default function LibroPage(props) {
                 Nuestro análisis se basa en el Catecismo de la Iglesia Católica, encíclicas papales y la tradición teológica. No pretende ser una posición oficial de la Iglesia, sino una orientación para lectores católicos que quieren leer con criterio de fe.
               </p>
               <p style={{ fontSize: 13, color: "#6E6E73", lineHeight: 1.7 }}>
-                ¿No estás de acuerdo con nuestra puntuación? Únete al club de lectura católico y deja tu propia valoración. El debate enriquece.
+                ¿No estás de acuerdo con nuestra puntuación? Únete al club de lectura católico y deja tu propia valoración.
               </p>
               <Link href="/" style={{ display: "inline-block", marginTop: ".75rem", fontSize: 13, color: "#1F3A5F", fontWeight: 500, textDecoration: "none" }}>
                 → Analizar otro libro
@@ -218,7 +228,6 @@ export default function LibroPage(props) {
               <span style={{ color: "#D8D0BC" }}>·</span>
               <Link href="/privacidad" style={{ color: "#AEAEB2", textDecoration: "none" }}>Privacidad</Link>
             </div>
-
           </div>
         </div>
       </div>
